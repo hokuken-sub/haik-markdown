@@ -1,0 +1,19 @@
+{
+    "name": "toiee/haik-markdown",
+    "description": "PHP haik Markdown parser",
+    "type": "library",
+    "keywords": ["markdown", "haik"],
+    "license": "",
+    "require": {
+        "php": ">=5.3.3",
+		"michelf/php-markdown": "1.4.0"
+    },
+    "require-dev": {
+        "phpunit/PHPUnit": "3.7.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Toiee\\haikMarkdown": "src/"
+        }
+    }
+}
