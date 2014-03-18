@@ -1,11 +1,13 @@
 <?php
-namespace Toiee;
+namespace Toiee\HaikMarkdown;
 
 use Michelf\MarkdownExtra;
+use Toiee\HaikMarkdown\Plugin\PluginRepositoryInterface;
 
 class HaikMarkdown extends MarkdownExtra {
 
-    public function __construct()
+    protected $plugins;
+    public function __construct(PluginRepositoryInterface $plugins)
     {
         $this->running = false;
 
@@ -18,6 +20,8 @@ class HaikMarkdown extends MarkdownExtra {
 		$this->span_gamut += array(
             "doInlinePlugins"    => 2,
         );
+
+        $this->plugins = $plugins;
 		
 		parent::__construct();
     }
@@ -53,7 +57,7 @@ class HaikMarkdown extends MarkdownExtra {
         $body = isset($matches[4]) ? $this->unhash($this->runSpanGamut($matches[4])) : '';
 
         try {
-            $result = \Plugin::get($plugin_id)->inline($params, $body);
+            $result = $this->plugins->load($plugin_id)->inline($params, $body);
         }
         catch (\InvalidArgumentException $e) {
             return $whole_match;
@@ -142,7 +146,7 @@ class HaikMarkdown extends MarkdownExtra {
         $body = $this->unHash($body);
 
         try {
-            $result = \Plugin::get($plugin_id)->convert($params, $body);
+            $result = $this->plugins->load($plugin_id)->convert($params, $body);
             return "\n\n".$this->hashBlock($result)."\n\n";
         }
         catch (\InvalidArgumentException $e)
