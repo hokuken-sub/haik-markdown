@@ -7,27 +7,55 @@ class PluginRepository implements PluginRepositoryInterface {
 
     private static $instance = null;
 
-    protected $repositories = array();
+    protected $repositories;
 
     private function __construct()
     {
+        $this->initialize();
+    }
+
+    /**
+     * Clean plugin repositories.
+     *
+     * @return PluginRepository $this for method chain
+     */
+    public function clean()
+    {
+        $this->repositories = array();
+
+        return $this;
+    }
+
+    /**
+     * Initialize this instance.
+     * Clear PluginRepositoryInterface array and register Basic/Bootstrap plugin repositories.
+     *
+     * @return PluginRepository $this for method chain
+     */
+    public function initialize()
+    {
+        $this->clean();
+
         $this->register(
             new BasicPluginRepository
-        );
-        $this->register(
+        )->register(
             new BootstrapPluginRepository
         );
+
+        return $this;
     }
 
     /**
      * Register PluginRepositoryInterface
      *
      * @param PluginRepositoryInterface $repository
-     * @return void
+     * @return PluginRepository $this for method chain
      */
     public function register(PluginRepositoryInterface $repository)
     {
         array_unshift($this->repositories, $repository);
+
+        return $this;
     }
 
     /**
