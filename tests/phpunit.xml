@@ -3,7 +3,7 @@
 <phpunit bootstrap="Bootstrap.php" colors="true">
     <testsuites>
         <testsuite name="toiee/haik-markdown">
-            <directory>./ToieeTest</directory>
+            <directory>./Toiee</directory>
         </testsuite>
     </testsuites>
 </phpunit>

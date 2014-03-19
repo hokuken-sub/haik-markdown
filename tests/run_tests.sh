@@ -1,2 +1,2 @@
-!#/bin/bash
-`which php` ../vendor/phpunit/phpunit/phpunit.php
+#!/bin/bash
+`which php` ./vendor/phpunit/phpunit/phpunit.php
