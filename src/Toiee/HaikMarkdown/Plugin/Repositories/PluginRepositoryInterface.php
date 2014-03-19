@@ -1,5 +1,5 @@
 <?php
-namespace Toiee\HaikMarkdown\Plugin;
+namespace Toiee\HaikMarkdown\Plugin\Repositories;
 
 interface PluginRepositoryInterface {
 
