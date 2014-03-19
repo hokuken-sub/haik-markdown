@@ -3,6 +3,8 @@ namespace Toiee\HaikMarkdown\Plugin;
 
 abstract class Plugin implements PluginInterface {
 
+    private static $maxId = 0;
+
     private $id;
 
     /**
@@ -10,9 +12,8 @@ abstract class Plugin implements PluginInterface {
      */
     public function __construct()
     {
-        $plugin_name = get_called_class();
-        PluginCounter::inc($plugin_name);
-        $this->id = PluginCounter::get($plugin_name);
+        self::maxId++;
+        $this->id = self::maxId;
     }
 
     /**
