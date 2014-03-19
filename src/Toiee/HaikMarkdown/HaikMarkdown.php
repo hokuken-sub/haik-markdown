@@ -2,11 +2,12 @@
 namespace Toiee\HaikMarkdown;
 
 use Michelf\MarkdownExtra;
-use Toiee\HaikMarkdown\Plugin\PluginRepository;
+use Toiee\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface;
+use Toiee\HaikMarkdown\Plugin\Repositories\PluginRepository;
 
 class HaikMarkdown extends MarkdownExtra {
 
-    protected $plugins;
+    protected $pluginRepository;
 
     public function __construct()
     {
@@ -22,9 +23,14 @@ class HaikMarkdown extends MarkdownExtra {
             "doInlinePlugins"    => 2,
         );
 
-        $this->plugins = PluginRepository::getInstance();
+        $this->setPluginRepository(PluginRepository::getInstance());
 		
 		parent::__construct();
+    }
+
+    public function setPluginRepository(PluginRepositoryInterface $repository)
+    {
+        $this->pluginRepository = $repository;
     }
 
     protected function doInlinePlugins($text)
