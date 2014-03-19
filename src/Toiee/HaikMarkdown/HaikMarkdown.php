@@ -64,9 +64,9 @@ class HaikMarkdown extends MarkdownExtra {
         $body = isset($matches[4]) ? $this->unhash($this->runSpanGamut($matches[4])) : '';
 
         try {
-            $result = $this->plugins->load($plugin_id)->inline($params, $body);
+            $result = $this->pluginRepository->load($plugin_id)->inline($params, $body);
         }
-        catch (\InvalidArgumentException $e) {
+        catch (\Exception $e) {
             return $whole_match;
         }
         return $this->hashPart($result);        
@@ -153,10 +153,10 @@ class HaikMarkdown extends MarkdownExtra {
         $body = $this->unHash($body);
 
         try {
-            $result = $this->plugins->load($plugin_id)->convert($params, $body);
+            $result = $this->pluginRepository->load($plugin_id)->convert($params, $body);
             return "\n\n".$this->hashBlock($result)."\n\n";
         }
-        catch (\InvalidArgumentException $e)
+        catch (\Exception $e)
         {
             return $whole_match;
         }
