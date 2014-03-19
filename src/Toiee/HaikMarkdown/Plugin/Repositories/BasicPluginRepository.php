@@ -6,7 +6,6 @@ class BasicPluginRepository extends AbstractPluginRepository {
     public function __construct()
     {
         $this->repositoryPath = dirname(__DIR__) . '/Basic';
-        parent::__construct();
     }
 
     protected function getClassName($id)

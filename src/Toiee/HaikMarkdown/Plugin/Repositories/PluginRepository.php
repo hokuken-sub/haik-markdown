@@ -9,7 +9,23 @@ class PluginRepository implements PluginRepositoryInterface {
 
     private function __construct()
     {
-        $this->register(new DefaultPluginRepository);
+        $this->register(
+            new BasicPluginRepository
+        );
+        $this->register(
+            new BootstrapPluginRepository
+        );
+    }
+
+    /**
+     * Register PluginRepositoryInterface
+     *
+     * @param PluginRepositoryInterface $repository
+     * @return void
+     */
+    public function register(PluginRepositoryInterface $repository)
+    {
+        array_unshift($this->repositories, $repository);
     }
 
     /**

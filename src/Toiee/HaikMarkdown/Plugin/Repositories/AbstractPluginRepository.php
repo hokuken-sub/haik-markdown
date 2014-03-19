@@ -42,16 +42,17 @@ abstract class AbstractPluginRepository implements PluginRepositoryInterface {
     {
         $plugin_dir = $this->repositoryPath;
         $dirs = glob($plugin_dir);
-        
-        $plugins = array_map(function($dir) use ($this as $repository)
+
+        $plugins = array();
+        foreach ($dirs as $dir)
         {
             $plugin_id = snake_case(basename($dir));
-            if ($repository->exists($id))
+            if ($this->exists($plugin_id))
             {
-                return $id;
+                $plugins[] = $plugin_id;
             }
-            return null;
-        }, $dirs);
+        }
+        return $plugins;
     }
 
     /**

@@ -6,7 +6,6 @@ class BootstrapPluginRepository extends AbstractPluginRepository {
     public function __construct()
     {
         $this->repositoryPath = dirname(__DIR__) . '/Bootstrap';
-        parent::__construct();
     }
 
     protected function getClassName($id)
