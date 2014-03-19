@@ -1,6 +1,8 @@
 <?php
 namespace Toiee\HaikMarkdown\Plugin\Repositories;
 
+use Toiee\HaikMarkdown\Plugin\PluginCounter;
+
 class PluginRepository implements PluginRepositoryInterface {
 
     private static $instance = null;
@@ -68,6 +70,7 @@ class PluginRepository implements PluginRepositoryInterface {
         {
             if ($repository->exists($id))
             {
+                $this->incrementPluginCount($id);
                 return $repository->load($id);
             }
         }
@@ -91,6 +94,11 @@ class PluginRepository implements PluginRepositoryInterface {
         sort($plugins, SORT_NATURAL | SORT_FLAG_CASE);
 
         return $plugins;
+    }
+
+    protected function incrementPluginCount($id)
+    {
+        PluginCounter::getInstance()->inc($id);
     }
 
 }

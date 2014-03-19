@@ -3,27 +3,43 @@ namespace Toiee\HaikMarkdown\Plugin;
 
 class PluginCounter {
 
-    protected static $counts = array();
+    private static $instance = null;
 
-    public static function inc($plugin_class_name)
+    /**
+     * Get Singleton instance
+     */
+    public static function getInstance()
     {
-        $plugin_name = class_basename($plugin_class_name);
-        if (isset(self::$counts[$plugin_name]))
+        if (null === self::$instance)
         {
-            self::$counts[$plugin_name] += 1;
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    private function __construct()
+    {
+    }
+
+    private $counts = array();
+
+    public function inc($id)
+    {
+        if (isset($this->counts[$id]))
+        {
+            $this->counts[$id] += 1;
         }
         else
         {
-            self::$counts[$plugin_name] = 1;
+            $this->counts[$id] = 1;
         }
     }
 
-    public static function get($plugin_class_name)
+    public function get($id)
     {
-        $plugin_name = class_basename($plugin_class_name);
-        if (isset(self::$counts[$plugin_name]))
+        if (isset($this->counts[$id]))
         {
-            return self::$counts[$plugin_name];
+            return $this->counts[$id];
         }
         else
         {
@@ -31,9 +47,9 @@ class PluginCounter {
         }
     }
 
-    public static function all()
+    public function all()
     {
-        return self::$counts;
+        return $this->counts;
     }
 
 }
