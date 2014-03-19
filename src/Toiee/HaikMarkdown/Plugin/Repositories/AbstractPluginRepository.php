@@ -32,6 +32,8 @@ abstract class AbstractPluginRepository implements PluginRepositoryInterface {
             $class_name = $this->getClassName($id);
             return new $class_name;
         }
+
+        throw new \InvalidArgumentException("A plugin with id=$id was not exist");
     }
 
     /**
