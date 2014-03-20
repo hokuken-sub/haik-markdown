@@ -3,10 +3,16 @@ namespace Toiee\HaikMarkdown\Plugin\Bootstrap;
 
 class Column {
 
-    const MAX_WIDTH            = 12;
-    const DEFAULT_OFFSET_WIDTH = 0;
-    const PARSABLE_REGEX       = '{ ^(\d+)(?:\+(\d+))?((?:\.[a-zA-Z0-9_-]+)+)?$ }mx';
+    public static $MAX_WIDTH            = 12;
+    public static $MAX_OFFSET_WIDTH     = 11;
+    public static $DEFAULT_OFFSET_WIDTH = 0;
+    public static $PARSABLE_REGEX       = '{ ^(\d+)(?:\+(\d+))?((?:\.[a-zA-Z0-9_-]+)+)?$ }mx';
 
+    public static $ROW_CLASS_NAME       = 'row';
+    public static $COLUMN_CLASS_PREFIX  = 'col-sm-';
+    public static $OFFSET_CLASS_PREFIX  = 'col-sm-offset-';
+
+    protected $attributesForClasses = array('columnWidth', 'offsetWidth', 'classAttribute');
     protected $columnWidth;
 
     protected $offsetWidth;
@@ -19,8 +25,8 @@ class Column {
 
     public function __construct($text = '')
     {
-        $this->columnWidth = self::MAX_WIDTH;
-        $this->offsetWidth = self::DEFAULT_OFFSET_WIDTH;
+        $this->columnWidth = self::$MAX_WIDTH;
+        $this->offsetWidth = self::$DEFAULT_OFFSET_WIDTH;
 
         $this->parseText($text);
     }
@@ -32,10 +38,10 @@ class Column {
      */
     public function parseText($text = '')
     {
-        if (preg_match(self::PARSABLE_REGEX, $text, $matches))
+        if (preg_match(self::$PARSABLE_REGEX, $text, $matches))
         {
-            $this->setColumnWidth(!empty($matches[1]) ? $matches[1] : self::MAX_WIDTH);
-            $this->setOffsetWidth(!empty($matches[2]) ? $matches[2] : self::DEFAULT_OFFSET_WIDTH);
+            $this->setColumnWidth(!empty($matches[1]) ? $matches[1] : self::$MAX_WIDTH);
+            $this->setOffsetWidth(!empty($matches[2]) ? $matches[2] : self::$DEFAULT_OFFSET_WIDTH);
             $this->addClassAttribute(!empty($matches[3]) ? trim(str_replace('.', ' ', $matches[3])) : '');
         }
         return $this;
@@ -43,7 +49,8 @@ class Column {
 
     public function setColumnWidth($column_width)
     {
-        $this->columnWidth = (int)$column_width;
+        $column_width = (int)$column_width;
+        $this->columnWidth = ($column_width > self::$MAX_WIDTH OR $column_width < 1) ? self::$MAX_WIDTH : $column_width;
         return $this;
     }
 
@@ -52,15 +59,24 @@ class Column {
         return $this->columnsWidth;
     }
 
-    public function setOffsetColumns($offset_width)
+    public function setOffsetWidth($offset_width)
     {
-        $this->offsetWidth = (int)$offset_width;
+        $offset_width = (int)$offset_width;
+        if ($offset_width > self::$MAX_OFFSET_WIDTH)
+        {
+            $offset_width = self::$MAX_OFFSET_WIDTH;
+        }
+        else if ($offset_width < 1)
+        {
+            $offset_width = 0;
+        }
+        $this->offsetWidth = $offset_width;
         return $this;
     }
 
-    public function getOffsetColumns()
+    public function getOffsetWidth()
     {
-        return $this->offsetWidth();
+        return $this->offsetWidth;
     }
 
     public function addClassAttribute($class_attr = '')
@@ -71,7 +87,7 @@ class Column {
 
     public function getClassAttribute()
     {
-        return $this->classAttribute();
+        return $this->classAttribute;
     }
 
     public function addStyleAttribute($style_declarations = '')
@@ -82,7 +98,7 @@ class Column {
 
     public function getStyleAttribute()
     {
-        return $this->styleAttribute();
+        return $this->styleAttribute;
     }
 
     public function setContent($content)
@@ -105,60 +121,65 @@ class Column {
     {
         $classes = array();
         
-        if ( ! isset($this->data['cols']))
+        foreach ($this->attributesForClasses as $attribute)
         {
-            return '';
+            $method = 'createClassAttributeFrom' . ucfirst($attribute);
+            $classes[] = $this->$method();
         }
-    
-        foreach($this->data as $key => $value)
-        {
-            $option = '';
-            switch($key)
-            {
-                case 'offset':
-                    $option = "offset-";
-                case 'cols':
-                    if ($value > 0)
-                    {
-                        $classes[] = 'col-sm-'. $option . $value;
-                    }
-                    break;
-                case 'class':
-                    if ($value !== '')
-                    {
-                        $classes[] = $value;
-                    }
-                    break;
-            }
-        }
+        $classes = array_filter($classes);
 
         return join(" ", $classes);
+    }
 
-        return '';
+    public function createClassAttributeFromColumnWidth()
+    {
+        $prefix = self::$COLUMN_CLASS_PREFIX;
+        return $prefix . $this->columnWidth;
+    }
+
+    public function createClassAttributeFromOffsetWidth()
+    {
+        $prefix = self::$OFFSET_CLASS_PREFIX;
+        return $this->offsetWidth ? $prefix . $this->offsetWidth : null;
+    }
+
+    public function createClassAttributeFromClassAttribute()
+    {
+        return $this->classAttribute;
+    }
+
+    public function createStyleAttribute()
+    {
+        return $this->styleAttribute;
     }
 
     /**
-     * makes wrapped html with column class
+     * Make html of column unit
      *
-     * @param  string content html
-     * @return string wrapped html with column class
+     * @return string html of column unit
      */
-    public function wrap()
+    public function render()
     {
         $class_attr = $this->createClassAttribute();
+        $style_attr = $this->createStyleAttribute();
+        $style_attr = $style_attr ? ' style="' . e($style_attr) . '"' : '';
+        return '<div class="' . e($class_attr) . '"'.$style_attr.'>' . $this->content . '</div>';
+    }
 
-        if ($class_attr === '')
-        {
-            return $this->content;
-        }
+    /**
+     * Make html of column unit with row
+     *
+     * @return string html of column unit with row
+     */
+    public function renderWithRow()
+    {
+        $column_html = $this->render();
 
-        $html = '<div class="row"><div class="'.e($class_attr).'">'.$this->content.'</div></div>';
-
-        return $html;
+        return '<div class="'. e(self::$ROW_CLASS_NAME) .'">'. $column_html .'</div>';
     }
 
     public static function isParsable($text)
     {
-        return preg_match(self::PARSABLE_REGEX, $text);
+        return preg_match(self::$PARSABLE_REGEX, $text);
     }
 }
