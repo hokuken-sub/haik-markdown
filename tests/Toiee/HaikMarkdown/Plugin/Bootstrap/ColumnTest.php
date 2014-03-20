@@ -3,6 +3,33 @@ use Toiee\HaikMarkdown\Plugin\Bootstrap\Column;
 
 class ColumnTest extends PHPUnit_Framework_TestCase {
 
+    public function testCompare()
+    {
+        $column1 = new Column("12");
+        $column2 = new Column("12");
+        $this->assertEquals(true, $column1 == $column2);
+
+        $column1 = new Column("10+2");
+        $column2 = new Column("10+2");
+        $this->assertEquals(true, $column1 == $column2);
+
+        $column1 = new Column("1.foo");
+        $column2 = new Column("1.foo");
+        $this->assertEquals(true, $column1 == $column2);
+
+        $column1 = new Column("10");
+        $column2 = new Column("12");
+        $this->assertEquals(false, $column1 == $column2);
+
+        $column1 = new Column("1.foo");
+        $column2 = new Column("1.bar");
+        $this->assertEquals(false, $column1 == $column2);
+
+        $column1 = new Column("1+11");
+        $column2 = new Column("2+10");
+        $this->assertEquals(false, $column1 == $column2);
+    }
+
     /**
      * @dataProvider parsableTestProvider
      */
