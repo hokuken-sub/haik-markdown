@@ -20,7 +20,18 @@ abstract class Plugin extends BasePlugin {
      */
     public function renderView($data = array())
     {
-        return $this->render($this->view, $data);
+        return $this->render($this->getViewPath(), $data);
+    }
+
+
+    public function getViewPath()
+    {
+        $view_path = dirname(__DIR__) . '/../../../../views/bootstrap/' . str_replace('.', '/', $this->view) . '.php';
+        if ( ! file_exists($view_path))
+        {
+            return false;
+        }
+        return $view_path;
     }
 
     /**
@@ -30,8 +41,16 @@ abstract class Plugin extends BasePlugin {
      * @param array $data
      * @return string converted HTML string
      */
-    public function render($view, $data = array())
+    public function render($view_path, $data = array())
     {
+        if ($view_path !== false)
+        {
+            extract($data);
+            $self = $this;
+            ob_start();
+            include $view_path;
+            return ob_get_clean();
+        }
         return '';
     }
 
