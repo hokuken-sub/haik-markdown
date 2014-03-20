@@ -18,15 +18,21 @@ abstract class Plugin extends BasePlugin {
      * @params array $data
      * @return string converted HTML string
      */
-    abstract public function renderView($data = array());
+    public function renderView($data = array())
+    {
+        return $this->render($this->view, $data);
+    }
 
     /**
      * render specified view file
      *
-     * @param string $view name of viewfile
+     * @param string $view name of viewfile e.g.) "plugin_name.template"
      * @param array $data
      * @return string converted HTML string
      */
-    abstract public function render($view, $data = array());
+    public function render($view, $data = array())
+    {
+        return '';
+    }
 
 }

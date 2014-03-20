@@ -56,7 +56,7 @@ class Column {
 
     public function getColumnWidth()
     {
-        return $this->columnsWidth;
+        return $this->columnWidth;
     }
 
     public function setOffsetWidth($offset_width)
