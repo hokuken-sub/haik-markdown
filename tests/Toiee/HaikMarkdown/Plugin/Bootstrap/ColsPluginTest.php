@@ -1,7 +1,7 @@
 <?php
 use Toiee\HaikMarkdown\Plugin\Bootstrap\Cols\ColsPlugin;
 use Toiee\HaikMarkdown\Plugin\Bootstrap\Column;
-
+use Toiee\HaikMarkdown\Plugin\Bootstrap\Row;
 
 class ColsPluginTest extends PHPUnit_Framework_TestCase {
 
@@ -23,7 +23,7 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
     {
         $plugin = new ColsPlugin;
         $plugin->convert($cols, '');
-        $this->assertAttributeEquals($assert, 'cols', $plugin);
+        $this->assertAttributeEquals($assert, 'row', $plugin);
     }
     
     public function paramProvider()
@@ -31,48 +31,48 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
         return array(
             array(
                 'cols'     => array(),
-                'expected' => array(
+                'expected' => new Row(array(
                     new Column()
-                )
+                ))
             ),
             array(
                 'cols'     => array("3"),
-                'expected' => array(
+                'expected' => new Row(array(
                     new Column("3")
-                )
+                ))
             ),
             array(
                 'cols'     => array("3", "9"),
-                'expected' => array(
+                'expected' => new Row(array(
                     new Column("3"),
                     new Column("9")
-                )
+                ))
             ),
             array(
                 'cols'   => array("3", "3", "6"),
-                'expected' => array(
+                'expected' => new Row(array(
                     new Column("3"),
                     new Column("3"),
                     new Column("6")
-                )
+                ))
             ),
             array(
                 'cols'   => array("3+9"),
-                'expected' => array(
+                'expected' => new Row(array(
                     new Column("3+9")
-                )
+                ))
             ),
             array(
                 'cols'   => array("3.class-name"),
-                'expected' => array(
+                'expected' => new Row(array(
                     new Column("3.class-name")
-                )
+                ))
             ),
             array(
                 'cols'   => array("6+6.class-name"),
-                'expected' => array(
+                'expected' => new Row(array(
                     new Column("6+6.class-name")
-                )
+                ))
             ),
         );
     }
@@ -84,7 +84,7 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
     {
         $plugin = new ColsPlugin;
         $plugin->convert($cols, '');
-        $this->assertAttributeEquals($assert, 'className', $plugin);
+        $this->assertAttributeEquals($assert, 'row', $plugin);
     }
     
     public function pluginClassProvider()
@@ -92,11 +92,11 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
         $tests = array(
             'classname' => array(
                 'cols'   => array('class=test-class'),
-                'assert' => 'test-class',
+                'assert' => with(new Row(array(new Column)))->addClassAttribute('test-class'),
             ),
             'no-classname' => array(
                 'cols'   => array('class='),
-                'assert' => '',
+                'assert' => with(new Row(array(new Column)))->addClassAttribute(''),
             ),
         );
         
@@ -136,7 +136,7 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
     {
         $plugin = new ColsPlugin;
         $plugin->convert(array(), $body);
-        $this->assertAttributeEquals($assert, 'cols', $plugin);
+        $this->assertAttributeEquals($assert, 'row', $plugin);
     }
     
     public function bodyProvider()
@@ -144,23 +144,23 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
         return array(
             array(
                 'body'     => "str1\nstr2",
-                'expected' => array(
-                    with(new Column())->setContent("str1\nstr2")
-                )
+                'expected' => new Row(array(
+                    with(new Column())->setContent("<p>str1\nstr2</p>")
+                ))
             ),
             array(
                 'body'     => "str1\n====\nstr2",
-                'expected' => array(
-                    with(new Column())->setColumnWidth(6)->setContent('str1'),
-                    with(new Column())->setColumnWidth(6)->setContent('str2')
-                )
+                'expected' => new Row(array(
+                    with(new Column())->setColumnWidth(6)->setContent('<p>str1</p>'),
+                    with(new Column())->setColumnWidth(6)->setContent('<p>str2</p>')
+                ))
             ),
             array(
                 'body'     => "\n====\n",
-                'expected' => array(
+                'expected' => new Row(array(
                     with(new Column())->setColumnWidth(6),
                     with(new Column())->setColumnWidth(6)
-                )
+                ))
             ),
         );
     }
@@ -256,49 +256,52 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
     }
     
 
-    public function testOverMaxCols()
+    /**
+     * @dataProvider overColumnSizeProvider
+     */
+    public function testOverColumnSize($cols, $expected)
     {
-        $this->markTestIncomplete();
-/*
-        
-        $tests = array(
-            'notAuth' => array(
-                'cols' => array(7,7),
-                'body' => "test1\n====\ntest2",
-                'assert' => '<div class="haik-plugin-cols row">'."\n".
-                            '  <div class="col-sm-7">'."\n".'      '.\Parser::parse('test1').'    </div>'."\n".
-                            '  <div class="col-sm-7">'."\n".'      '.\Parser::parse('test2').'    </div>'."\n".
-                            '</div>',
+        $plugin = new ColsPlugin();
+        $plugin->convert($cols);
+        $this->assertAttributeEquals($expected, 'violateColumnSize', $plugin);
+    }
+
+    public function overColumnSizeProvider()
+    {
+        return array(
+            array(
+                'cols' => array('1', '1'),
+                'expected' => false
             ),
-            'Auth' => array(
-                'cols' => array(7,7),
-                'body' => "test1\n====\ntest2",
-                'assert' => '<div class="haik-plugin-alert alert alert-danger alert-dismissable">'.
-                            '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>'.
-                            '<p>There are over 12 columns.</p>'."\n".
-                            '</div>'."\n".
-                            '<div class="haik-plugin-cols row">'."\n".
-                            '  <div class="col-sm-7">'."\n".'      '.\Parser::parse('test1').'    </div>'."\n".
-                            '  <div class="col-sm-7">'."\n".'      '.\Parser::parse('test2').'    </div>'."\n".
-                            '</div>',
+            array(
+                'cols' => array('6', '6'),
+                'expected' => false
+            ),
+            array(
+                'cols' => array('6', '7'),
+                'expected' => true
+            ),
+            array(
+                'cols' => array('12', '12'),
+                'expected' => true
+            ),
+            array(
+                'cols' => array('3+3', '3+3'),
+                'expected' => false
+            ),
+            array(
+                'cols' => array('3+4', '3+3'),
+                'expected' => true
+            ),
+            array(
+                'cols' => array('1+1', '1+1'),
+                'expected' => false
+            ),
+            array(
+                'cols' => array('7+11', '9+11'),
+                'expected' => true
             ),
         );
-
-
-        foreach ($tests as $key => $data)
-        {
-            if ($key === 'Auth')
-            {
-                $user = User::where('email', 'touch@toiee.jp')->first();
-                $this->be($user);
-            }
-            $data['assert'] = preg_replace('/\n| {2,}/', '', trim($data['assert']));
-            $cmpdata = with(new ColsPlugin)->convert($data['cols'], $data['body']);
-            $cmpdata = preg_replace('/\n| {2,}/', '', trim($cmpdata));
-
-            $this->assertEquals($data['assert'], $cmpdata);
-        }
-*/
     }
 
 }
