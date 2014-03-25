@@ -1,10 +1,13 @@
 <?php
 namespace Toiee\HaikMarkdown\Plugin\Repositories;
 
+use Michelf\MarkdownInterface;
+
 class BootstrapPluginRepository extends AbstractPluginRepository {
 
-    public function __construct()
+    public function __construct(MarkdownInterface $parser)
     {
+        parent::__construct($parser);
         $this->repositoryPath = dirname(__DIR__) . '/Bootstrap';
     }
 

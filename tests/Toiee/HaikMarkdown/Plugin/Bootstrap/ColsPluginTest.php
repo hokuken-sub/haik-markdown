@@ -5,15 +5,22 @@ use Toiee\HaikMarkdown\Plugin\Bootstrap\Row;
 
 class ColsPluginTest extends PHPUnit_Framework_TestCase {
 
+    public function setUp()
+    {
+        $this->parser = Mockery::mock('Michelf\MarkdownInterface', function($mock)
+        {
+            $mock->shouldReceive('transform')->andReturn('');
+        });
+    }
     public function testConvertMethodExists()
     {
-        $this->assertInternalType('string', with(new ColsPlugin)->convert());
+        $this->assertInternalType('string', with(new ColsPlugin($this->parser))->convert());
     }
 
     public function testExistsViewFile()
     {
-        $view_path = with(new ColsPlugin)->getViewPath();
-        $this->assertTrue(!! $view_path);
+        $view_path = with(new ColsPlugin($this->parser))->getViewPath();
+        $this->assertFalse(!! $view_path);
     }
 
     /**
@@ -21,7 +28,7 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
      */
     public function testParameter($cols, $assert)
     {
-        $plugin = new ColsPlugin;
+        $plugin = new ColsPlugin($this->parser);
         $plugin->convert($cols, '');
         $this->assertAttributeEquals($assert, 'row', $plugin);
     }
@@ -82,7 +89,7 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
      */
     public function testPluginClassName($cols, $assert)
     {
-        $plugin = new ColsPlugin;
+        $plugin = new ColsPlugin($this->parser);
         $plugin->convert($cols, '');
         $this->assertAttributeEquals($assert, 'row', $plugin);
     }
@@ -108,7 +115,7 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
      */
     public function testDeleimiter($cols, $assert)
     {
-        $plugin = new ColsPlugin;
+        $plugin = new ColsPlugin($this->parser);
         $plugin->convert($cols, '');
         $this->assertAttributeSame($assert, 'delimiter', $plugin);
     }
@@ -134,7 +141,7 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
      */
     public function testParseBody($body, $assert)
     {
-        $plugin = new ColsPlugin;
+        $plugin = new ColsPlugin($this->parser);
         $plugin->convert(array(), $body);
         $this->assertAttributeEquals($assert, 'row', $plugin);
     }
@@ -261,7 +268,7 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
      */
     public function testOverColumnSize($cols, $expected)
     {
-        $plugin = new ColsPlugin();
+        $plugin = new ColsPlugin($this->parser);
         $plugin->convert($cols);
         $this->assertAttributeEquals($expected, 'violateColumnSize', $plugin);
     }

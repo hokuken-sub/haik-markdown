@@ -1,9 +1,19 @@
 <?php
 namespace Toiee\HaikMarkdown\Plugin\Repositories;
 
+use Michelf\MarkdownInterface;
+
 abstract class AbstractPluginRepository implements PluginRepositoryInterface {
 
+    /** @var MarkdownInterface */
+    protected $parser;
+
     protected $repositoryPath;
+
+    public function __construct(MarkdownInterface $parser)
+    {
+        $this->parser = $parser;
+    }
 
     /**
      * plugin $id is exists?
@@ -30,7 +40,7 @@ abstract class AbstractPluginRepository implements PluginRepositoryInterface {
         if ($this->exists($id))
         {
             $class_name = $this->getClassName($id);
-            return new $class_name;
+            return new $class_name($this->parser);
         }
 
         throw new \InvalidArgumentException("A plugin with id=$id was not exist");

@@ -26,7 +26,7 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
         });
 
         $this->parser = new HaikMarkdown;
-        $this->parser->setPluginRepository($repository);
+        $this->parser->registerPluginRepository($repository);
     }
 
     public function testEmptyElementSuffix()
@@ -37,6 +37,51 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
     public function testCodeClassPrefix()
     {
         $this->assertEquals('', $this->parser->code_class_prefix);
+    }
+
+    public function testPluginRepository()
+    {
+        $this->assertTrue($this->parser->hasPlugin('plugin'));
+
+        $plugin = $this->parser->loadPlugin('plugin');
+        $this->assertInstanceOf('\Toiee\HaikMarkdown\Plugin\PluginInterface', $plugin);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testThrowsWhenLoadedNonExistancePlugin()
+    {
+        $repository = Mockery::mock('Toiee\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface', function($mock)
+        {
+            $mock->shouldReceive('exists')->andReturn(false);
+            return $mock;
+        });
+        $parser = new HaikMarkdown();
+        $parser->registerPluginRepository($repository);
+        
+        $parser->loadPlugin('plugin');
+    }
+
+    public function testPluginRepositoryGetAll()
+    {
+        $repository1 = Mockery::mock('Toiee\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface', function($mock)
+        {
+            $mock->shouldReceive('getAll')->andReturn(array('foo', 'bar', 'buzz', 'same'));
+            return $mock;
+        });
+        $repository2 = Mockery::mock('Toiee\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface', function($mock)
+        {
+            $mock->shouldReceive('getAll')->andReturn(array('hoge', 'fuga', 'piyo', 'same'));
+            return $mock;
+        });
+        $parser = new HaikMarkdown();
+        $parser->registerPluginRepository($repository1)->registerPluginRepository($repository2);
+        $this->assertAttributeEquals(array($repository2, $repository1), 'pluginRepositories', $parser);
+
+        $expected = array('bar', 'buzz', 'foo', 'fuga', 'hoge', 'piyo', 'same');
+        $plugins = $parser->getAllPlugin();
+        $this->assertEquals($expected, $plugins);
     }
 
     // ! inline plugin
@@ -193,12 +238,13 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
                  ->andReturn(false);
             return $mock;
         });
-        $this->parser->setPluginRepository($repository);
+        $parser = new HaikMarkdown();
+        $parser->registerPluginRepository($repository);
     
         $markdown = '&plugin;hr&plugin;';
         $expected = '<p>&plugin;hr&plugin;</p>';
         
-        $this->assertEquals($expected, trim($this->parser->transform($markdown)));
+        $this->assertEquals($expected, trim($parser->transform($markdown)));
     }
 
     // ! convert plugin
@@ -348,12 +394,13 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
                  ->andReturn(false);
             return $mock;
         });
-        $this->parser->setPluginRepository($repository);
+        $parser = new HaikMarkdown();
+        $parser->registerPluginRepository($repository);
 
         $markdown = "::: {#plugin}\nhoge\n:::";
         $expected = "<p>::: {#plugin}\nhoge\n:::</p>";
         
-        $this->assertEquals($expected, trim($this->parser->transform($markdown)));
+        $this->assertEquals($expected, trim($parser->transform($markdown)));
     }
     // !TODO: 具体クラスでテストする
     public function testCallNestedConvertPlugins()

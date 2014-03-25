@@ -7,7 +7,12 @@ use Toiee\HaikMarkdown\Plugin\Repositories\PluginRepository;
 
 class HaikMarkdown extends MarkdownExtra {
 
-    protected $pluginRepository;
+    /** @var boolean is parser running for prevent recursively parse */
+    protected $running;
+
+    /** @var array of PluginRepositoryInterface */
+    protected $pluginRepositories = array();
+
 
     public function __construct()
     {
@@ -23,14 +28,23 @@ class HaikMarkdown extends MarkdownExtra {
             "doInlinePlugins"    => 2,
         );
 
-        $this->setPluginRepository(PluginRepository::getInstance());
-		
 		parent::__construct();
     }
 
-    public function setPluginRepository(PluginRepositoryInterface $repository)
+    public function transform($text)
     {
-        $this->pluginRepository = $repository;
+        if ($this->running)
+        {
+            return with(new self())->transform($text);
+        }
+
+        $this->running = true;
+
+        $text = parent::transform($text);
+
+        $this->running = false;
+
+        return $text;
     }
 
     protected function doInlinePlugins($text)
@@ -64,12 +78,13 @@ class HaikMarkdown extends MarkdownExtra {
         $body = isset($matches[4]) ? $this->unhash($this->runSpanGamut($matches[4])) : '';
 
         try {
-            $result = $this->pluginRepository->load($plugin_id)->inline($params, $body);
+            $result = with($this->loadPlugin($plugin_id))->inline($params, $body);
+            return $this->hashPart($result);
         }
-        catch (\Exception $e) {
-            return $whole_match;
-        }
-        return $this->hashPart($result);        
+        catch (\RuntimeException $e) {}
+        catch (\InvalidArgumentException $e) {}
+
+        return $whole_match;
     }
     
     protected function doConvertPlugins($text)
@@ -153,13 +168,68 @@ class HaikMarkdown extends MarkdownExtra {
         $body = $this->unHash($body);
 
         try {
-            $result = $this->pluginRepository->load($plugin_id)->convert($params, $body);
+            $result = with($this->loadPlugin($plugin_id))->convert($params, $body);
             return "\n\n".$this->hashBlock($result)."\n\n";
         }
-        catch (\Exception $e)
+        catch (\RuntimeException $e) {}
+        catch (\InvalidArgumentException $e) {}
+
+        return $whole_match;
+    }
+
+    /**
+     * Register PluginRepository by LIFO
+     *
+     * @param PluginRepositoryInterface $repository
+     * @return $this for method chain
+     */
+    public function registerPluginRepository(PluginRepositoryInterface $repository)
+    {
+        array_unshift($this->pluginRepositories, $repository);
+        return $this;
+    }
+
+    /**
+     * Load plugin instance
+     *
+     * @param string plugin id
+     * @return PluginInterface
+     * @throws \InvalidArgumentException
+     */
+    public function loadPlugin($plugin_id)
+    {
+        foreach ($this->pluginRepositories as $repository)
         {
-            return $whole_match;
+            if ($repository->exists($plugin_id))
+            {
+                return $repository->load($plugin_id);
+            }
         }
+
+        throw new \InvalidArgumentException("A plugin with id=$plugin_id was not exist");
+    }
+
+    public function hasPlugin($plugin_id)
+    {
+        foreach ($this->pluginRepositories as $repository)
+        {
+            if ($repository->exists($plugin_id)) return true;
+        }
+        return false;
+    }
+
+    public function getAllPlugin()
+    {
+        $plugins = array();
+        foreach ($this->pluginRepositories as $repository)
+        {
+            $plugins = array_merge($plugins, $repository->getAll());
+        }
+
+        $plugins = array_unique($plugins);
+        sort($plugins, SORT_NATURAL | SORT_FLAG_CASE);
+
+        return $plugins;
     }
 
 }
