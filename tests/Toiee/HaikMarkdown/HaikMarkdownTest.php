@@ -39,6 +39,22 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('', $this->parser->code_class_prefix);
     }
 
+    public function testBreakLineAlways()
+    {
+        $parser = new HaikMarkdown();
+        $parser->setHardWrap(true);
+        $markdown = "1\n2\n3";
+        $expected = array(
+            'tag' => 'p',
+            'children' => array(
+                'count' => 2,
+                'only' => array('tag'=>'br')
+            )
+        );
+        $result = $parser->transform($markdown);
+        $this->assertTag($expected, $result);
+    }
+
     public function testPluginRepository()
     {
         $this->assertTrue($this->parser->hasPlugin('plugin'));
