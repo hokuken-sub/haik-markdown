@@ -13,12 +13,16 @@ class HaikMarkdown extends MarkdownExtra {
     /** @var array of PluginRepositoryInterface */
     protected $pluginRepositories = array();
 
+    protected $hardWrap;
+
 
     public function __construct()
     {
         $this->running = false;
 
         $this->empty_element_suffix = '>';
+
+        $this->hardWrap = false;
         
         $this->document_gamut += array(
             'doConvertPlugins'   => 10,
@@ -29,6 +33,18 @@ class HaikMarkdown extends MarkdownExtra {
         );
 
 		parent::__construct();
+    }
+
+    /**
+     * Set hard-wrap mode
+     *
+     * @param boolean hard-wrap mode on/off
+     * @return $this for method chain
+     */
+    public function setHardWrap($hard_wrap)
+    {
+        $this->hardWrap = !! $hard_wrap;
+        return $this;
     }
 
     public function transform($text)
@@ -46,6 +62,21 @@ class HaikMarkdown extends MarkdownExtra {
 
         return $text;
     }
+
+    /**
+     * @see Michelf\Markdown::doHardBreaks
+     */
+	protected function doHardBreaks($text) {
+		# Do hard breaks:
+		# when hardWrap is true then replace all break lines
+		$regex = '/ {2,}\n/';
+		if ($this->hardWrap)
+		{
+    		$regex = '/ *\n/';
+		}
+		return preg_replace_callback($regex, 
+			array(&$this, '_doHardBreaks_callback'), $text);
+	}
 
     protected function doInlinePlugins($text)
     {
