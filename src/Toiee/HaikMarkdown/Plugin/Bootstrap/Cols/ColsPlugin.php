@@ -5,6 +5,7 @@ use Toiee\HaikMarkdown\HaikMarkdown;
 use Toiee\HaikMarkdown\Plugin\Bootstrap\Plugin;
 use Toiee\HaikMarkdown\Plugin\Bootstrap\Row;
 use Toiee\HaikMarkdown\Plugin\Bootstrap\Column;
+use Michelf\MarkdownInterface;
 
 class ColsPlugin extends Plugin {
 
@@ -22,9 +23,9 @@ class ColsPlugin extends Plugin {
 
     protected $view = 'cols.template';
     
-    public function __construct()
+    public function __construct(MarkdownInterface $parser)
     {
-        parent::__construct();
+        parent::__construct($parser);
 
         $this->row = new Row();
         $this->delimiter = self::COL_DELIMITER;
