@@ -23,7 +23,6 @@ class AlertPluginTest extends PHPUnit_Framework_TestCase {
     public function testParameter($params, $expected)
     {
         $result = $this->plugin->convert($params, 'test');
-        var_dump($params, $result);
         $this->assertTag($expected, $result);
     }
 
