@@ -19,7 +19,8 @@ class ButtonPluginTest extends PHPUnit_Framework_TestCase {
      */
     public function testParameter($params, $expected)
     {
-        $this->assertTag($expected, $this->plugin->inline($params, 'button'));
+        $result = $this->plugin->inline($params, 'button');
+        $this->assertTag($expected, $result);
     }
 
     public function paramsProvider()
