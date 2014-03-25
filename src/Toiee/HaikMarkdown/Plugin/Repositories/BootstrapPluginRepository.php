@@ -11,12 +11,6 @@ class BootstrapPluginRepository extends AbstractPluginRepository {
         $this->repositoryPath = dirname(__DIR__) . '/Bootstrap';
     }
 
-    protected function factory($id)
-    {
-        $class_name = $this->getClassName($id);
-        return new $class_name($this->parser);
-    }
-
     protected function getClassName($id)
     {
         $class_name = studly_case($id);

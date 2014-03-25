@@ -7,11 +7,6 @@ abstract class Plugin extends BasePlugin {
 
     protected $view;
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     /**
      * render view file
      *

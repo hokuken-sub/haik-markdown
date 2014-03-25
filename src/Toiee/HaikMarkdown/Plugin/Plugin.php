@@ -1,17 +1,23 @@
 <?php
 namespace Toiee\HaikMarkdown\Plugin;
 
+use Michelf\MarkdownInterface;
+
 abstract class Plugin implements PluginInterface {
 
     private static $maxId = 0;
 
     private $id;
 
+    /** @var MarkdownInterface */
+    protected $parser;
+
     /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(MarkdownInterface $parser)
     {
+        $this->parser = $parser;
         self::$maxId++;
         $this->id = self::$maxId;
     }
