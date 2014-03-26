@@ -1,7 +1,7 @@
 <?php
 namespace Toiee\HaikMarkdown\Plugin\Bootstrap\Alert;
 
-use Toiee\HaikMarkdown\Plugin\Plugin;
+use Toiee\HaikMarkdown\Plugin\Bootstrap\Plugin;
 use Michelf\MarkdownInterface;
 
 class AlertPlugin extends Plugin {
