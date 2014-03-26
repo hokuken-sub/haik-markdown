@@ -145,7 +145,7 @@ class ColsPlugin extends Plugin {
     {
         foreach ($this->row as $i => $column)
         {
-            $this->row[$i]->setContent(trim(HaikMarkdown::defaultTransform($column->getContent())));
+            $this->row[$i]->setContent(trim($this->parser->transform($column->getContent())));
         }
     }
 

@@ -152,14 +152,14 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
             array(
                 'body'     => "str1\nstr2",
                 'expected' => new Row(array(
-                    with(new Column())->setContent("<p>str1\nstr2</p>")
+                    with(new Column())->setContent('')
                 ))
             ),
             array(
                 'body'     => "str1\n====\nstr2",
                 'expected' => new Row(array(
-                    with(new Column())->setColumnWidth(6)->setContent('<p>str1</p>'),
-                    with(new Column())->setColumnWidth(6)->setContent('<p>str2</p>')
+                    with(new Column())->setColumnWidth(6)->setContent(''),
+                    with(new Column())->setColumnWidth(6)->setContent('')
                 ))
             ),
             array(
