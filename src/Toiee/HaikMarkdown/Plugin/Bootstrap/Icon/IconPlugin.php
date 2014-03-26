@@ -22,12 +22,15 @@ class IconPlugin extends Plugin {
      */
     function inline($params = array(), $body = '')
     {
-        if (count($params) === 0)
-        {
-            return '';
-        }
+        $this->params = $params;
+        $this->body = $body;
 
-        foreach ($params as $param)
+        return $this->parseParams()->renderView();
+    }
+
+    protected function parseParams()
+    {
+        foreach ($this->params as $param)
         {
             $icon_name = trim($param);
             if ($this->validateIconName($icon_name))
@@ -36,7 +39,7 @@ class IconPlugin extends Plugin {
                 break;
             }
         }
-        return $this->renderView();
+        return $this;
     }
 
     protected function validateIconName($icon_name)
@@ -61,6 +64,8 @@ class IconPlugin extends Plugin {
 
     public function renderView($data = array())
     {
+        if ( ! $this->iconName) return '';
+
         $class_attr = $this->createClassAttribute();
         return '<i class="'.e($class_attr).'"></i>';
     }
