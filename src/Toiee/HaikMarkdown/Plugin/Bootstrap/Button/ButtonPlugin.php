@@ -6,7 +6,7 @@ use Michelf\MarkdownInterface;
 
 class ButtonPlugin extends Plugin {
 
-    protected static $CLASS_ATTRIBUTE_PREFIX = 'haik-plugin-button';
+    protected static $PREFIX_CLASS_ATTRIBUTE = 'haik-plugin-button';
     protected static $BASE_CSS_CLASS_NAME    = 'btn';
     protected static $PREFIX_CSS_CLASS_NAME  = 'btn-';
     protected static $DEFAULT_URL             = '#';
@@ -30,7 +30,7 @@ class ButtonPlugin extends Plugin {
 
     public function __construct(MarkdownInterface $parser)
     {
-        $this->parser = $parser;
+        parent::__construct($parser);
 
         $this->classAttribute = '';
         $this->url = self::$DEFAULT_URL;
@@ -149,7 +149,7 @@ class ButtonPlugin extends Plugin {
     protected function createClassAttribute()
     {
         $classes = array();
-        $classes[] = self::$CLASS_ATTRIBUTE_PREFIX;
+        $classes[] = self::$PREFIX_CLASS_ATTRIBUTE;
         $classes[] = self::$BASE_CSS_CLASS_NAME;
         $classes[] = $this->getTypeClassName();
         $size_class = $this->getSizeClassName();

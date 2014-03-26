@@ -6,7 +6,7 @@ use Michelf\MarkdownInterface;
 
 class AlertPlugin extends Plugin {
 
-    protected static $CLASS_ATTRIBUTE_PREFIX     = 'haik-plugin-alert';
+    protected static $PREFIX_CLASS_ATTRIBUTE     = 'haik-plugin-alert';
     protected static $BASE_CSS_CLASS_NAME        = 'alert';
     protected static $PREFIX_CSS_CLASS_NAME      = 'alert-';
     protected static $DEFAULT_TYPE               = 'warning';
@@ -78,7 +78,7 @@ class AlertPlugin extends Plugin {
     protected function createClassAttribute()
     {
         $classes = array();
-        $classes[] = self::$CLASS_ATTRIBUTE_PREFIX;
+        $classes[] = self::$PREFIX_CLASS_ATTRIBUTE;
         $classes[] = self::$BASE_CSS_CLASS_NAME;
         $classes[] = $this->getTypeClassName();
         if ($this->dismissable)
