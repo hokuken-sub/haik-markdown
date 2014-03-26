@@ -33,6 +33,12 @@ a:focus {
   color: #555;
 }
 
+.navbar-custom .nav li a:hover,
+.navbar-custom .nav li a:focus,
+.navbar-custom .nav li.active {
+   background-color: rgba(85,85,85,.1);
+}
+
 
 /* intro */
 .intro {
@@ -60,6 +66,8 @@ h6{
 p {
   font-size: 16px;
 }
+
+/* custom parts */
 
 .btn {
     text-transform: none;
@@ -92,11 +100,19 @@ p {
   background: rgba(85,85,85,1);
 }
 
+.btn-haikmde {
+  color: #555;
+  border-color: #999;
+  border-width: 1px;
+  background-color: #fff;
 
-@media(min-width:767px) {
-  .content-section {
-    padding-top: 150px;
-  }
+}
+
+.btn-haikmde-inline {
+  color: #555;
+  border-color: none;
+  border-width: 1px;
+  background-color: rgba(255,255,255, .8);
 }
 
 .download-section {
@@ -107,6 +123,24 @@ p {
   -moz-background-size: cover;
   background-size: cover;
   -o-background-size: cover;
+}
+
+.haikmde-editor {
+  padding-top: 100px;
+}
+
+.haikmde-editor .container {
+  position: relative;
+}
+
+
+@media(min-width:767px) {
+  .content-section {
+    padding-top: 150px;
+  }
+  .haikmde-editor {
+    padding-top: 100px;
+  }
 }
 
 
@@ -131,7 +165,7 @@ p {
   position: absolute;
   top:23px;
   right:16px;
-  z-index: 999;
+  z-index: 1031;
   border-style:none;
 }
 
@@ -147,7 +181,7 @@ p {
   right: 0;
   background: #fff;
   text-shadow: none;
-  z-index: 1000;
+  z-index: 1032;
   display: block;
 }
 
