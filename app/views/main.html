@@ -1,36 +1,96 @@
-<div class="header">
-  <ul class="nav nav-pills pull-right">
-    <li class="active"><a ng-href="#">Home</a></li>
-    <li><a ng-href="#">About</a></li>
-    <li><a ng-href="#">Contact</a></li>
-  </ul>
-  <h3 class="text-muted">haikMarkdownDemo</h3>
-</div>
+    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="" ng-click="scroll('#page-top')">
+                    <i class="fa fa-pencil-square-o"></i>  <span class="light">Start</span> haik Markdown
+                </a>
+            </div>
 
-<div class="jumbotron">
-  <h1>'Allo, 'Allo!</h1>
-  <p class="lead">
-    <img src="images/yeoman.png" alt="I'm Yeoman"><br>
-    Always a pleasure scaffolding your apps.
-  </p>
-  <p><a class="btn btn-lg btn-success" ng-href="#">Splendid!</a></p>
-</div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+                <ul class="nav navbar-nav">
+                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                    <li class="hidden">
+                        <a href="" ng-click="scroll('#page-top')"></a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="" ng-click="scroll('#about')">About</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="" ng-click="scroll('#download')">Download</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="" ng-click="scroll('#contact')">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
 
-<div class="row marketing">
-  <h4>HTML5 Boilerplate</h4>
-  <p>
-    HTML5 Boilerplate is a professional front-end template for building fast, robust, and adaptable web apps or sites.
-  </p>
+    <section class="intro">
+        <div class="intro-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8 col-md-offset-2">
+                        <h1 class="brand-heading">haik Markdown</h1>
+                        <p class="intro-text">ゴーシュはマッチのおねがいゴーシュたちにゴーシュを云っ入り口ました。ところがこれから生意気ましだとかいうセロたます。生意気んたんたこそじまたこどもの生団のときへはかなり上手ないたて、みんなまで片手に落ちがっのたない。</p>
+                        <div class="page-scroll">
+                            <a href="" ng-click="scroll('#about')" class="btn btn-circle">
+                                <i class="fa fa-angle-double-down animated"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-  <h4>Angular</h4>
-  <p>
-    AngularJS is a toolset for building the framework most suited to your application development.
-  </p>
+    <section id="about" class="container content-section text-center">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+                <h2>About haik Markdown</h2>
+                <p>ゴーシュはマッチのおねがいゴーシュたちにゴーシュを云っ入り口ました。ところがこれから生意気ましだとかいうセロたます。生意気んたんたこそじまたこどもの生団のときへはかなり上手ないたて、みんなまで片手に落ちがっのたない。</p>
+                <p>ゴーシュはマッチのおねがいゴーシュたちにゴーシュを云っ入り口ました。ところがこれから生意気ましだとかいうセロたます。生意気んたんたこそじまたこどもの生団のときへはかなり上手ないたて、みんなまで片手に落ちがっのたない。</p>
+                <p>if you check haik Markdown then go to <a href="#editor">haik Markdown editor</a>.</p>
+            </div>
+        </div>
+    </section>
 
-  <h4>Karma</h4>
-  <p>Spectacular Test Runner for JavaScript.</p>
-</div>
+    <section id="download" class="content-section text-center">
+        <div class="download-section">
+            <div class="container">
+                <div class="col-lg-8 col-lg-offset-2">
+                    <h2>Download haik Markdown</h2>
+                    <p>You can download Grayscale for free on the download page at Start Bootstrap. You can also get the source code directly from GitHub if you prefer. Additionally, Grayscale is the first Start Bootstrap theme to come with a LESS file for easy color customization!</p>
+                    <a href="http://startbootstrap.com/grayscale" class="btn btn-default btn-lg">Visit Download Page</a>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<div class="footer">
-  <p>♥ from the Yeoman team</p>
+    <section id="contact" class="container content-section text-center">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+                <h2>Contact Start haik Markdown</h2>
+                <p>Feel free to provide some feedback on our works, give us suggestions for new css framework and plugins, or to just say hello!</p>
+
+                <ul class="list-inline banner-social-buttons">
+                    <li><a href="https://facebook.com/toiee" class="btn btn-default btn-lg"><i class="fa fa-facebook fa-fw"></i> <span class="network-name">facebook</span></a>
+                    </li>
+                    <li><a href="https://twitter.com/" class="btn btn-default btn-lg"><i class="fa fa-twitter fa-fw"></i> <span class="network-name">Twitter</span></a>
+                    </li>
+                    <li><a href="https://github.com/toiee/haik-markdown" class="btn btn-default btn-lg"><i class="fa fa-github fa-fw"></i> <span class="network-name">Github</span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+<div class="footer container">
+  <p class="text-right"><i class="fa fa-heart"></i> from haik Markdown team</p>
 </div>

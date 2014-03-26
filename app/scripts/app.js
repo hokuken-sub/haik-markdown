@@ -22,4 +22,7 @@ angular.module('haikMarkdownDemoApp', [
       .otherwise({
         redirectTo: '/'
       });
+  }])
+  .run(['$route', function($route) {
+    $route.reload();
   }]);
