@@ -5,7 +5,7 @@ use Toiee\HaikMarkdown\Plugin\Bootstrap\Plugin;
 
 class IconPlugin extends Plugin {
 
-    protected static $CLASS_ATTRIBUTE_PREFIX = 'haik-plugin-icon';
+    protected static $PREFIX_CLASS_ATTRIBUTE = 'haik-plugin-icon';
     protected static $BASE_CSS_CLASS_NAME    = 'glyphicon';
     protected static $PREFIX_CSS_CLASS_NAME  = 'glyphicon-';
     protected static $ICON_NAME_REGEX        = '/\A[0-9a-zA-Z_-]+\z/';
@@ -52,7 +52,7 @@ class IconPlugin extends Plugin {
     protected function createClassAttribute()
     {
         $classes = array();
-        $classes[] = self::$CLASS_ATTRIBUTE_PREFIX;
+        $classes[] = self::$PREFIX_CLASS_ATTRIBUTE;
         $classes[] = self::$BASE_CSS_CLASS_NAME;
         $classes[] = $this->getIconClassName();
 
