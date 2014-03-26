@@ -2,8 +2,10 @@
 
 angular.module('haikMarkdownDemoApp')
   .controller('MainCtrl', ['$scope', '$rootScope', function ($scope, $rootScope) {
+/*
       $rootScope.styles = [
       ];
+*/
       
       
       $scope.scroll = function(id){

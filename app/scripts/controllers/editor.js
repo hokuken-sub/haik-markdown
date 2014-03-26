@@ -1,8 +1,9 @@
 'use strict';
 
 angular.module('haikMarkdownDemoApp')
-  .controller('EditorCtrl', ['$scope', '$rootScope', 'Editor',
-    function ($scope, $rootScope, Editor) {
+  .controller('EditorCtrl', ['$scope', '$rootScope', '$location', 'Editor',
+    function ($scope, $rootScope, $location, Editor) {
+
     var styles = [
           {"href": "bower_components/bootstrap/dist/css/bootstrap.css"},
           {"href": "bower_components/bootstrap/dist/css/bootstrap.css"},
@@ -13,6 +14,7 @@ angular.module('haikMarkdownDemoApp')
     $scope.Editor = Editor;
 
     $scope.Editor.body = '' +
+                          '<button class="btn btn-success" type="button">Blue</button>\n'+
                           '<a class="btn btn-blue">Blue</a>\n'+
                           '<a class="pure-button pure-button-primary" href="#">A Primary Button</a>\n' +
                           '<a class="btn btn-success" href="#">eeee</a>\n';
@@ -62,6 +64,8 @@ angular.module('haikMarkdownDemoApp')
               $scope.active = $scope.Editor.viewIndexOf(type);
               $scope.editorVisible = false;
               $rootScope.styles = [styles[$scope.active]];
+              $rootScope.htmlData = response.html;
+              $location.path( "/preview/" + type);
             });
 
         },
