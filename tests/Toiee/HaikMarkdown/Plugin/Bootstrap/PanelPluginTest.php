@@ -1,5 +1,6 @@
 <?php
 use Toiee\HaikMarkdown\Plugin\Bootstrap\Panel\PanelPlugin;
+use Michelf\MarkdownExtra;
 
 class PanelPluginTest extends PHPUnit_Framework_TestCase {
 
@@ -7,7 +8,7 @@ class PanelPluginTest extends PHPUnit_Framework_TestCase {
     {
         $this->parser = Mockery::mock('Michelf\MarkdownInterface', function($mock)
         {
-            $mock->shouldReceive('transform')->andReturn('<div>test</div>');
+            $mock->shouldReceive('transform')->andReturn('<p>test</p>');
             return $mock;
         });
         $this->plugin = new PanelPlugin($this->parser);
@@ -34,13 +35,6 @@ class PanelPluginTest extends PHPUnit_Framework_TestCase {
             'attributes' => array(
                 'class' => 'haik-plugin-panel panel panel-default',
             ),
-            'child' => array(
-                'tag' => 'div',
-                'attributes' => array(
-                    'class' => 'panel-body',
-                    'content' => '',
-                ),
-            )
         );
         $this->assertTag($expected, $result);
     }
@@ -51,7 +45,7 @@ class PanelPluginTest extends PHPUnit_Framework_TestCase {
     public function testTypeAfterParseParams($params, $expected)
     {
         $this->plugin->convert($params, 'test');
-        $this->assertAttributeSame($expected, $this->plugin);
+        $this->assertAttributeSame($expected, 'type', $this->plugin);
     }
     
     public function paramsProvider()
@@ -87,7 +81,7 @@ class PanelPluginTest extends PHPUnit_Framework_TestCase {
     {
         $params = array();
         $this->plugin->convert($params, $body);
-        
+
         foreach (array('head', 'body', 'footer') as $partial)
         {
             $attr_name = 'partial' . ucfirst($partial);
@@ -118,7 +112,7 @@ class PanelPluginTest extends PHPUnit_Framework_TestCase {
             ),
             array(
                 "head\n====\nbody\n====\nfooter",
-                false, true, true
+                true, true, true
             ),
         );
     }
@@ -128,6 +122,7 @@ class PanelPluginTest extends PHPUnit_Framework_TestCase {
      */
     public function testPartialHead($body, $class_attr, $heading_level)
     {
+        $this->plugin = new PanelPlugin(new MarkdownExtra());
         $params = array();
         $result = $this->plugin->convert($params, $body);
         $expected = array(
@@ -148,6 +143,12 @@ class PanelPluginTest extends PHPUnit_Framework_TestCase {
                 ),
             )
         );
+        $expected = array(
+            'tag' => 'h' . $heading_level,
+            'attributes' => array(
+                'class' => $class_attr,
+            ),
+        );
         $this->assertTag($expected, $result);
     }
 
@@ -165,7 +166,7 @@ class PanelPluginTest extends PHPUnit_Framework_TestCase {
                 2
             ),
             array(
-                "### Heading {.panel-head}\n\n====\nbody",
+                "### Heading {.panel-title}\n\n====\nbody",
                 'panel-title',
                 3
             ),
@@ -175,32 +176,46 @@ class PanelPluginTest extends PHPUnit_Framework_TestCase {
                 4
             ),
             array(
-                '<h5>Heading</h5>\n\n====\nbody',
+                "<h5>Heading</h5>\n\n====\nbody",
                 'panel-title',
                 5
             ),
             array(
-                '<h6 class="class-name">Heading</h6>\n\n====\nbody',
+                "<h6 class=\"class-name\">Heading</h6>\n\n====\nbody",
                 'class-name',
-                5
+                6
             ),
-            //ignore greater than heading level 7
             array(
-                '<h7>Heading</h7>\n\n====\nbody',
-                '',
-                7
-            ),
-            //through other attributes of heading tag
-            array(
-                '<h1 data-foo="bar">Heading</h1>',
+                "<h1 class=\"\">Heading</h1>\n\n====\nbody",
                 'panel-title',
                 1
             ),
         );
     }
 
+    public function testPartialHeadWithDataAttribute()
+    {
+        $this->plugin = new PanelPlugin(new MarkdownExtra());
+        $params = array();
+        $body = "<h1 data-foo=\"bar\">Heading</h1>\n\n====\nbody";
+        $result = $this->plugin->convert($params, $body);
+        $expected = array(
+            'tag' => 'div',
+            'child' => array(
+                'tag' => 'h1',
+                'attributes' => array(
+                    'class' => 'panel-title',
+                    'data-foo' => 'bar',
+                )
+            ),
+        );
+
+        $this->assertTag($expected, $result);
+    }
+
     public function testPartialHeadWithMultipleHeading()
     {
+        $this->plugin = new PanelPlugin(new MarkdownExtra());
         $body = "### Heading\n###Heading\n\n====\nbody";
         $expected = array(
             'tag' => 'div',
@@ -209,7 +224,7 @@ class PanelPluginTest extends PHPUnit_Framework_TestCase {
                 'count' => 2,
                 'only' => array(
                     'tag' => 'h3',
-                    'attributes' => 'panel-title'
+                    'attributes' => array('class' => 'panel-title')
                 )
             )
         );
