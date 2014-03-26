@@ -1,0 +1,44 @@
+[
+    {
+        "name": "header", 
+        "label": "見出し", 
+        "icon": "glyphicon glyphicon-header",
+        "snippet": "#",
+        "order" : 1
+    }, 
+    {
+        "name": "strong", 
+        "label": "強調", 
+        "icon": "glyphicon glyphicon-bold",
+        "snippet": "'",
+        "order" : 2
+    }, 
+    {
+        "name": "image", 
+        "label": "画像", 
+        "icon": "glyphicon glyphicon-picture",
+        "snippet": "{#show(imgurl)}",
+        "order" : 3
+    }, 
+    {
+        "name": "link", 
+        "label": "リンク", 
+        "icon": "glyphicon glyphicon-link",
+        "snippet": "[[]]",
+        "order" : 4
+    }, 
+    {
+        "name": "newline", 
+        "label": "改行", 
+        "icon": "glyphicon glyphicon-allow-left",
+        "snippet": "{#br}",
+        "order" : 5
+    }, 
+    {
+        "name": "more", 
+        "label": "more", 
+        "icon": "glyphicon glyphicon-heart",
+        "snippet": "",
+        "order" : 6
+    }
+]

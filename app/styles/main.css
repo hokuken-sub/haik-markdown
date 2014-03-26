@@ -1,0 +1,147 @@
+@import url(http://fonts.googleapis.com/css?family=Ubuntu+Mono);
+
+/* Space out content a bit */
+body {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+/* Everything but the jumbotron gets side spacing for mobile first views */
+.header,
+.content,
+.footer {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/* Custom page header */
+.header {
+  border-bottom: 1px solid #e5e5e5;
+}
+/* Make the masthead heading the same height as the navigation */
+.header .navbar-brand {
+  font-family: 'Ubuntu Mono', sans-serif;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Custom page footer */
+.footer {
+  padding-top: 19px;
+  color: #777;
+  border-top: 1px solid #e5e5e5;
+}
+
+/* Custom fullscreen mode */
+
+.haikmd-fullscreen {
+  position: absolute;
+  top:23px;
+  right:16px;
+  z-index: 999;
+  border-style:none;
+}
+
+.haikmde-preview {
+  margin-top: 20px;  
+}
+
+.fullscreen-overlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  text-shadow: none;
+  z-index: 1000;
+  display: block;
+}
+
+.fullscreen-overlay .fullscreen-container {
+  max-width: 800px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 30px 0;
+}
+
+.fullscreen-overlay .textarea-wrap {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.fullscreen-overlay textarea {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  border: 0;
+  background: #fff;
+  color: #999999;
+  font-size: 1.6rem;
+  line-height: 2.1rem;
+  resize: none;
+  -moz-transition: color 0.15s ease-in 0;
+  -webkit-transition: color 0.15s ease-in 0;
+  transition: color 0.15s ease-in 0;
+  box-shadow: none;
+}
+
+.fullscreen-overlay textarea:hover,
+.fullscreen-overlay textarea:focus {
+  outline: none;
+  color: #333333;
+}
+
+.fullscreen-overlay .haikmde-preview {
+  margin-top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Customize container */
+@media (min-width: 768px) {
+  .container {
+    max-width: 730px;
+  }
+}
+.container-narrow > hr {
+  margin: 30px 0;
+}
+
+/* Main marketing message and sign up button */
+.jumbotron {
+  text-align: center;
+  border-bottom: 1px solid #e5e5e5;
+}
+.jumbotron .btn {
+  font-size: 21px;
+  padding: 14px 24px;
+}
+
+/* Supporting marketing content */
+.content {
+  margin: 40px 0;
+}
+.content p + h4 {
+  margin-top: 28px;
+}
+
+/* Responsive: Portrait tablets and up */
+@media screen and (min-width: 768px) {
+  /* Remove the padding we set earlier */
+  .header,
+  .content,
+  .footer {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  /* Space out the masthead */
+  .header {
+    margin-bottom: 30px;
+  }
+  /* Remove the bottom border on the jumbotron for visual effect */
+  .jumbotron {
+    border-bottom: 0;
+  }
+}
