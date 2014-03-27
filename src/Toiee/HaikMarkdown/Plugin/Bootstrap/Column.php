@@ -150,11 +150,6 @@ class Column implements ColumnInterface {
         return $this->classAttribute;
     }
 
-    public function createStyleAttribute()
-    {
-        return $this->styleAttribute;
-    }
-
     /**
      * Make html of column unit
      *
@@ -163,25 +158,14 @@ class Column implements ColumnInterface {
     public function render()
     {
         $class_attr = $this->createClassAttribute();
-        $style_attr = $this->createStyleAttribute();
+        $style_attr = $this->getStyleAttribute();
         $style_attr = $style_attr ? ' style="' . e($style_attr) . '"' : '';
         return '<div class="' . e($class_attr) . '"'.$style_attr.'>' . $this->content . '</div>';
-    }
-
-    /**
-     * Make html of column unit with row
-     *
-     * @return string html of column unit with row
-     */
-    public function renderWithRow()
-    {
-        $column_html = $this->render();
-
-        return '<div class="'. e(self::$ROW_CLASS_NAME) .'">'. $column_html .'</div>';
     }
 
     public static function isParsable($text)
     {
         return preg_match(self::$PARSABLE_REGEX, $text);
     }
+
 }
