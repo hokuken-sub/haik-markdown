@@ -5,6 +5,7 @@ use ArrayAccess;
 use IteratorAggregate;
 use ArrayIterator;
 use Countable;
+use Toiee\HaikMarkdown\GridSystem\ColumnInterface;
 
 class Row implements ArrayAccess, IteratorAggregate, Countable {
 
@@ -15,30 +16,35 @@ class Row implements ArrayAccess, IteratorAggregate, Countable {
     protected $classAttribute = '';
     protected $styleAttribute = '';
 
+    protected $columnClassName;
+
     protected $columns;
 
     /**
      * Constructor
      *
-     * @param array $columns array of Column or parsable column string
+     * @param array $columns array of ColumnInterface or parsable column string
      */
     public function __construct($columns = array())
     {
+        $column_class_name = $this->getColumnClassName();
+
         foreach ($columns as $i => $column)
         {
-            if ($column instanceof Column)
+            if ($column instanceof ColumnInterface)
             {
                 //
             }
-            else if (is_string($column) && Column::isParsable($column))
+            else if (is_string($column) && $column_class_name::isParsable($column))
             {
-                $columns[$i] = new Column($column);
+                $columns[$i] = new $column_class_name($column);
             }
             else
             {
                 unset($columns[$i]);
             }
         }
+        $this->columnClassName = 'Column';
         $this->columns = array_values($columns);
 
         $this->addClassAttribute(self::$CLASS_ATTRIBUTE);
@@ -72,18 +78,23 @@ class Row implements ArrayAccess, IteratorAggregate, Countable {
         return $this->styleAttribute;
     }
 
+    protected function getColumnClassName()
+    {
+        return $this->columnClassName;
+    }
+
     public function getColumn($offset)
     {
         if ( ! isset($this->columns[$offset])) return null;
         return $this->columns[$offset];
     }
 
-    public function addColumn(Column $column)
+    public function addColumn(ColumnInterface $column)
     {
         $this->columns[] = $column;
     }
 
-    public function setColumn($offset, Column $column)
+    public function setColumn($offset, ColumnInterface $column)
     {
         $this->columns[$offset] = $column;
     }
