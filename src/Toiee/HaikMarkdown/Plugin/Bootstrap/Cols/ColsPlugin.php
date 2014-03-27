@@ -30,9 +30,30 @@ class ColsPlugin extends Plugin {
         parent::__construct($parser);
 
         $class_name = get_called_class();
-        $this->row = with(new Row())->prependClassAttribute($class_name::$PREFIX_CLASS_ATTRIBUTE);
+        $this->row = $this->createRow()->prependClassAttribute($class_name::$PREFIX_CLASS_ATTRIBUTE);
         $this->delimiter = self::COL_DELIMITER;
         $this->violateColumnSize = false;
+    }
+
+    /**
+     * Create Row instance
+     *
+     * @return Row
+     */
+    protected function createRow()
+    {
+        return new Row();
+    }
+
+    /**
+     * Create Column instance
+     *
+     * @param 
+     * @return Column
+     */
+    protected function createColumn($text = '')
+    {
+        return new Column($text);
     }
 
     /**
@@ -63,7 +84,8 @@ class ColsPlugin extends Plugin {
 
     protected function validatesColumnSize()
     {
-        if ($this->row->totalColumns() > Row::$COLUMN_SIZE)
+        $row_class_name = get_class($this->row);
+        if ($this->row->totalColumns() > $row_class_name::$COLUMN_SIZE)
         {
             $this->violateColumnSize = true;
         }
@@ -79,7 +101,7 @@ class ColsPlugin extends Plugin {
         {
             if (Column::isParsable($param))
             {
-                $column = new Column($param);
+                $column = $this->createColumn($param);
                 $this->row[] = $column;
             }
             else
@@ -107,10 +129,11 @@ class ColsPlugin extends Plugin {
         {
             // if parameter is not set then make cols with body
         	$data = explode($this->delimiter, $this->body);
-    		$col_width = (int)(Row::$COLUMN_SIZE / count($data));
+        	$row_class_name = get_class($this->row);
+    		$col_width = (int)($row_class_name::$COLUMN_SIZE / count($data));
     		for ($i = 0; $i < count($data); $i++)
     		{
-    		    $column = with(new Column())->setColumnWidth($col_width);
+    		    $column = $this->createColumn()->setColumnWidth($col_width);
                 $this->row[$i] = $column;
     		}
         }
