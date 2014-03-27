@@ -38,48 +38,48 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
         return array(
             array(
                 'cols'     => array(),
-                'expected' => new Row(array(
+                'expected' => with(new Row(array(
                     new Column()
-                ))
+                )))->prependClassAttribute('haik-plugin-cols')
             ),
             array(
                 'cols'     => array("3"),
-                'expected' => new Row(array(
+                'expected' => with(new Row(array(
                     new Column("3")
-                ))
+                )))->prependClassAttribute('haik-plugin-cols')
             ),
             array(
                 'cols'     => array("3", "9"),
-                'expected' => new Row(array(
+                'expected' => with(new Row(array(
                     new Column("3"),
                     new Column("9")
-                ))
+                )))->prependClassAttribute('haik-plugin-cols')
             ),
             array(
                 'cols'   => array("3", "3", "6"),
-                'expected' => new Row(array(
+                'expected' => with(new Row(array(
                     new Column("3"),
                     new Column("3"),
                     new Column("6")
-                ))
+                )))->prependClassAttribute('haik-plugin-cols')
             ),
             array(
                 'cols'   => array("3+9"),
-                'expected' => new Row(array(
+                'expected' => with(new Row(array(
                     new Column("3+9")
-                ))
+                )))->prependClassAttribute('haik-plugin-cols')
             ),
             array(
                 'cols'   => array("3.class-name"),
-                'expected' => new Row(array(
+                'expected' => with(new Row(array(
                     new Column("3.class-name")
-                ))
+                )))->prependClassAttribute('haik-plugin-cols')
             ),
             array(
                 'cols'   => array("6+6.class-name"),
-                'expected' => new Row(array(
+                'expected' => with(new Row(array(
                     new Column("6+6.class-name")
-                ))
+                )))->prependClassAttribute('haik-plugin-cols')
             ),
         );
     }
@@ -99,11 +99,11 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
         $tests = array(
             'classname' => array(
                 'cols'   => array('class=test-class'),
-                'assert' => with(new Row(array(new Column)))->addClassAttribute('test-class'),
+                'assert' => with(new Row(array(new Column)))->prependClassAttribute('haik-plugin-cols')->addClassAttribute('test-class'),
             ),
             'no-classname' => array(
                 'cols'   => array('class='),
-                'assert' => with(new Row(array(new Column)))->addClassAttribute(''),
+                'assert' => with(new Row(array(new Column)))->prependClassAttribute('haik-plugin-cols')->addClassAttribute(''),
             ),
         );
         
@@ -151,23 +151,23 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
         return array(
             array(
                 'body'     => "str1\nstr2",
-                'expected' => new Row(array(
+                'expected' => with(new Row(array(
                     with(new Column())->setContent('')
-                ))
+                )))->prependClassAttribute('haik-plugin-cols')
             ),
             array(
                 'body'     => "str1\n====\nstr2",
-                'expected' => new Row(array(
+                'expected' => with(new Row(array(
                     with(new Column())->setColumnWidth(6)->setContent(''),
                     with(new Column())->setColumnWidth(6)->setContent('')
-                ))
+                )))->prependClassAttribute('haik-plugin-cols')
             ),
             array(
                 'body'     => "\n====\n",
-                'expected' => new Row(array(
+                'expected' => with(new Row(array(
                     with(new Column())->setColumnWidth(6),
                     with(new Column())->setColumnWidth(6)
-                ))
+                )))->prependClassAttribute('haik-plugin-cols')
             ),
         );
     }
