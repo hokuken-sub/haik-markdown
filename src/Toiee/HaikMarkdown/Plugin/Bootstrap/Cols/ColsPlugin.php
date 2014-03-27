@@ -11,6 +11,8 @@ class ColsPlugin extends Plugin {
 
     const COL_DELIMITER   = "\n====\n";
 
+    public static $PREFIX_CLASS_ATTRIBUTE = 'haik-plugin-cols';
+
     protected $delimiter;
 
     protected $row;
@@ -27,7 +29,8 @@ class ColsPlugin extends Plugin {
     {
         parent::__construct($parser);
 
-        $this->row = new Row();
+        $class_name = get_called_class();
+        $this->row = with(new Row())->prependClassAttribute($class_name::$PREFIX_CLASS_ATTRIBUTE);
         $this->delimiter = self::COL_DELIMITER;
         $this->violateColumnSize = false;
     }
@@ -145,7 +148,7 @@ class ColsPlugin extends Plugin {
     {
         foreach ($this->row as $i => $column)
         {
-            $this->row[$i]->setContent(trim(HaikMarkdown::defaultTransform($column->getContent())));
+            $this->row[$i]->setContent(trim($this->parser->transform($column->getContent())));
         }
     }
 

@@ -50,6 +50,12 @@ class Row implements ArrayAccess, IteratorAggregate, Countable {
         return $this;
     }
 
+    public function prependClassAttribute($class_attr = '')
+    {
+        $this->classAttribute = trim(trim($class_attr) . ' ' . $this->classAttribute);
+        return $this;
+    }
+
     public function getClassAttribute()
     {
         return $this->classAttribute;
