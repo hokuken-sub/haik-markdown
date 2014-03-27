@@ -1,1 +1,11 @@
-<div ng-bind-html="html"></div>
+<div class="btn-haikmde-group-vertical  pull-right">
+  <button class="btn-haikmde" ng-click="backEdit()"><span class="fa fa-pencil text-muted"></span></button>
+  <button class="btn-haikmde dropdown-toggle" data-toggle="dropdown"><span class="fa fa-eye text-muted"></span></button>
+  <ul class="dropdown-menu" role="menu">
+    <li ng-repeat="viewname in Editor.views" ng-class="{active: isActive($index)}" data-preview="{{viewname}}" ng-if="viewname!='Editor'">
+      <a href="" ng-click="preview(viewname)">{{ viewname }}</a>
+    </li>
+  </ul>
+</div>
+
+<div ng-bind-html="Editor.html"></div>

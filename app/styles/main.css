@@ -1,3 +1,5 @@
+/* angular ng-cloak */
+
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
   display: none !important;
 }
@@ -100,21 +102,6 @@ p {
   background: rgba(85,85,85,1);
 }
 
-.btn-haikmde {
-  color: #555;
-  border-color: #999;
-  border-width: 1px;
-  background-color: #fff;
-
-}
-
-.btn-haikmde-inline {
-  color: #555;
-  border-color: none;
-  border-width: 1px;
-  background-color: rgba(255,255,255, .8);
-}
-
 .download-section {
   color: #555;
   background: url(//files.slack.com/files-pri/T025H600K-F0275NB9N/haikmd_section_bg_02.jpg) no-repeat center center scroll;
@@ -124,15 +111,6 @@ p {
   background-size: cover;
   -o-background-size: cover;
 }
-
-.haikmde-editor {
-  padding-top: 100px;
-}
-
-.haikmde-editor .container {
-  position: relative;
-}
-
 
 @media(min-width:767px) {
   .content-section {
@@ -146,6 +124,7 @@ p {
 
 
 /* Custom page footer */
+
 .footer {
   font-size: 16px;
   font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -157,71 +136,4 @@ p {
 
 .footer p{
   font-size: 16px;
-}
-
-/* Custom fullscreen mode */
-
-.haikmd-fullscreen {
-  position: absolute;
-  top:23px;
-  right:16px;
-  z-index: 1031;
-  border-style:none;
-}
-
-.haikmde-preview {
-  margin-top: 20px;  
-}
-
-.fullscreen-overlay {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: #fff;
-  text-shadow: none;
-  z-index: 1032;
-  display: block;
-}
-
-.fullscreen-overlay .fullscreen-container {
-  max-width: 800px;
-  height: 100%;
-  margin: 0 auto;
-  padding: 30px 0;
-}
-
-.fullscreen-overlay .textarea-wrap {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-
-.fullscreen-overlay textarea {
-  width: 100%;
-  height: 100%;
-  padding: 20px;
-  border: 0;
-  background: #fff;
-  color: #999999;
-  font-size: 1.6rem;
-  line-height: 2.1rem;
-  resize: none;
-  -moz-transition: color 0.15s ease-in 0;
-  -webkit-transition: color 0.15s ease-in 0;
-  transition: color 0.15s ease-in 0;
-  box-shadow: none;
-}
-
-.fullscreen-overlay textarea:hover,
-.fullscreen-overlay textarea:focus {
-  outline: none;
-  color: #333333;
-}
-
-.fullscreen-overlay .haikmde-preview {
-  margin-top: 0;
-  width: 100%;
-  height: 100%;
 }

@@ -6,6 +6,6 @@ angular.module('haikMarkdownDemoApp')
       $rootScope.styles = [
       ];
 */
-    $scope.html = $rootScope.htmlData
+    $scope.html = $rootScope.htmlData;
 
 }]);

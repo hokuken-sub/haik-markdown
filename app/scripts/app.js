@@ -24,29 +24,30 @@ angular.module('haikMarkdownDemoApp', [
       templateUrl: 'views/editor.html',
       controller: 'EditorCtrl',
       css: [
-        'bower_components/bootstrap/dist/css/bootstrap.css',
-        'lib/grayscale/css/grayscale.css',
-        'styles/main.css'
+        'styles/editor.css'
       ]
     })
     .when('/preview/pure', {
       templateUrl: 'views/preview.html',
-      controller: 'PreviewCtrl',
+      controller: 'EditorCtrl',
       css: [
+        'styles/editor.css',
         'bower_components/pure/pure-min.css'
       ]
     })
     .when('/preview/bootstrap', {
       templateUrl: 'views/preview.html',
-      controller: 'PreviewCtrl',
+      controller: 'EditorCtrl',
       css: [
+        'styles/editor.css',
         'bower_components/bootstrap/dist/css/bootstrap.css'
       ]
     })
     .when('/preview/kube', {
       templateUrl: 'views/preview.html',
-      controller: 'PreviewCtrl',
+      controller: 'EditorCtrl',
       css: [
+        'styles/editor.css',
         'bower_components/kube/css/kube.css'
       ]
     })
@@ -59,9 +60,11 @@ angular.module('haikMarkdownDemoApp', [
         return {
             restrict: 'E',
             link: function(scope, elem){
-                var html = '<link rel="stylesheet" ng-repeat="(routeCtrl, cssUrl) in routeStyles" ng-href="{{cssUrl}}" />';
+                var html =  '<link rel="stylesheet" ng-repeat="(routeCtrl, cssUrl) in routeStyles" ng-href="{{cssUrl}}" />\n'+
+                            '<link rel="stylesheet" ng-repeat="style in styles" ng-href="{{style.href}}" />';
                 elem.append($compile(html)(scope));
                 scope.routeStyles = {};
+                
                 $rootScope.$on('$routeChangeStart', function (e, next, current) {
                     if(current && current.$$route && current.$$route.css){
                         if(!Array.isArray(current.$$route.css)){

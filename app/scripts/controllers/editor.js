@@ -4,43 +4,45 @@ angular.module('haikMarkdownDemoApp')
   .controller('EditorCtrl', ['$scope', '$rootScope', '$location', 'Editor',
     function ($scope, $rootScope, $location, Editor) {
 
-    var styles = [
-          {"href": "bower_components/bootstrap/dist/css/bootstrap.css"},
-          {"href": "bower_components/bootstrap/dist/css/bootstrap.css"},
-          {"href": "bower_components/kube/css/kube.css"},
-          {"href": "bower_components/pure/pure-min.css"}
-    ];
+    angular.extend($scope, {
+      "isActive": function(matchIdx) {
+          return $scope.active == matchIdx;
+      },
+      "backEdit": function() {
+          $scope.active = $scope.Editor.viewIndexOf('Editor');
+          $scope.editorVisible = true;
+          $rootScope.styles = [$scope.Editor.styles[$scope.active]];
+          $scope.fullscreen = $scope.zen;
+          $location.path("editor");
+      },
+      "setZen": function(full) {
+          $scope.fullscreen = full;
+          $scope.zen = full;
+      }
+    });
     
     $scope.Editor = Editor;
-
-    $scope.Editor.body = '' +
-                          '<button class="btn btn-success" type="button">Blue</button>\n'+
-                          '<a class="btn btn-blue">Blue</a>\n'+
-                          '<a class="pure-button pure-button-primary" href="#">A Primary Button</a>\n' +
-                          '<a class="btn btn-success" href="#">eeee</a>\n';
-
-
+    if ($scope.Editor.body.length === 0)
+    {
+/*
+      $scope.Editor.body = '' +
+            '<button class="btn btn-success" type="button">Blue</button>\n'+
+            '<a class="btn btn-blue">Blue</a>\n'+
+            '<a class="pure-button pure-button-primary" href="#">A Primary Button</a>\n' +
+            '<a class="btn btn-success" href="#">eeee</a>\n';
+*/
+    }
     $scope.editorVisible = true;
     $scope.active = 0;
     $scope.fullscreen = false;
 
-    $rootScope.styles = [styles[$scope.active]];
-
+    $scope.zen = $rootScope.zen || false;
+    $scope.setZen($scope.zen);
     
-    $scope.isActive = function(matchIdx) {
-      return $scope.active == matchIdx;
-    };
-    
-    $scope.switchScreen = function(full) {
-      $scope.fullscreen = full;
-    }
-
     $scope.preview = function (type) {
 
       if ($scope.Editor.isEditor(type)) {
-        $scope.active = $scope.Editor.viewIndexOf(type);
-        $scope.editorVisible = true;
-        $rootScope.styles = [styles[$scope.active]];
+        $scope.backEdit();
         return;
       }
 
@@ -58,25 +60,19 @@ angular.module('haikMarkdownDemoApp')
         dataType: 'json',
         success: function(response) {
             console.log('success');
-
             $scope.$apply(function(){
               $scope.Editor.html = response.html;
-              $scope.active = $scope.Editor.viewIndexOf(type);
-              $scope.editorVisible = false;
-              $rootScope.styles = [styles[$scope.active]];
-              $rootScope.htmlData = response.html;
-              $location.path( "/preview/" + type);
+              $rootScope.zen = $scope.zen;
+              $location.path("preview/"+type);
             });
-
         },
         error: function(response){
             console.log('error');
         }
       });
-
     }
 
-    $scope.insert = function(name){
+    $scope.insert = function(name) {
       var target = angular.element("textarea");
       var str = $scope.Editor.snippetText(name)
 
