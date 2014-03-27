@@ -1,5 +1,6 @@
 <?php
 use Toiee\HaikMarkdown\Plugin\Bootstrap\Thumbnails\ThumbnailsPlugin;
+use Michelf\MarkdownExtra;
 
 class ThumbnailsPluginTest extends PHPUnit_Framework_TestCase {
 
@@ -30,82 +31,82 @@ class ThumbnailsPluginTest extends PHPUnit_Framework_TestCase {
     {
         $this->assertInstanceOf('\Toiee\HaikMarkdown\Plugin\Bootstrap\Cols\ColsPlugin', $this->plugin);
     }
-/*
 
-    public function testHtml()
+    /**
+     * @dataProvider bodyProvider
+     */
+    public function testHtml($body, $expected)
     {
-        $tests = array(
+        $parser = Mockery::mock('\Michelf\MarkdownInterface', function($mock)
+        {
+            $mock->shouldReceive('transform')
+                 ->once()->andReturn('<img src="sample.jpg" alt="sample" title="sample">');
+            $mock->shouldReceive('transform')
+                 ->twice()->andReturn('<p>test</p>');
+            return $mock;
+        });
+        $this->plugin = new ThumbnailsPlugin($parser);
+        $result = $this->plugin->convert(array(), $body);
+        $this->assertTag($expected, $result);
+    }
+
+    public function bodyProvider()
+    {
+        return array(
             'no_params' => array(
-                'cols' => array(),
                 'body' => 'test',
-                'assert' => '<div class="haik-plugin-thumbnails row">'."\n".
-                            '  <div class="col-sm-12">'."\n".
-                            '    <div class="thumbnail">'."\n".
-                            '      '."\n".
-                            '      <div class="caption">'."\n".
-                            '        '.\Parser::parse('test')."\n".
-                            '      </div>'."\n".
-                            '    </div>'."\n". 
-                            '  </div>'."\n". 
-                            '</div>',
+                'expected' => array(
+                    'ancestor' => array(
+                        'tag' => 'div',
+                        'attributes' => array(
+                            'class' => 'haik-plugin-thumbnails row'
+                        ),
+                    ),
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'thumbnail',
+                    ),
+                    'child' => array(
+                        'tag' => 'div',
+                        'attributes' => array(
+                            'class' => 'caption'
+                        )
+                    ),
+                ),
             ),
             'one' => array(
-                'cols' => array(),
-                'body' => "STYLE:background-color:#000;color:#ccc;\n".
-                          "CLASS:burbon\n".
-                          '![text](http://pacehold.jp/150x150.png "title")'."\n".
+                'body' => '![sample](sample.jpg "sample")'."\n".
                           "#thumbnail title\n".
                           "body1\n".
                           "body2",
-                'assert' => '<div class="haik-plugin-thumbnails row">'."\n".
-                            '  <div class="col-sm-12 burbon" style="background-color:#000;color:#ccc;">'."\n".
-                            '    <div class="thumbnail">'."\n".
-                            '      <img src="http://pacehold.jp/150x150.png" alt="text" title="title">'."\n".
-                            '      <div class="caption">'."\n".
-                            '        '.\Parser::parse("#thumbnail title\nbody1\nbody2")."\n".
-                            '      </div>'."\n".
-                            '    </div>'."\n".
-                            '  </div>'."\n".
-                            '</div>',
-            ),
-            'two' => array(
-                'cols' => array(),
-                'body' => '![image1](http://pacehold.jp/120x200.png "title1")'."\n".
-                          "#thumbnail title1\n".
-                          "body1"."\n".
-                          "====\n".
-                          '![image2](http://pacehold.jp/140x200.png "title2")'."\n".
-                          "#thumbnail title2\n".
-                          "body2",
-                'assert' => '<div class="haik-plugin-thumbnails row">'."\n".
-                            '  <div class="col-sm-6">'."\n".
-                            '    <div class="thumbnail">'."\n".
-                            '      <img src="http://pacehold.jp/120x200.png" alt="image1" title="title1">'."\n".
-                            '      <div class="caption">'."\n".
-                            '        '.\Parser::parse("#thumbnail title1\nbody1")."\n".
-                            '      </div>'."\n".
-                            '    </div>'."\n".
-                            '  </div>'."\n".
-                            '  <div class="col-sm-6">'."\n".
-                            '    <div class="thumbnail">'."\n".
-                            '      <img src="http://pacehold.jp/140x200.png" alt="image2" title="title2">'."\n".
-                            '      <div class="caption">'."\n".
-                            '        '.\Parser::parse("#thumbnail title2\nbody2")."\n".
-                            '      </div>'."\n".
-                            '    </div>'."\n".
-                            '  </div>'."\n".
-                            '</div>',
+                'expected' => array(
+                    'ancestor' => array(
+                        'tag' => 'div',
+                        'attributes' => array(
+                            'class' => 'haik-plugin-thumbnails row'
+                        ),
+                    ),
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'thumbnail',
+                    ),
+                    'child' => array(
+                        'tag' => 'img',
+                        'attributes' => array(
+                            'src' => 'sample.jpg',
+                            'alt' => 'sample',
+                            'title' => 'sample',
+                        )
+                    ),
+                    'descendant' => array(
+                        'tag' => 'div',
+                        'attributes' => array(
+                            'class' => 'caption',
+                        ),
+                    )
+                )
             ),
         );
-
-        foreach ($tests as $key => $data)
-        {
-            $data['assert'] = preg_replace('/\n| {2,}/', '', trim($data['assert']));
-            $cmpdata = with(new ThumbnailsPlugin)->convert($data['cols'], $data['body']);
-            $cmpdata = preg_replace('/\n| {2,}/', '', trim($cmpdata));
-            $this->assertEquals($data['assert'], $cmpdata);
-        }
     }
-*/
 
 }
