@@ -1,7 +1,9 @@
 <?php
 namespace Toiee\HaikMarkdown\Plugin\Bootstrap;
 
-class Column {
+use Toiee\HaikMarkdown\GridSystem\ColumnInterface;
+
+class Column implements ColumnInterface {
 
     public static $MAX_WIDTH            = 12;
     public static $MAX_OFFSET_WIDTH     = 11;
