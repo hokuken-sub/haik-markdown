@@ -72,16 +72,6 @@ class Row implements ArrayAccess, IteratorAggregate, Countable {
         return $this->styleAttribute;
     }
 
-    public function totalColumns()
-    {
-        $total_columns = 0;
-        foreach ($this->columns as $column)
-        {
-            $total_columns += $column->getColumnWidth() + $column->getOffsetWidth();
-        }
-        return $total_columns;
-    }
-
     public function getColumn($offset)
     {
         if ( ! isset($this->columns[$offset])) return null;

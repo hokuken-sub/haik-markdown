@@ -85,10 +85,20 @@ class ColsPlugin extends Plugin {
     protected function validatesColumnSize()
     {
         $row_class_name = get_class($this->row);
-        if ($this->row->totalColumns() > $row_class_name::$COLUMN_SIZE)
+        if ($this->getTotalColumnSize() > $row_class_name::$COLUMN_SIZE)
         {
             $this->violateColumnSize = true;
         }
+    }
+
+    protected function getTotalColumnSize()
+    {
+        $total_columns = 0;
+        foreach ($this->row as $column)
+        {
+            $total_columns += $column->getColumnWidth() + $column->getOffsetWidth();
+        }
+        return $total_columns;
     }
 
     /**
