@@ -311,20 +311,4 @@ class ColumnTest extends PHPUnit_Framework_TestCase {
         $this->assertTag($expected, $html);
     }
 
-    public function testRenderWithRow()
-    {
-        $column = new Column();
-        $html = $column->renderWithRow();
-        $expected = array(
-            'tag' => 'div',
-            'attributes' => array(
-                'class' => 'row'
-            ),
-            'child' => array(
-                'tag' => 'div',
-                'attributes' => array('class'=>'col-sm-12')
-            )
-        );
-        $this->assertTag($expected, $html);
-    }
 }

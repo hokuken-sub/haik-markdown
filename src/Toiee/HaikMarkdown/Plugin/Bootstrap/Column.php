@@ -10,7 +10,6 @@ class Column implements ColumnInterface {
     public static $DEFAULT_OFFSET_WIDTH = 0;
     public static $PARSABLE_REGEX       = '{ ^(\d+)(?:\+(\d+))?((?:\.[a-zA-Z0-9_-]+)+)?$ }mx';
 
-    public static $ROW_CLASS_NAME       = 'row';
     public static $COLUMN_CLASS_PREFIX  = 'col-sm-';
     public static $OFFSET_CLASS_PREFIX  = 'col-sm-offset-';
 
