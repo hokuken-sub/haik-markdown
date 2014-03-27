@@ -56,7 +56,7 @@ class CarouselPlugin extends Plugin {
 
         $class_name = get_called_class();
         return $this->renderView(array(
-            'defaultImage' => self::DEFAULT_IMAGE
+            'defaultImage' => $class_name::DEFAULT_IMAGE
         ));
     }
     
