@@ -894,7 +894,6 @@ class MediaListPluginTest extends PHPUnit_Framework_TestCase {
         $params = array('6');
         $body = '';
         $result = $this->plugin->convert($params, $body);
-        var_dump($result);
         $expected = array(
             'tag' => 'div',
             'attributes' => array(
