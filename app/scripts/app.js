@@ -6,8 +6,7 @@ angular.module('haikMarkdownDemoApp', [
   'ngSanitize',
   'ngRoute',
 
-  'editorServices',
-  'monospaced.elastic'
+  'editorServices'
 ])
 .config(['$routeProvider', function ($routeProvider) {
   $routeProvider
@@ -16,7 +15,7 @@ angular.module('haikMarkdownDemoApp', [
       controller: 'MainCtrl',
       css: [
         'bower_components/bootstrap/dist/css/bootstrap.css',
-        'lib/grayscale/css/grayscale.css',
+        'assets/styles/grayscale/css/grayscale.css',
         'styles/main.css'
       ] 
     })
@@ -24,7 +23,7 @@ angular.module('haikMarkdownDemoApp', [
       templateUrl: 'views/editor.html',
       controller: 'EditorCtrl',
       css: [
-        'styles/editor.css'
+         'styles/editor.css'
       ]
     })
     .when('/preview/pure', {

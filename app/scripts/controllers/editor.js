@@ -18,20 +18,34 @@ angular.module('haikMarkdownDemoApp')
       "setZen": function(full) {
           $scope.fullscreen = full;
           $scope.zen = full;
+          if (full) {
+            angular.element('#haikmde_full_textarea').click();
+          } else {
+            angular.element('#haikmde_textarea').click();
+          }
+      },
+      "setExnote": function() {
+        angular.element('#haikmde_textarea')
+          .exnote({css:{height:"300px", fontSize:"14px"}});
+        angular.element('#haikmde_full_textarea')
+          .exnote({css:{height:"100%", fontSize:"16px"}});
       }
     });
     
     $scope.Editor = Editor;
+
     if ($scope.Editor.body.length === 0)
     {
-/*
       $scope.Editor.body = '' +
             '<button class="btn btn-success" type="button">Blue</button>\n'+
             '<a class="btn btn-blue">Blue</a>\n'+
             '<a class="pure-button pure-button-primary" href="#">A Primary Button</a>\n' +
             '<a class="btn btn-success" href="#">eeee</a>\n';
-*/
     }
+
+    setTimeout(function(){$scope.setExnote();}, 5)
+
+
     $scope.editorVisible = true;
     $scope.active = 0;
     $scope.fullscreen = false;
@@ -39,6 +53,8 @@ angular.module('haikMarkdownDemoApp')
     $scope.zen = $rootScope.zen || false;
     $scope.setZen($scope.zen);
     
+
+
     $scope.preview = function (type) {
 
       if ($scope.Editor.isEditor(type)) {

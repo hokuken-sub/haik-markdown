@@ -8,7 +8,7 @@ editorServices.factory('Editor', ['$resource', function($resource) {
     
     var body = '';
     var views = [
-          {"view":"Editor",     "href": "styles/editor.css"},
+          {"view":"Editor",     "href": ""},
           {"view":"bootstrap",  "href": "bower_components/bootstrap/dist/css/bootstrap.css"},
           {"view":"kube",       "href": "bower_components/kube/css/kube.css"},
           {"view":"pure",       "href": "bower_components/pure/pure-min.css"}
@@ -28,9 +28,11 @@ editorServices.factory('Editor', ['$resource', function($resource) {
       views: (function(){
                 return views.map(function(v){ return v.view; });
       })(),
+
       styles:(function(){
         return views.map(function(v){ return {"href": v.href}; });
-      })(), 
+      })(),
+
       viewIndexOf: function(type) {
         return this.views.indexOf(type);
       },

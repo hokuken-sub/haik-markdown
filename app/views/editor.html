@@ -1,4 +1,4 @@
-<nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+<nav class="navbar navbar-custom navbar-fixed-top top-nav-collapse" role="navigation">
   <div class="container">
     <div class="navbar-header page-scroll">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
@@ -34,11 +34,8 @@
           <button ng-repeat="tool in Editor.tools" class="btn btn-haikmde" ng-click="insert(tool.name)">{{ tool.label }}</button>
         </div>
       </div>
-      <textarea msd-elastic="\n" class="form-control" rows="10" ng-model="Editor.body" placeholder="Leave a comment"></textarea>
+      <textarea class="haikmde-textarea" ng-model="Editor.body" placeholder="Leave a comment" id="haikmde_textarea" data-exnote="onready"></textarea>
     </div>
-
-    <div class="haikmde-preview" ng-hide="editorVisible" ng-bind-html="Editor.html"></div>
-
   </div>
 
   <div class="fullscreen-overlay" ng-show="fullscreen">
@@ -55,9 +52,8 @@
 
     <div class="fullscreen-container">
       <div class="textarea-wrap" ng-show="editorVisible">
-        <textarea msd-elastic="\n" ng-model="Editor.body" placeholder="Leave a comment" rows="10"></textarea>
+        <textarea ng-model="Editor.body" placeholder="Leave a comment" id="haikmde_full_textarea" data-exnote="onready"></textarea>
       </div>
-<!--       <div class="haikmde-preview" ng-hide="editorVisible" ng-bind-html="Editor.html"></div> -->
     </div>
 
   </div>
@@ -65,5 +61,5 @@
 
 
 <div class="footer container">
-  <p class="text-right"><i class="fa fa-heart"></i> from haik Markdown team</p>
+  <p class="text-right"><i class="haikmde-love fa fa-heart"></i> from haik Markdown team</p>
 </div>
