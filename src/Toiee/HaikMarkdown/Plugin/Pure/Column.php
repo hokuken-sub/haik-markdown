@@ -5,10 +5,11 @@ use Toiee\HaikMarkdown\GridSystem\ColumnInterface;
 
 class Column implements ColumnInterface {
 
-    public static $PARSABLE_REGEX           = '{ ^(\d+)(?:\+(\d+))?((?:\.[a-zA-Z0-9_-]+)+)?$ }mx';
+    public static $PARSABLE_REGEX           = '{ ^(\d+)(?:-(\d+))?((?:\.[a-zA-Z0-9_-]+)+)?$ }mx';
     public static $COLUMN_CLASS_PREFIX      = 'pure-u-';
     public static $DEFAULT_UNIT_NUMERATOR   = 1;
     public static $DEFAULT_UNIT_DENOMINATOR = 1;
+    public static $MAX_UNIT_SIZE            = 24;
 
     protected $unitNumerator;
 
@@ -38,15 +39,65 @@ class Column implements ColumnInterface {
     {
         if (preg_match(self::$PARSABLE_REGEX, $text, $matches))
         {
-            // !TODO: 
+            $unit_numerator = $matches[1];
+            $unit_denominator = empty($matches[2]) ? null: $matches[2];
+            $this->setUnitSize($unit_numerator, $unit_denominator);
+            $this->addClassAttribute(!empty($matches[3]) ? trim(str_replace('.', ' ', $matches[3])) : '');
         }
         return $this;
     }
 
-    public function setUnitWidth($unit_numerator, $unit_denominator)
+    public function setUnitSize($unit_numerator, $unit_denominator = null)
     {
-        //! TODO: 
+        if (null === $unit_denominator)
+        {
+            $unit_denominator = self::$MAX_UNIT_SIZE;
+        }
+        $unit_numerator = (int)$unit_numerator;
+        $unit_denominator = (int)$unit_denominator;
+        
+        if ( ! $this->validateUnitSize($unit_numerator, $unit_denominator))
+        {
+            return $this;
+        }
+
+        $gcd = $this->getGCDByEuclideanAlgorithm($unit_numerator, $unit_denominator);
+        $this->unitNumerator = (int)($unit_numerator / $gcd);
+        $this->unitDenominator = (int)($unit_denominator / $gcd);
+        
         return $this;
+    }
+
+    protected function validateUnitSize($unit_numerator, $unit_denominator)
+    {
+        $unit_numerator = (int)$unit_numerator;
+        $unit_denominator = (int)$unit_denominator;
+
+        if ($unit_numerator > $unit_denominator) return false;
+        if (1 > $unit_numerator) return false;
+        if (1 > $unit_denominator) return false;
+        if (self::$MAX_UNIT_SIZE < $unit_numerator) return false;
+        if (self::$MAX_UNIT_SIZE < $unit_denominator) return false;
+        
+        return true;
+    }
+
+    protected function getGCDByEuclideanAlgorithm($n, $m)
+    {
+        $n = (int)$n;
+        $m = (int)$m;
+
+        if ($n === 0)
+        {
+            return $m;
+        }
+
+        if ($n > $m)
+        {
+            list($m, $n) = array($n, $m);
+        }
+
+        return $this->getGCDByEuclideanAlgorithm($m % $n, $n);
     }
 
     public function addClassAttribute($class_attr = '')
@@ -101,8 +152,7 @@ class Column implements ColumnInterface {
 
     public function createClassAttributeFromNumeratorAndDenominator()
     {
-        // !TODO: 
-        return '';
+        return self::$COLUMN_CLASS_PREFIX . $this->unitNumerator . '-' . $this->unitDenominator;
     }
 
     public function createClassAttributeFromClassAttribute()
@@ -125,9 +175,7 @@ class Column implements ColumnInterface {
 
     public static function isParsable($text)
     {
-        if ( ! preg_match(self::$PARSABLE_REGEX, $text, $mts)) return false;
-        
-        // !TODO: 
-        return true;
+        return preg_match(self::$PARSABLE_REGEX, $text);
     }
+
 }
