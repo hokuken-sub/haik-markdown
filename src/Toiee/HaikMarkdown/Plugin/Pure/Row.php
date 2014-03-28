@@ -5,7 +5,7 @@ use Toiee\HaikMarkdown\Plugin\Bootstrap\Row as BootstrapRow;
 
 class Row extends BootstrapRow {
 
-    const ColumnClassName = '\Toiee\HaikMarkdown\Plugin\Pure\Column';
+    const COLUMN_CLASS_NAME = '\Toiee\HaikMarkdown\Plugin\Pure\Column';
 
     public static $NO_RESPONSIVE_CLASS_NAME = 'pure-g';
     public static $RESPONSIVE_CLASS_NAME    = 'pure-g-r';

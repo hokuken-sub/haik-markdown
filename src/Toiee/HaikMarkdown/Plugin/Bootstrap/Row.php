@@ -9,7 +9,7 @@ use Toiee\HaikMarkdown\GridSystem\ColumnInterface;
 
 class Row implements ArrayAccess, IteratorAggregate, Countable {
 
-    const ColumnClassName = '\Toiee\HaikMarkdown\Plugin\Bootstrap\Column';
+    const COLUMN_CLASS_NAME = '\Toiee\HaikMarkdown\Plugin\Bootstrap\Column';
 
     public static $COLUMN_SIZE     = 12;
     public static $CLASS_ATTRIBUTE = 'row';
@@ -27,7 +27,7 @@ class Row implements ArrayAccess, IteratorAggregate, Countable {
     public function __construct($columns = array())
     {
         $called_class_name = get_called_class();
-        $column_class_name = $called_class_name::ColumnClassName;
+        $column_class_name = $called_class_name::COLUMN_CLASS_NAME;
 
         foreach ($columns as $i => $column)
         {
