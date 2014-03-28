@@ -29,10 +29,10 @@ class PureColumnTest extends PHPUnit_Framework_TestCase {
             array('1-2', true),
             array('2-5', true),
             array('3-8', true),
-            array('3-7', false),
+            array('3-7', true),
             array('6-24', true),
-            array('25-24', false),
-            array('3-2', false),
+            array('25-24', true),
+            array('3-2', true),
             array('-1-2', false),
             array('4a', false),
             array('4+7b', false),
@@ -86,8 +86,8 @@ class PureColumnTest extends PHPUnit_Framework_TestCase {
             ),
             array(
                 'string'    => '8',
-                'expected_numerator'   => 8,
-                'expected_denominator' => 24,
+                'expected_numerator'   => 1,
+                'expected_denominator' => 3,
                 'expected_class_attribute' => '',
             ),
             array(
@@ -127,6 +127,18 @@ class PureColumnTest extends PHPUnit_Framework_TestCase {
                 'expected_class_attribute' => '',
             ),
             array(
+                'string'    => '5-0',
+                'expected_numerator'   => 5,
+                'expected_denominator' => 24,
+                'expected_class_attribute' => '',
+            ),
+            array(
+                'string'    => '5-0.class-name',
+                'expected_numerator'   => 5,
+                'expected_denominator' => 24,
+                'expected_class_attribute' => 'class-name',
+            ),
+            array(
                 'string'    => '2-3.class-name',
                 'expected_numerator'   => 2,
                 'expected_denominator' => 3,
@@ -147,7 +159,7 @@ class PureColumnTest extends PHPUnit_Framework_TestCase {
     public function testCreateClassAttribute($data, $expected)
     {
         $column = new Column();
-        $column->setUnitWidth($data['unitNumerator'], $data['unitDenominator']);
+        $column->setUnitSize($data['unitNumerator'], $data['unitDenominator']);
         $column->addClassAttribute($data['classAttribute']);
         $class_attribute = $column->createClassAttribute();
         $this->assertEquals($expected, $class_attribute);
