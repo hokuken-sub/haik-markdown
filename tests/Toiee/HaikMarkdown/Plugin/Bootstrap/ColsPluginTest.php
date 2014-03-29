@@ -17,12 +17,6 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
         $this->assertInternalType('string', with(new ColsPlugin($this->parser))->convert());
     }
 
-    public function testExistsViewFile()
-    {
-        $view_path = with(new ColsPlugin($this->parser))->getViewPath();
-        $this->assertFalse(!! $view_path);
-    }
-
     /**
      * @dataProvider paramProvider
      */
