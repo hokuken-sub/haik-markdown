@@ -100,6 +100,16 @@ class Column implements ColumnInterface {
         return $this->getGCDByEuclideanAlgorithm($m % $n, $n);
     }
 
+    public function getUnitNumerator()
+    {
+        return $this->unitNumerator;
+    }
+
+    public function getUnitDenominator()
+    {
+        return $this->unitDenominator();
+    }
+
     public function addClassAttribute($class_attr = '')
     {
         $this->classAttribute = trim($this->classAttribute . ' ' . trim($class_attr));
