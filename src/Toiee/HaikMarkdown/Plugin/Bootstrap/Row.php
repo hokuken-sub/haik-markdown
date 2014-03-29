@@ -9,14 +9,13 @@ use Toiee\HaikMarkdown\GridSystem\ColumnInterface;
 
 class Row implements ArrayAccess, IteratorAggregate, Countable {
 
-    public static $COLUMN_SIZE     = 12;
+    const COLUMN_CLASS_NAME = '\Toiee\HaikMarkdown\Plugin\Bootstrap\Column';
 
+    public static $COLUMN_SIZE     = 12;
     public static $CLASS_ATTRIBUTE = 'row';
 
     protected $classAttribute = '';
     protected $styleAttribute = '';
-
-    protected $columnClassName;
 
     protected $columns;
 
@@ -27,7 +26,8 @@ class Row implements ArrayAccess, IteratorAggregate, Countable {
      */
     public function __construct($columns = array())
     {
-        $column_class_name = $this->getColumnClassName();
+        $called_class_name = get_called_class();
+        $column_class_name = $called_class_name::COLUMN_CLASS_NAME;
 
         foreach ($columns as $i => $column)
         {
@@ -44,9 +44,13 @@ class Row implements ArrayAccess, IteratorAggregate, Countable {
                 unset($columns[$i]);
             }
         }
-        $this->columnClassName = 'Column';
         $this->columns = array_values($columns);
 
+        $this->initialize();
+    }
+
+    protected function initialize()
+    {
         $this->addClassAttribute(self::$CLASS_ATTRIBUTE);
     }
 
@@ -76,11 +80,6 @@ class Row implements ArrayAccess, IteratorAggregate, Countable {
     public function getStyleAttribute()
     {
         return $this->styleAttribute;
-    }
-
-    protected function getColumnClassName()
-    {
-        return $this->columnClassName;
     }
 
     public function getColumn($offset)
@@ -151,7 +150,7 @@ class Row implements ArrayAccess, IteratorAggregate, Countable {
         return $this->styleAttribute;
     }
 
-    public function renderColumns()
+    protected function renderColumns()
     {
         $columns = array();
         foreach ($this as $column)
