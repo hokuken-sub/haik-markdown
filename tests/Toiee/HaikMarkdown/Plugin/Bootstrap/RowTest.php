@@ -4,6 +4,35 @@ use Toiee\HaikMarkdown\Plugin\Bootstrap\Column;
 
 class RowTest extends PHPUnit_Framework_TestCase {
 
+    /**
+     * @dataProvider columnsProvider
+     */
+    public function testConstructor($columns)
+    {
+        $expected = new Row(array(
+            new Column('6'),
+            new Column('6')
+        ));
+    }
+
+    public function columnsProvider()
+    {
+        return array(
+            array(
+                new Column('6'),
+                new Column('6')
+            ),
+            array(
+                '6',
+                '6',
+            ),
+            array(
+                new Column('6'),
+                '6',
+            ),
+        );
+    }
+
     public function testIterator()
     {
         $columns = array(
@@ -41,6 +70,34 @@ class RowTest extends PHPUnit_Framework_TestCase {
         );
         $row = new Row($columns);
         $this->assertEquals(count($columns), count($row));
+    }
+
+    public function testUnsetColumn()
+    {
+        $columns = array(
+            new Column('1'),
+            new Column('2'),
+            new Column('3')
+        );
+        $row = new Row($columns);
+        unset($row[1]);
+        $expected = new Row(array(
+            new Column('1'),
+            new Column('3')
+        ));
+        $this->assertEquals($expected, $row);
+    }
+
+    public function testIssetColumn()
+    {
+        $columns = array(
+            new Column('1'),
+            new Column('2'),
+            new Column('3')
+        );
+        $row = new Row($columns);
+        $this->assertTrue(isset($row[2]));
+        $this->assertFalse(isset($row[3]));
     }
 
     public function testStyleAttribute()

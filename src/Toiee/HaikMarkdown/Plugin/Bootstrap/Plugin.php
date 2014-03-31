@@ -24,7 +24,9 @@ abstract class Plugin extends BasePlugin {
         $view_path = dirname(__DIR__) . '/../../../../views/bootstrap/' . str_replace('.', '/', $this->view) . '.php';
         if ( ! file_exists($view_path))
         {
+            // @codeCoverageIgnoreStart
             return false;
+            // @codeCoverageIgnoreEnd
         }
         return $view_path;
     }
@@ -46,7 +48,9 @@ abstract class Plugin extends BasePlugin {
             include $view_path;
             return ob_get_clean();
         }
+        // @codeCoverageIgnoreStart
         return '';
+        // @codeCoverageIgnoreEnd
     }
 
 }

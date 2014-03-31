@@ -100,7 +100,7 @@ class Row implements ArrayAccess, IteratorAggregate, Countable {
 
     public function deleteColumn($offset)
     {
-        array_splice($this->columns[$offset], $offset, 1);
+        array_splice($this->columns, $offset, 1);
     }
 
     public function offsetExists($offset)
@@ -147,7 +147,7 @@ class Row implements ArrayAccess, IteratorAggregate, Countable {
 
     public function createStyleAttribute()
     {
-        return $this->styleAttribute;
+        return $this->getStyleAttribute();
     }
 
     protected function renderColumns()
