@@ -26,8 +26,9 @@ class UnitsPlugin extends BootstrapColsPlugin {
     /**
      * Create Column instance
      *
-     * @param 
-     * @return Column
+     * @param string $text
+     * @return Toiee\HaikMarkdown\Plugin\Pure\Column
+     * @see Toiee\HaikMarkdown\Plugin\Bootstrap\Cols\ColsPlugin::createColumn
      */
     protected function createColumn($text = '')
     {
