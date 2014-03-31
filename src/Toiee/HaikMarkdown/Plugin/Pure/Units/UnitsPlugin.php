@@ -80,7 +80,7 @@ class UnitsPlugin extends BootstrapColsPlugin {
         	$data = explode($this->delimiter, $this->body);
         	$row_class_name = get_class($this->row);
     		$col_size = (int)(self::$MAX_COLUMN_SIZE / count($data));
-    		//TODO: get GCM of $col_size and $MAX_COLUMN_SIZE
+
     		$gcd = Utility::getGCD($col_size, self::$MAX_COLUMN_SIZE);
     		$unit_numerator = (int)($col_size / $gcd);
     		$unit_denominator = (int)(self::$MAX_COLUMN_SIZE / $gcd);
