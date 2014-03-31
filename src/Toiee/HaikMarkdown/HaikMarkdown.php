@@ -52,7 +52,8 @@ class HaikMarkdown extends MarkdownExtra {
         if ($this->running)
         {
             // @codeCoverageIgnoreStart
-            return with(new self())->transform($text);
+            $called_class = \get_called_class();
+            return with(new $called_class())->transform($text);
             // @codeCoverageIgnoreEnd
         }
 
