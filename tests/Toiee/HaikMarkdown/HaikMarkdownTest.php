@@ -25,8 +25,13 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
             return $mock;
         });
 
-        $this->parser = new HaikMarkdown;
+        $this->parser = new HaikMarkdown();
         $this->parser->registerPluginRepository($repository);
+    }
+
+    public function testTransform()
+    {
+        $this->assertInternalType('string', $this->parser->transform(''));
     }
 
     public function testEmptyElementSuffix()
@@ -61,6 +66,18 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
 
         $plugin = $this->parser->loadPlugin('plugin');
         $this->assertInstanceOf('\Toiee\HaikMarkdown\Plugin\PluginInterface', $plugin);
+    }
+
+    public function testHasPluginReturnsFalseWhenPluginIsNotExist()
+    {
+        $parser = new HaikMarkdown();
+        $repository = Mockery::mock('Toiee\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface', function($mock)
+        {
+            $mock->shouldReceive('exists')->andReturn(false);
+            return $mock;
+        });
+        $parser->registerPluginRepository($repository);
+        $this->assertFalse($parser->hasPlugin('plugin_not_exist'));
     }
 
     /**

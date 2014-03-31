@@ -23,14 +23,14 @@ class HaikMarkdown extends MarkdownExtra {
         $this->empty_element_suffix = '>';
 
         $this->hardWrap = false;
-        
-        $this->document_gamut += array(
-            'doConvertPlugins'   => 10,
-        );
 
-		$this->span_gamut += array(
-            "doInlinePlugins"    => 2,
-        );
+        $this->document_gamut = array_merge($this->document_gamut, array(
+            'doConvertPlugins' => 10,
+        ));
+
+        $this->span_gamut = array_merge($this->span_gamut, array(
+            'doInlinePlugins' => 2,
+        ));
 
 		parent::__construct();
     }
@@ -51,7 +51,9 @@ class HaikMarkdown extends MarkdownExtra {
     {
         if ($this->running)
         {
+            // @codeCoverageIgnoreStart
             return with(new self())->transform($text);
+            // @codeCoverageIgnoreEnd
         }
 
         $this->running = true;
