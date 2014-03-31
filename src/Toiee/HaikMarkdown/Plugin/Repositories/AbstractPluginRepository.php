@@ -53,7 +53,7 @@ abstract class AbstractPluginRepository implements PluginRepositoryInterface {
     public function getAll()
     {
         $plugin_dir = $this->repositoryPath;
-        $dirs = glob($plugin_dir);
+        $dirs = glob($plugin_dir . '/*/');
 
         $plugins = array();
         foreach ($dirs as $dir)
