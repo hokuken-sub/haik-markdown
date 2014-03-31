@@ -90,7 +90,7 @@ class Column implements ColumnInterface {
 
     public function getUnitDenominator()
     {
-        return $this->unitDenominator();
+        return $this->unitDenominator;
     }
 
     public function addClassAttribute($class_attr = '')

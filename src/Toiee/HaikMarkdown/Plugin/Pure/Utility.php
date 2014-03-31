@@ -10,7 +10,7 @@ class Utility {
      * @param integer $m
      * @return integer GCD of $n and $m
      */
-    public static getGCD($n, $m)
+    public static function getGCD($n, $m)
     {
         $n = (int)$n;
         $m = (int)$m;
