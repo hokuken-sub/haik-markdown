@@ -18,7 +18,7 @@ class DecoPlugin extends Plugin {
         $ccnt = 0;
         foreach ($params as $v)
         {
-    		if( is_numeric($v) )
+    		if( preg_match('/^\d+$/', $v) )
     		{
     			$size = $v.'px';
     		}

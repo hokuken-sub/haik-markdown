@@ -116,7 +116,62 @@ class DecoPluginTest extends PHPUnit_Framework_TestCase {
                         'content' => 'test'
                     )
                 )
-            ),        
+            ),
+            'font-size-only-numeric' => array(
+                'deco' => array('18'),
+                'assert' => array(
+                    'tag' => 'span',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-deco',
+                        'style' => 'font-size:18px'
+                    ),
+                    'content' => 'test'
+                )
+            ),
+            'font-size-starts-with-dot' => array(
+                'deco' => array('.8'),
+                'assert' => array(
+                    'tag' => 'span',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-deco',
+                        'style' => 'font-size:.8'
+                    ),
+                    'content' => 'test'
+                )
+            ),
+            'font-size-with-other-unit' => array(
+                'deco' => array('1.6em'),
+                'assert' => array(
+                    'tag' => 'span',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-deco',
+                        'style' => 'font-size:1.6em'
+                    ),
+                    'content' => 'test'
+                )
+            ),
+            'font-size-with-string' => array(
+                'deco' => array('small'),
+                'assert' => array(
+                    'tag' => 'span',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-deco',
+                        'style' => 'font-size:small'
+                    ),
+                    'content' => 'test'
+                )
+            ),
+            'italic' => array(
+                'deco' => array('italic'),
+                'assert' => array(
+                    'tag' => 'span',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-deco',
+                        'style' => 'font-style:italic'
+                    ),
+                    'content' => 'test'
+                )
+            ),
         );
     }
 }
