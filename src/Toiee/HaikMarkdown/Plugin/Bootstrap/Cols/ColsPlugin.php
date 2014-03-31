@@ -106,10 +106,9 @@ class ColsPlugin extends Plugin {
      */
     protected function parseParams()
     {
-
         foreach ($this->params as $param)
         {
-            if (Column::isParsable($param))
+            if ($this->columnIsParsable($param))
             {
                 $column = $this->createColumn($param);
                 $this->row[] = $column;
@@ -130,10 +129,16 @@ class ColsPlugin extends Plugin {
         }
     }
 
+    protected function columnIsParsable($text)
+    {
+        return Column::isParsable($text);
+    }
     /**
-     * parse body
+     * Set columns by body
+     *
+     * @return void
      */
-    protected function parseBody()
+    protected function setColumnsByBody()
     {
         if (count($this->row) === 0)
         {
@@ -147,7 +152,14 @@ class ColsPlugin extends Plugin {
                 $this->row[$i] = $column;
     		}
         }
-        
+    }
+    /**
+     * parse body
+     */
+    protected function parseBody()
+    {
+        $this->setColumnsByBody();
+
         // if parameter and body delimiter is not match then bind body over cols
         $col_num = count($this->row);
         $data = array_pad(explode($this->delimiter, $this->body, $col_num), $col_num, '');

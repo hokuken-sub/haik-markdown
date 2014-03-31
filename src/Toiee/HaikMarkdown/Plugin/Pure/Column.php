@@ -2,6 +2,7 @@
 namespace Toiee\HaikMarkdown\Plugin\Pure;
 
 use Toiee\HaikMarkdown\GridSystem\ColumnInterface;
+use Toiee\HaikMarkdown\Plugin\Pure\Utility;
 
 class Column implements ColumnInterface {
 
@@ -61,7 +62,7 @@ class Column implements ColumnInterface {
             return $this;
         }
 
-        $gcd = $this->getGCDByEuclideanAlgorithm($unit_numerator, $unit_denominator);
+        $gcd = Utility::getGCD($unit_numerator, $unit_denominator);
         $this->unitNumerator = (int)($unit_numerator / $gcd);
         $this->unitDenominator = (int)($unit_denominator / $gcd);
         
@@ -82,22 +83,14 @@ class Column implements ColumnInterface {
         return true;
     }
 
-    protected function getGCDByEuclideanAlgorithm($n, $m)
+    public function getUnitNumerator()
     {
-        $n = (int)$n;
-        $m = (int)$m;
+        return $this->unitNumerator;
+    }
 
-        if ($n === 0)
-        {
-            return $m;
-        }
-
-        if ($n > $m)
-        {
-            list($m, $n) = array($n, $m);
-        }
-
-        return $this->getGCDByEuclideanAlgorithm($m % $n, $n);
+    public function getUnitDenominator()
+    {
+        return $this->unitDenominator;
     }
 
     public function addClassAttribute($class_attr = '')
