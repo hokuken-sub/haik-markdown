@@ -49,7 +49,7 @@ class ColsPlugin extends Plugin {
      * Create Column instance
      *
      * @param 
-     * @return Column
+     * @return Toiee\HaikMarkdown\GridSystem\ColumnInterface
      */
     protected function createColumn($text = '')
     {
@@ -110,8 +110,7 @@ class ColsPlugin extends Plugin {
         {
             if ($this->columnIsParsable($param))
             {
-                $column = $this->createColumn($param);
-                $this->row[] = $column;
+                $this->addColumns($param);
             }
             else
             {
@@ -133,6 +132,19 @@ class ColsPlugin extends Plugin {
     {
         return Column::isParsable($text);
     }
+
+    /**
+     * Add columns by text
+     *
+     * @param string $text Column::isParsable is true
+     * @return void
+     */
+    protected function addColumns($text)
+    {
+        $column = $this->createColumn($text);
+        $this->row[] = $column;
+    }
+
     /**
      * Set columns by body
      *
