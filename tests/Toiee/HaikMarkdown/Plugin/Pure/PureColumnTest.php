@@ -73,6 +73,12 @@ class PureColumnTest extends PHPUnit_Framework_TestCase {
                 'expected_class_attribute' => '',
             ),
             array(
+                'string'    => '15-105',
+                'expected_numerator'   => 1,
+                'expected_denominator' => 1,
+                'expected_class_attribute' => '',
+            ),
+            array(
                 'string'    => '0',
                 'expected_numerator'   => 1,
                 'expected_denominator' => 1,
