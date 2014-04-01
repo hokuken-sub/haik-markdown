@@ -8,7 +8,7 @@ class FlatUIPluginRepositoryTest extends PHPUnit_Framework_TestCase {
         $this->parser = Mockery::mock('Michelf\MarkdownInterface');
     }
 
-    public function testLoadCompatiblePluginInBootstrapCompatibleMode()
+    public function testLoadBootstrapPlugin()
     {
         $repository = new PluginRepository($this->parser, true);
         $plugin = $repository->load('cols');
@@ -18,11 +18,10 @@ class FlatUIPluginRepositoryTest extends PHPUnit_Framework_TestCase {
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testThrowsExceptionWhenLoadCompatiblePluginInNoCompatibleMode()
+    public function testThrowsExceptionWhenLoadNonePlugin()
     {
         $repository = new PluginRepository($this->parser, false);
-        $plugin = $repository->load('cols');
-        $this->assertInstanceOf('Toiee\HaikMarkdown\Plugin\PluginInterface', $plugin);
+        $plugin = $repository->load('fall');
     }
 
     public function testContainsCompatiblePluginWhenGetAll()
