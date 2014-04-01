@@ -163,6 +163,20 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
                     with(new Column())->setColumnWidth(6)
                 )))->prependClassAttribute('haik-plugin-cols')
             ),
+            array(
+                'body'     => "STYLE:color:red\n====\nSTYLE:background-color:#eee",
+                'expected' => with(new Row(array(
+                    with(new Column())->setColumnWidth(6)->addStyleAttribute('color:red'),
+                    with(new Column())->setColumnWidth(6)->addStyleAttribute('background-color:#eee')
+                )))->prependClassAttribute('haik-plugin-cols')
+            ),
+            array(
+                'body'     => "CLASS:class-name\n====\nCLASS:class-name1 class-name2",
+                'expected' => with(new Row(array(
+                    with(new Column())->setColumnWidth(6)->addClassAttribute('class-name'),
+                    with(new Column())->setColumnWidth(6)->addClassAttribute('class-name1 class-name2')
+                )))->prependClassAttribute('haik-plugin-cols')
+            ),
         );
     }
 

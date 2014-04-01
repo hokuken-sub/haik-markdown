@@ -181,19 +181,21 @@ class ColsPlugin extends Plugin {
     	    $column = $this->row[$i];
     		if (isset($data[$i]))
     		{
-    		    if (preg_match('/(?:^|\n)STYLE:(.+?)\n/', $data[$i], $mts))
+                $data[$i] = preg_replace_callback('{ (?:\A|\n)STYLE:(.+)(?:\z|\n) }xm', function($matches) use ($column)
     		    {
-    		        $this->row[$i]->addStyleAttribute($mts[1]);
-        		    $data[$i] = preg_replace('/'.preg_quote($mts[0], '/'). '/', '', $data[$i], 1);
-    		    }
+                    $style_attribute = $matches[1];
+                    $column->addStyleAttribute($style_attribute);
+                    return "\n";
+                }, $data[$i]);
 
-    		    if (preg_match('/(?:^|\n)CLASS:(.+?)\n/', $data[$i], $mts))
+                $data[$i] = preg_replace_callback('{ (?:\A|\n)CLASS:(.+)(?:\z|\n) }xm', function($matches) use ($column)
     		    {
-    		        $this->row[$i]->addClassAttribute($mts[1]);
-        		    $data[$i] = preg_replace('/'.preg_quote($mts[0], '/'). '/', '', $data[$i], 1);
-    		    }
+                    $class_attribute = $matches[1];
+                    $column->addClassAttribute($class_attribute);
+                    return "\n";
+                }, $data[$i]);
 
-    		    $this->row[$i]->setContent($data[$i]);
+                $column->setContent($data[$i]);
     		}
     	}
     }
