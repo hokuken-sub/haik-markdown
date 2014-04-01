@@ -146,7 +146,7 @@ class Column implements ColumnInterface {
 
     public function createClassAttributeFromClassAttribute()
     {
-        return $this->classAttribute;
+        return $this->getClassAttribute();
     }
 
     /**
