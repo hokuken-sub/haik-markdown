@@ -13,22 +13,37 @@ class RowTest extends PHPUnit_Framework_TestCase {
             new Column('6'),
             new Column('6')
         ));
+        $row = new Row($columns);
+        
+        foreach ($row as $i => $column)
+        {
+            $this->assertEquals($expected[$i], $column);
+        }
     }
 
     public function columnsProvider()
     {
         return array(
+            // column instances
             array(
-                new Column('6'),
-                new Column('6')
+                array(
+                    new Column('6'),
+                    new Column('6')
+                )
             ),
+            // string column options
             array(
-                '6',
-                '6',
+                array(
+                    '6',
+                    '6',
+                )
             ),
+            // mixed
             array(
-                new Column('6'),
-                '6',
+                array(
+                    new Column('6'),
+                    '6',
+                )
             ),
         );
     }
