@@ -44,21 +44,26 @@ class IconPlugin extends Plugin {
 
     protected function validateIconName($icon_name)
     {
-        return preg_match(self::$ICON_NAME_REGEX, $icon_name);
+        $called_class = get_called_class();
+        return preg_match($called_class::$ICON_NAME_REGEX, $icon_name);
     }
 
     protected function getIconClassName()
     {
-        return self::$PREFIX_CSS_CLASS_NAME . $this->iconName;
+        $called_class = get_called_class();
+        return $called_class::$PREFIX_CSS_CLASS_NAME . $this->iconName;
     }
 
     protected function createClassAttribute()
     {
-        $classes = array();
-        $classes[] = self::$PREFIX_CLASS_ATTRIBUTE;
-        $classes[] = self::$BASE_CSS_CLASS_NAME;
-        $classes[] = $this->getIconClassName();
+        $called_class = get_called_class();
 
+        $classes = array();
+        $classes[] = $called_class::$PREFIX_CLASS_ATTRIBUTE;
+        $classes[] = $called_class::$BASE_CSS_CLASS_NAME;
+        $classes[] = $this->getIconClassName();
+        $classes = array_filter($classes);
+        
         return $this->classAttribute = trim(join(' ', $classes));
     }
 
