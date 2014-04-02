@@ -8,7 +8,7 @@ class BootstrapPluginRepository extends AbstractPluginRepository {
     public function __construct(MarkdownInterface $parser)
     {
         parent::__construct($parser);
-        $this->repositoryPath = dirname(__DIR__) . '/Bootstrap';
+        $this->repositoryPath = dirname(__DIR__);
     }
 
     protected function getClassName($id)
