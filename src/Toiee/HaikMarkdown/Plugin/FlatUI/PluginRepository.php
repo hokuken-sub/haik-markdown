@@ -3,7 +3,7 @@ namespace Toiee\HaikMarkdown\Plugin\FlatUI;
 
 use Michelf\MarkdownInterface;
 use Toiee\HaikMarkdown\Plugin\Repositories\AbstractPluginRepository;
-use Toiee\HaikMarkdown\Plugin\Repositories\BootstrapPluginRepository;
+use Toiee\HaikMarkdown\Plugin\Bootstrap\PluginRepository as BootstrapPluginRepository;
 
 class PluginRepository extends AbstractPluginRepository {
 
