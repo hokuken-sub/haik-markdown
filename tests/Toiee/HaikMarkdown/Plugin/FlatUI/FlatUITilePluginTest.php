@@ -1,6 +1,5 @@
 <?php
 use Toiee\HaikMarkdown\Plugin\FlatUI\Tile\TilePlugin;
-use Michelf\MarkdownExtra;
 use Toiee\HaikMarkdown\HaikMarkdown;
 
 class TilePluginTest extends PHPUnit_Framework_TestCase {
