@@ -11,6 +11,28 @@ class TilePlugin extends BootstrapColsPlugin {
     public static $PREFIX_CLASS_ATTRIBUTE = 'haik-plugin-tile';
 
     /**
+     * Create Column instance
+     *
+     * @param 
+     * @return Toiee\HaikMarkdown\GridSystem\ColumnInterface
+     */
+    protected function createColumn($text = '')
+    {
+        $hot = false;
+        $text = preg_replace_callback('/\.(hot|popular|tile-hot)\b/', function($matches) use (&$hot)
+        {
+            $hot = ' tile-hot';
+            return '';
+        },
+        $text);
+
+        $column =  parent::createColumn($text);
+        $column->hot = $hot;
+        
+        return $column;
+    }
+    
+    /**
      * Parse columns content's markdown
      *
      * @see Toiee\HaikMarkdown\Plugin\Bootstrap\Cols\ColsPlugin::parseColumns
@@ -36,8 +58,6 @@ class TilePlugin extends BootstrapColsPlugin {
             }
 
             $body = join("\n", $lines);
-
-
             $body = $this->parser->transform($body);
             if ( ! preg_match('{ <h[1-6][^>]*?class=".*?" }mx', $body))
             {
@@ -59,9 +79,11 @@ class TilePlugin extends BootstrapColsPlugin {
         foreach ($this->row as $column)
         {
             $thumbnail = isset($column->thumbnail) ? $column->thumbnail : '';
+            $hot = ($column->hot === false) ? '': $column->hot;
+            
             $content = $column->getContent();
             
-            $content = '<div class="tile">'.$thumbnail.$content.'</div>';
+            $content = '<div class="tile'.$hot.'">'.$thumbnail.$content.'</div>';
             $column->setContent($content);
         }
         return parent::renderView($data);
