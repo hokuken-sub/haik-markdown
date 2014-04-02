@@ -141,6 +141,17 @@ class ImagePluginTest extends PHPUnit_Framework_TestCase {
                     ),
                 ),
             ),
+            'circle_custom_image_alt' => array(
+                'image' => array('circle', 'class=custom', 'http://placehold.jp/200x200.png', 'alt_text'),
+                'expected' => array(
+                    'tag' => 'img',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-image img-circle custom',
+                        'src'   => 'http://placehold.jp/200x200.png',
+                        'alt'   => 'alt_text',
+                    ),
+                ),
+            ),
         );
     }
 
@@ -263,6 +274,17 @@ class ImagePluginTest extends PHPUnit_Framework_TestCase {
                         'class' => 'haik-plugin-image img-responsive img-circle',
                         'src'   => 'http://placehold.jp/300x300.png',
                         'alt'   => '',
+                    ),
+                ),
+            ),
+            'circle_custom_image_alt' => array(
+                'image' => array('circle', 'class=custom', 'http://placehold.jp/200x200.png', 'alt_text'),
+                'expected' => array(
+                    'tag' => 'img',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-image img-responsive img-circle custom',
+                        'src'   => 'http://placehold.jp/200x200.png',
+                        'alt'   => 'alt_text',
                     ),
                 ),
             ),
