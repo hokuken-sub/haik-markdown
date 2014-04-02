@@ -20,8 +20,6 @@ class TilePlugin extends BootstrapColsPlugin {
 
         foreach ($this->row as $i => $column)
         {
-/* var_dump($i .':'. $column->getContent()); */
-
             $lines = preg_split('{ \n+ }mx', trim($column->getContent()));
 
             $top_line = $this->parser->transform($lines[0]);
