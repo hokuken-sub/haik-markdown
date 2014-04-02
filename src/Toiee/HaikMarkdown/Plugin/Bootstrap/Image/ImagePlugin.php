@@ -66,6 +66,7 @@ class ImagePlugin extends Plugin {
             return $this;
         }
 
+        $tmpParams = $this->params;
         $issetType = false;
         foreach ($this->params as $key => $param)
         {
@@ -81,6 +82,7 @@ class ImagePlugin extends Plugin {
                         $this->type = self::$PREFIX_CSS_CLASS_NAME . $param;
                         $issetType = true;
                     }
+                    unset($tmpParams[$key]);
                     continue 2;
                     break;
             }
@@ -89,16 +91,15 @@ class ImagePlugin extends Plugin {
             {
                 $param = trim(preg_replace('{ ^class=(.*?) }mx', '\1', $param));
                 $this->customClass = $param;
+                unset($tmpParams[$key]);
                 continue;
             }
+        }
 
-            if ($key === 0)
-            {
-                $this->imagePath = $param;
-                continue;
-            }
-
-            $this->altText = $param;
+        if (count($tmpParams) > 0)
+        {
+            $this->imagePath = array_shift($tmpParams);
+            $this->altText = join(' ', $tmpParams);
         }
 
         return $this;
