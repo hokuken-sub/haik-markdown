@@ -152,6 +152,28 @@ class ImagePluginTest extends PHPUnit_Framework_TestCase {
                     ),
                 ),
             ),
+            'custom_circle' => array(
+                'image' => array('class=custom', 'circle'),
+                'expected' => array(
+                    'tag' => 'img',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-image img-circle custom',
+                        'src'   => 'http://placehold.jp/300x300.png',
+                        'alt'   => '',
+                    ),
+                ),
+            ),
+            'too_many_params' => array(
+                'image' => array('http://placehold.jp/200x200.png', 'circle', 'class=custom', 'alt_text', 'too_many'),
+                'expected' => array(
+                    'tag' => 'img',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-image img-circle custom',
+                        'src'   => 'http://placehold.jp/200x200.png',
+                        'alt'   => 'alt_text too_many',
+                    ),
+                ),
+            ),
         );
     }
 
@@ -285,6 +307,28 @@ class ImagePluginTest extends PHPUnit_Framework_TestCase {
                         'class' => 'haik-plugin-image img-responsive img-circle custom',
                         'src'   => 'http://placehold.jp/200x200.png',
                         'alt'   => 'alt_text',
+                    ),
+                ),
+            ),
+            'custom_circle' => array(
+                'image' => array('class=custom', 'circle'),
+                'expected' => array(
+                    'tag' => 'img',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-image img-responsive img-circle custom',
+                        'src'   => 'http://placehold.jp/300x300.png',
+                        'alt'   => '',
+                    ),
+                ),
+            ),
+            'too_many_params' => array(
+                'image' => array('http://placehold.jp/200x200.png', 'circle', 'class=custom', 'alt_text', 'too_many'),
+                'expected' => array(
+                    'tag' => 'img',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-image img-responsive img-circle custom',
+                        'src'   => 'http://placehold.jp/200x200.png',
+                        'alt'   => 'alt_text too_many',
                     ),
                 ),
             ),
