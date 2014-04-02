@@ -9,7 +9,7 @@ class PluginRepository extends AbstractPluginRepository {
     public function __construct(MarkdownInterface $parser)
     {
         parent::__construct($parser);
-        $this->repositoryPath = dirname(__DIR__);
+        $this->repositoryPath = __DIR__;
     }
 
     protected function getClassName($id)
