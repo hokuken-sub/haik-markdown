@@ -132,7 +132,123 @@ class TilePluginTest extends PHPUnit_Framework_TestCase {
                     )
                 )
             ),
-        );
+            'hot' => array(
+                'params' => array("3.hot","4"),
+                'body'   => '![sample](sample.jpg "sample")'."\n".
+                          "##thumbnail title\n".
+                          "body1\n".
+                          "body2\n".
+                          "\n====\n".
+                          '![sample](sample.jpg "sample")'."\n".
+                          "#thumbnail2 title\n".
+                          "body3\n".
+                          "body4",
+                'expected' => array(
+                    'ancestor' => array(
+                        'tag' => 'div',
+                        'attributes' => array(
+                            'class' => 'col-sm-3'
+                        ),
+                    ),
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'tile tile-hot',
+                    ),
+                    'child' => array(
+                        'tag' => 'img',
+                        'attributes' => array(
+                            'src' => 'sample.jpg',
+                            'alt' => 'sample',
+                            'title' => 'sample',
+                            'class' => 'tile-image big-illustration'
+                        )
+                    ),
+                    'descendant' => array(
+                        'tag' => 'h2',
+                        'attributes' => array(
+                            'class' => 'tile-title',
+                        ),
+                    )
+                )
+            ),
+            'popular' => array(
+                'params' => array("5.popular","7"),
+                'body'   => '![sample](sample.jpg "sample")'."\n".
+                          "##thumbnail title\n".
+                          "body1\n".
+                          "body2\n".
+                          "\n====\n".
+                          '![sample](sample.jpg "sample")'."\n".
+                          "#thumbnail2 title\n".
+                          "body3\n".
+                          "body4",
+                'expected' => array(
+                    'ancestor' => array(
+                        'tag' => 'div',
+                        'attributes' => array(
+                            'class' => 'col-sm-5'
+                        ),
+                    ),
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'tile tile-hot',
+                    ),
+                    'child' => array(
+                        'tag' => 'img',
+                        'attributes' => array(
+                            'src' => 'sample.jpg',
+                            'alt' => 'sample',
+                            'title' => 'sample',
+                            'class' => 'tile-image big-illustration'
+                        )
+                    ),
+                    'descendant' => array(
+                        'tag' => 'h2',
+                        'attributes' => array(
+                            'class' => 'tile-title',
+                        ),
+                    )
+                )
+            ),
+            'tile-hot' => array(
+                'params' => array("6.popular","6"),
+                'body'   => '![sample](sample.jpg "sample")'."\n".
+                          "##thumbnail title\n".
+                          "body1\n".
+                          "body2\n".
+                          "\n====\n".
+                          '![sample](sample.jpg "sample")'."\n".
+                          "#thumbnail2 title\n".
+                          "body3\n".
+                          "body4",
+                'expected' => array(
+                    'ancestor' => array(
+                        'tag' => 'div',
+                        'attributes' => array(
+                            'class' => 'col-sm-6'
+                        ),
+                    ),
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'tile tile-hot',
+                    ),
+                    'child' => array(
+                        'tag' => 'img',
+                        'attributes' => array(
+                            'src' => 'sample.jpg',
+                            'alt' => 'sample',
+                            'title' => 'sample',
+                            'class' => 'tile-image big-illustration'
+                        )
+                    ),
+                    'descendant' => array(
+                        'tag' => 'h2',
+                        'attributes' => array(
+                            'class' => 'tile-title',
+                        ),
+                    )
+                )
+            ),        );
     }
 
 }
