@@ -229,5 +229,26 @@ class TablePluginTest extends PHPUnit_Framework_TestCase {
             ),
         );
     }
+
+    public function testKeepExistingClassName()
+    {
+        $this->parser = Mockery::mock('Michelf\MarkdownInterface', function($mock)
+        {
+            $table_html = "<table class=\"class-name\">\n<thead>\n<tr>\n  <th>Header</th>\n  <th>Header Right</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n  <td>Item</td>\n  <td>Item</td>\n</tr>\n<tr>\n  <td>Item</td>\n  <td>Item</td>\n</tr>\n</tbody>\n</table>\n";
+            $mock->shouldReceive('transform')->andReturn($table_html);
+            return $mock;
+        });
+        $this->plugin = new TablePlugin($this->parser);
+        
+        $result = $this->plugin->convert();
+        $expected = array(
+            'tag' => 'table',
+            'attributes' => array(
+                'class' => 'class-name table',
+            ),
+        );
+        $this->assertTag($expected, $result);
+    }
+
     
 }
