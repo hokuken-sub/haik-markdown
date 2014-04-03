@@ -14,7 +14,9 @@ class ImagePlugin extends Plugin {
     protected $imagePath;
     protected $type;
     protected $customClass;
+    protected $float;
     protected $altText;
+    protected $style;
 
     protected $block;
 
@@ -24,7 +26,7 @@ class ImagePlugin extends Plugin {
         parent::__construct($parser);
 
         $this->imagePath = self::$DEFAULT_IMAGE;
-        $this->type = $this->customClass = $this->altText = '';
+        $this->type = $this->customClass = $this->float = $this->altText = $this->style = '';
         $this->block = false;
     }
     /**
@@ -69,6 +71,7 @@ class ImagePlugin extends Plugin {
 
         $tmpParams = $this->params;
         $issetType = false;
+        $issetFloat = false;
         foreach ($this->params as $key => $param)
         {
             $param = trim($param);
@@ -82,6 +85,16 @@ class ImagePlugin extends Plugin {
                     {
                         $this->type = self::$PREFIX_CSS_CLASS_NAME . $param;
                         $issetType = true;
+                    }
+                    unset($tmpParams[$key]);
+                    continue 2;
+                    break;
+                case 'left':
+                case 'right':
+                    if ( ! $issetFloat && $this->block)
+                    {
+                        $this->float = 'pull-' . $param;
+                        $issetFloat = true;
                     }
                     unset($tmpParams[$key]);
                     continue 2;
@@ -113,6 +126,7 @@ class ImagePlugin extends Plugin {
         if ($this->block)
         {
             $classes[] = self::$CSS_CLASS_NAME_FOR_BLOCK;
+            $classes[] = $this->float;
         }
         $classes[] = $this->type;
         $classes[] = $this->customClass;
@@ -120,9 +134,24 @@ class ImagePlugin extends Plugin {
         return trim(join(' ', $classes));
     }
 
+    public function createImageStyle()
+    {
+        if ($this->float === 'pull-left')
+        {
+            $this->style = 'style="margin: 0 15px 15px 0;"';
+        }
+        elseif ($this->float === 'pull-right')
+        {
+            $this->style = 'style="margin: 0 0 15px 15px;"';
+        }
+
+        return $this->style;
+    }
+
     public function renderView($data = array())
     {
         $class_attr = $this->createClassAttribute();
-        return '<img src="'.e($this->imagePath).'" alt="'.e($this->altText).'" class="'.e($class_attr).'">';
+        $style = $this->createImageStyle();
+        return '<img src="'.e($this->imagePath).'" alt="'.e($this->altText).'" class="'.e($class_attr).'" '.$style.'>';
     }
 }
