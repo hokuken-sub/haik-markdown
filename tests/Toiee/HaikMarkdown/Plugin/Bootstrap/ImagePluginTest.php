@@ -354,6 +354,78 @@ class ImagePluginTest extends PHPUnit_Framework_TestCase {
                     ),
                 ),
             ),
+            'image_pull_left' => array(
+                'image' => array('http://placehold.jp/200x200.png', 'left'),
+                'expected' => array(
+                    'tag' => 'img',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-image img-responsive pull-left',
+                        'src'   => 'http://placehold.jp/200x200.png',
+                        'alt'   => '',
+                        'style' => 'margin: 0 15px 15px 0;',
+                    ),
+                ),
+            ),
+            'image_pull_right' => array(
+                'image' => array('http://placehold.jp/200x200.png', 'right'),
+                'expected' => array(
+                    'tag' => 'img',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-image img-responsive pull-right',
+                        'src'   => 'http://placehold.jp/200x200.png',
+                        'alt'   => '',
+                        'style' => 'margin: 0 0 15px 15px;',
+                    ),
+                ),
+            ),
+            'image_rounded_pull_left' => array(
+                'image' => array('http://placehold.jp/200x200.png', 'rounded', 'left'),
+                'expected' => array(
+                    'tag' => 'img',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-image img-responsive img-rounded pull-left',
+                        'src'   => 'http://placehold.jp/200x200.png',
+                        'alt'   => '',
+                        'style' => 'margin: 0 15px 15px 0;',
+                    ),
+                ),
+            ),
+            'image_rounded_custom_pull_left' => array(
+                'image' => array('http://placehold.jp/200x200.png', 'rounded', 'class=custom', 'left'),
+                'expected' => array(
+                    'tag' => 'img',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-image img-responsive img-rounded custom pull-left',
+                        'src'   => 'http://placehold.jp/200x200.png',
+                        'alt'   => '',
+                        'style' => 'margin: 0 15px 15px 0;',
+                    ),
+                ),
+            ),
+            'image_pull_right_custom' => array(
+                'image' => array('http://placehold.jp/200x200.png', 'right', 'class=custom'),
+                'expected' => array(
+                    'tag' => 'img',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-image img-responsive custom pull-right',
+                        'src'   => 'http://placehold.jp/200x200.png',
+                        'alt'   => '',
+                        'style' => 'margin: 0 0 15px 15px;',
+                    ),
+                ),
+            ),
+            'image_rounded_custom_pull_left_alt' => array(
+                'image' => array('http://placehold.jp/200x200.png', 'rounded', 'class=custom', 'left', 'alt-text'),
+                'expected' => array(
+                    'tag' => 'img',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-image img-responsive img-rounded custom pull-left',
+                        'src'   => 'http://placehold.jp/200x200.png',
+                        'alt'   => 'alt-text',
+                        'style' => 'margin: 0 15px 15px 0;',
+                    ),
+                ),
+            ),
         );
     }
 }
