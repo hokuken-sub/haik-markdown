@@ -39,6 +39,7 @@ class ImagePlugin extends Plugin {
         $this->params = $params;
         $this->body = $body;
 
+/*         var_dump($this->parseParams()->renderView()); */
         return $this->parseParams()->renderView();
     }
 
@@ -87,9 +88,9 @@ class ImagePlugin extends Plugin {
                     break;
             }
 
-            if (preg_match('{ ^class=.*? }mx', $param))
+            if (preg_match('{ ^class=(.*)$ }mx', $param, $matches))
             {
-                $param = trim(preg_replace('{ ^class=(.*?) }mx', '\1', $param));
+                $param = $matches[1];
                 $this->customClass = $param;
                 unset($tmpParams[$key]);
                 continue;
