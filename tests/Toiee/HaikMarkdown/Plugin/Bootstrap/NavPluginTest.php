@@ -181,6 +181,18 @@ class NavPluginTest extends PHPUnit_Framework_TestCase {
                     ),
                 )
             ),
+            'inverse' => array(
+                array(
+                    'inverse'
+                ),
+                array(
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'navbar navbar-inverse navbar-fixed-top',
+                        'role' => 'navigation'
+                    )
+                )
+            ),
         );
     }
 
@@ -214,17 +226,17 @@ class NavPluginTest extends PHPUnit_Framework_TestCase {
                 false,
             ),
             'set brand title' => array(
-                'BRAND:The Brand',
+                'BRAND: <a href="#">The Brand</a>',
                 'brandTitle',
-                'The Brand',
+                '<a href="#" class="navbar-brand">The Brand</a>',
             ),
             'set brand image #1' => array(
-                'BRAND: <img src="brand.png" alt="The Brand">',
+                'BRAND: <a href="#"><img src="brand.png" alt="The Brand"></a>',
                 'brandTitle',
-                'The Brand',
+                '<a href="#" class="navbar-brand"><img src="brand.png" alt="The Brand"></a>',
             ),
             'set brand image #2' => array(
-                'BRAND: <img src="brand.png" alt="The Brand">',
+                'BRAND: <a href="#"><img src="brand.png" alt="The Brand"></a>',
                 'hasBrandImage',
                 true,
             ),
@@ -236,20 +248,30 @@ class NavPluginTest extends PHPUnit_Framework_TestCase {
             'set action buttons' => array(
                 "ACTION:\n" . '<a href="#" class="btn btn-success">Sign Up</a>' . "\n" . '<a href="#" class="btn btn-success">Sign In</a>',
                 'actionButtons',
-                '<div class="btn-group navbar-right">' . "\n". 
                   '<a href="#" class="btn btn-success navbar-btn">Sign Up</a>' . "\n" .
-                  '<a href="#" class="btn btn-success navbar-btn">Sign In</a>'.
-                '</div>',
+                  '<a href="#" class="btn btn-success navbar-btn">Sign In</a>',
             ),
-            'test invalid: set brand title and image #1' => array(
-                'BRAND:The Brand <img src="brand.png" alt="Brand Image">',
+            'set brand title and image #1' => array(
+                'BRAND: <a href="#"><img src="brand.png" alt="Brand Image"> The Brand</a>',
                 'brandTitle',
-                'Brand Image',
+                '<a href="#" class="navbar-brand"><img src="brand.png" alt="Brand Image"> The Brand</a>',
             ),
-            'test invalid: set brand title and image #2' => array(
-                'BRAND:The Brand <img src="brand.png" alt="Brand Image">',
+            'set brand title and image #1' => array(
+                'BRAND: <a href="#"><img src="brand.png" alt="Brand Image"> The Brand</a>',
                 'hasBrandImage',
                 true,
+            ),
+            'set brand title and action buttons #1' => array(
+                'BRAND: <a href="#">The Brand</a>' . "\n" .
+                'ACTION:' . "\n". '<a href="#" class="btn btn-success">Sign Up</a>',
+                'brandTitle',
+                '<a href="#" class="navbar-brand">The Brand</a>',
+            ),
+            'set brand title and action buttons #2' => array(
+                'BRAND: <a href="#">The Brand</a>' . "\n" .
+                'ACTION:' . "\n". '<a href="#" class="btn btn-success">Sign Up</a>',
+                'actionButtons',
+                '<a href="#" class="btn btn-success navbar-btn navbar-right">Sign Up</a>',
             ),
             'test invalid: action button and other text' => array(
                 "ACTION:\n" . '<a href="#" class="btn btn-success">Sign Up</a>foo bar buzz',
@@ -267,6 +289,41 @@ class NavPluginTest extends PHPUnit_Framework_TestCase {
                 '<a href="#" class="btn btn-success navbar-btn navbar-right">Sign Up</a>',
             ),
         );
+    }
+
+    /**
+     * @dataProvider delimiterProvider
+     */
+    public function testDelimiter($delimiter)
+    {
+        $body = 'body' . "\n" . $delimiter . "\n";
+        $body.= 'BRAND: <a href="#">The Brand</a>';
+        $result = $this->plugin->convert(array(), $body);
+        $expected = array(
+            'tag' => 'a',
+            'attributes' => array(
+                'class' => 'navbar-brand',
+            ),
+        );
+        $this->assertTag($expected, $result);
+    }
+
+    public function delimiterProvider()
+    {
+        return [
+            [
+                '* * *'
+            ],
+            [
+                '* * * *'
+            ],
+            [
+                '* * * * '
+            ],
+            [
+                '* * * * *'
+            ],
+        ];
     }
 
     /**
@@ -720,6 +777,46 @@ BRAND: <img src="brand.png" alt="The Brand">
                             'attributes' => [
                                 'src' => 'brand.png',
                                 'alt' => 'The Brand',
+                            ],
+                        ],
+                    ],
+                ],
+                []
+            ],
+
+
+            'multi action buttons' => [
+                [],
+                '',
+                '
+ACTION:
+<a href="#" class="btn btn-success">Action1</a>
+<a href="#" class="btn btn-success">Action2</a>
+',
+                [
+                    [
+                        'tag' => 'a',
+                        'attributes' => [
+                            'class' => 'btn btn-success navbar-btn',
+                            'content' => 'Action1',
+                        ],
+                        'parent' => [
+                            'tag' => 'div',
+                            'attributes' => [
+                                'class' => 'btn-group navbar-right',
+                            ],
+                        ],
+                    ],
+                    [
+                        'tag' => 'a',
+                        'attributes' => [
+                            'class' => 'btn btn-success navbar-btn',
+                            'content' => 'Action2',
+                        ],
+                        'parent' => [
+                            'tag' => 'div',
+                            'attributes' => [
+                                'class' => 'btn-group navbar-right',
                             ],
                         ],
                     ],
