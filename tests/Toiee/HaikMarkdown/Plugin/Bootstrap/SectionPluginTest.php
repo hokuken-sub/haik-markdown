@@ -24,7 +24,7 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
             'tag' => 'style',
         ),
         $result);
-var_dump($result);
+
         $result = $plugin->convert();
         $this->assertNotTag(array(
             'tag' => 'style',

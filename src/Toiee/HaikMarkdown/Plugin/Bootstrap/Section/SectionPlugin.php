@@ -76,7 +76,6 @@ class SectionPlugin extends Plugin {
      */
     protected function parseParams()
     {
-        // align
         foreach ($this->params as $param)
         {
             switch($param)
@@ -120,7 +119,6 @@ class SectionPlugin extends Plugin {
     {
         list($body, $config) = array_pad(explode(self::CONFIG_DELIMITER, $this->body), 2, '');
 
-        // !TODO cols 
         $cols = explode(self::COL_DELIMITER, $body);
         $columns = array();
         if (count($cols) > 1)
@@ -146,7 +144,10 @@ class SectionPlugin extends Plugin {
         $this->setConfig($config);
     }
     
-    
+    /**
+     * set config data
+     * @params string $config config data
+     */
     protected function setConfig($config)
     {
         foreach (self::$CONFIG_STYLE as $key => $style)
@@ -160,6 +161,11 @@ class SectionPlugin extends Plugin {
         }
     }
     
+    /**
+     * Add config data
+     * @params string $key config key
+     * @params string $val config val
+     */
     protected function addConfig($key, $val)
     {
         $val = trim($val);
@@ -180,6 +186,11 @@ class SectionPlugin extends Plugin {
         }
     }
     
+    /**
+     * get style attribute
+     * @params string $name which style
+     * @return string converted style
+     */
     protected function getStyleAttribute($name)
     {
         $style_name = $name.'_style';
@@ -200,6 +211,9 @@ class SectionPlugin extends Plugin {
         return join(";", $styles);
     }
 
+    /**
+     * get class attribute
+     */
     protected function getClassAttribute()
     {
         $classes = array();
@@ -210,6 +224,9 @@ class SectionPlugin extends Plugin {
         return join(" ", $classes);
     }
 
+    /**
+     * render
+     */
     public function renderView($data = array())
     {
         $section_style_attr   = $this->getStyleAttribute('section');
@@ -231,6 +248,11 @@ class SectionPlugin extends Plugin {
         return $html;
     }
     
+    /**
+     * get section stylesheet when called first time
+     *
+     * @return string converted stylesheet
+     */
     protected function getPluginStylesheet()
     {
         $called_class_name = get_called_class();
