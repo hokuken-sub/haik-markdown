@@ -332,4 +332,45 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
             ),
         );
     }
+
+    /**
+     * @dataProvider mixProvider
+     */
+    public function testMixedHtml($params, $body, $expected)
+    {
+        $plugin = new SectionPlugin(new HaikMarkdown);
+        $result = $plugin->convert($params, $body);
+        $this->assertTag($expected, $result);
+    }
+
+    public function mixProvider()
+    {
+        $config_delim = "\n****\n";
+        $col_delim = "\n====\n";
+        return array(
+            'test' => array(
+                'params' => array('middle', 'center'),
+                'body'   => "\ntest1\n\n".$config_delim."\n"."BG_COLOR: rgba(255,255,255,0);\n\n"."BG_IMAGE: image/img2.png\n\n"."COLOR: #333\n\n",
+                'expected' => array(
+                    'ancestor' => array(
+                        'tag' => 'div',
+                        'attributes' => array(
+                            'class' => 'jumbotron text-center',
+                            'style' => 'color:#333;background-image:url(image/img2.png);background-color:rgba(255,255,255,0)'
+                        ),
+                    ),
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'container',
+                        'style' => 'vertical-align:middle',
+                    ),
+                    'descendant' => array(
+                        'tag' => 'p',
+                        'content' => 'test1',
+                    ),
+                ),
+            ),
+        );
+    }
+
 }
