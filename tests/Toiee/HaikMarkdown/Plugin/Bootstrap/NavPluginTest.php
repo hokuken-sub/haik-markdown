@@ -332,12 +332,15 @@ class NavPluginTest extends PHPUnit_Framework_TestCase {
     public function testBody($params, $body, $expects, $not_expects = array())
     {
         $result = $this->plugin->convert($params, $body);
+        var_dump($result);
         foreach ($expects as $expected)
         {
+            if ( ! $expected) continue;
             $this->assertTag($expected, $result);
         }
         foreach ($not_expects as $not_expected)
         {
+            if ( ! $not_expected) continue;
             $this->assertNotTag($not_expected, $result);
         }
     }
@@ -402,12 +405,9 @@ class NavPluginTest extends PHPUnit_Framework_TestCase {
                         'attributes' => array(
                             'class' => 'nav navbar-nav navbar-right'
                         ),
-                        'children' => array(
-                            'only' => array(
-                                'tag' => 'li',
-                                'attributes' => array('class' => 'active'),
-                            ),
-                            'count' => 1
+                        'child' => array(
+                            'tag' => 'li',
+                            'attributes' => array('class' => 'active'),
                         ),
                         'parent' => array(
                             'tag' => 'div',

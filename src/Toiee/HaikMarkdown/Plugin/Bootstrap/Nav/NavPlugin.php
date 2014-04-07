@@ -151,27 +151,172 @@ class NavPlugin extends Plugin {
     {
         $whole_match = $matches[0];
         
-        $html = preg_replace_callback('/<ul(?:\s+(.*?))?>/', function($matches)
-        {
-            $attrs = isset($matches[1]) ? $matches[1] : '';
-            if (preg_match('/\bclass\s*=\s*(\'|")(.*)?\1/', $attrs, $inner_matches))
-            {
-                $attrs = str_replace($inner_matches[0], '', $attrs);
-                $class_attr = $inner_matches[2] . ' nav navbar-nav navbar-right';
-                $attrs .= 'class="'. e($class_attr) . '"';
-            }
-            else
-            {
-                $attrs .= 'class="nav navbar-nav navbar-right"';
-            }
-            return '<ul '.$attrs.'>';
-        }, $whole_match, 1);
+        $html = preg_replace_callback('/<ul(?:\s+(.*?))?>/',
+                                      array($this, '_addClassNameOfNavbarList'),
+                                      $whole_match, 1);
 
-        // ! TODO: exclude list item without link
+/*
+        $html = preg_replace_callback('{
+                (<li(?:.*?)>)     # $1: parent list item
+                    (.+?)         # $2: trigger
+                    (<ul(?:.*?)>) # $3: .dropdown-menu
+                        (.*?)     # $4: ul contents
+                    </ul>
+                </li>
+            }xs',
+            array($this, '_addClassNameOfNavbarDropdownMenu'), $html);
+*/
+        $html = preg_replace_callback('{
+                (<li(?:.*?)>)     # $1: parent list item
+                    (.*?)
+                    (<ul(?:.*?)>) # $3: .dropdown-menu
+                        (.*?)     # $4: ul contents
+                    </ul>\s*
+                </li>
+            }xs',
+            array($this, '_addClassNameOfNavbarDropdownMenu'), $html);
 
-        // ! TODO: set drop down
+        // exclude list item without link
+        $html = preg_replace_callback('{ <li>(.*?)</li> }xs',
+                                      array($this, '_excludeListItemWithoutLink'),
+                                      $html);
 
         return $html;
+    }
+
+    protected function _addClassNameOfNavbarList($matches)
+    {
+        $attrs = isset($matches[1]) ? $matches[1] : '';
+        if (preg_match('/\bclass\s*=\s*(\'|")(.*)?\1/', $attrs, $inner_matches))
+        {
+            $attrs = str_replace($inner_matches[0], '', $attrs);
+            $class_attr = $inner_matches[2] . ' nav navbar-nav navbar-right';
+            $attrs .= 'class="'. e($class_attr) . '"';
+        }
+        else
+        {
+            $attrs .= 'class="nav navbar-nav navbar-right"';
+        }
+        return '<ul '.$attrs.'>';
+    }
+
+    protected function _addClassNameOfNavbarDropdownMenu($matches)
+    {
+    var_dump('matches', $matches);
+        $whole_match = $matches[0];
+        $parent_li_open_tag = $matches[1];
+        $trigger_a_tag = $matches[2];
+        $dropdown_ul_open_tag = $matches[3];
+        $ul_contents_tag = $matches[4];
+
+        $parent_li_open_tag = preg_replace_callback('/<li(?:\s+(.*?))?>/',
+                                                    array($this, '_addClassNameOfNavbarDropdownMenuParentListItem'),
+                                                    $parent_li_open_tag);
+        $trigger_a_tag = preg_replace_callback('/<a(?:\s+(.*?))?>/',
+                                               array($this, '_addAttributesOfNavbarDropdownMenuTrigger'),
+                                               $trigger_a_tag, 1);
+        $trigger_a_tag = preg_replace_callback('{ </a> }xs',
+                                               array($this, '_addCaretOfNavbarDropdownMenuTrigger'),
+                                               $trigger_a_tag);
+        $dropdown_ul_open_tag = preg_replace_callback('/<ul(?:\s+(.*?))?>/',
+                                                      array($this, '_addClassNameOfNavbarDropdownMenuList'),
+                                                      $dropdown_ul_open_tag);
+        $ul_contents_tag = preg_replace_callback('{
+                                                  <li>
+                                     				^[ ]{0,3}	# Leading space
+                                    				([-*_])		# $1: First marker
+                                    				(?>			# Repeated marker group
+                                    					[ ]{0,2}	# Zero, one, or two spaces.
+                                    					\1			# Marker character
+                                    				){2,}		# Group repeated at least twice
+                                    				[ ]*		# Tailing spaces
+                                                 </li>
+                                                  }xs',
+                                                 array($this, '_addClassNameOfNavbarDropdownMenuDivider'),
+                                                 $ul_contents_tag);
+
+        return <<< EOD
+{$parent_li_open_tag}
+  {$trigger_a_tag}
+  {$dropdown_ul_open_tag}
+    {$ul_contents_tag}
+  </ul>
+</li>
+EOD;
+    }
+
+    protected function _addClassNameOfNavbarDropdownMenuParentListItem($matches)
+    {
+        $attrs = isset($matches[1]) ? $matches[1] : '';
+        if (preg_match('/\bclass\s*=\s*(\'|")(.*)?\1/', $attrs, $inner_matches))
+        {
+            $attrs = str_replace($inner_matches[0], '', $attrs);
+            $class_attr = $inner_matches[2] . ' dropdown';
+            $attrs .= 'class="'. e($class_attr) . '"';
+        }
+        else
+        {
+            $attrs .= 'class="dropdown"';
+        }
+        return '<li '.$attrs.'>';
+    }
+
+    protected function _addAttributesOfNavbarDropdownMenuTrigger($matches)
+    {
+        $attrs = isset($matches[1]) ? $matches[1] : '';
+        if (preg_match('/\bclass\s*=\s*(\'|")(.*)?\1/', $attrs, $inner_matches))
+        {
+            $attrs = str_replace($inner_matches[0], '', $attrs);
+            $class_attr = $inner_matches[2] . ' dropdown-toggle';
+            $attrs .= ' class="'. e($class_attr) . '"';
+        }
+        else
+        {
+            $attrs .= ' class="dropdown-toggle"';
+        }
+
+        if ( ! preg_match('/\bdata-toggle\s*=\s*(\'|")dropdown\1/', $attrs, $inner_matches))
+        {
+            $attrs .= ' data-toggle="dropdown"';
+        }
+
+        return '<a '.$attrs.'>';
+    }
+
+    protected function _addCaretOfNavbarDropdownMenuTrigger($matches)
+    {
+        return ' <b class="caret"></b></a>';
+    }
+
+    protected function _addClassNameOfNavbarDropdownMenuList($matches)
+    {
+        $attrs = isset($matches[1]) ? $matches[1] : '';
+        if (preg_match('/\bclass\s*=\s*(\'|")(.*)?\1/', $attrs, $inner_matches))
+        {
+            $attrs = str_replace($inner_matches[0], '', $attrs);
+            $class_attr = $inner_matches[2] . ' dropdown-menu';
+            $attrs .= 'class="'. e($class_attr) . '"';
+        }
+        else
+        {
+            $attrs .= 'class="dropdown-menu"';
+        }
+        return '<ul '.$attrs.'>';        
+    }
+
+    protected function _addClassNameOfNavbarDropdownMenuDivider($matches)
+    {
+        return '<li class="divider"></li>';
+    }
+
+    protected function _excludeListItemWithoutLink($matches)
+    {
+        $li_content = $matches[1];
+        if ( ! preg_match('{ <a.*?href.*?</a> }xs', $li_content))
+        {
+            return '';
+        }
+        return $matches[0];
     }
 
     protected function contentParagraphParser()
