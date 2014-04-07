@@ -204,7 +204,8 @@ class SectionPlugin extends Plugin {
         {
             if ($val !== '')
             {
-               $styles[] = "{$key}:{$val}";
+              $val = rtrim($val, ';');
+              $styles[] = "{$key}:{$val}";
             }
         }
         $styles = array_filter($styles);
