@@ -2,6 +2,7 @@
 namespace Toiee\HaikMarkdown\Plugin\Bootstrap\Nav;
 
 use Toiee\HaikMarkdown\Plugin\Bootstrap\Plugin;
+use Symfony\Component\DomCrawler\Crawler;
 
 class NavPlugin extends Plugin {
 
@@ -139,195 +140,154 @@ class NavPlugin extends Plugin {
 
     protected function contentListParser()
     {
-        $this->contentBody = preg_replace_callback(
-            '{
-                <ul(?:\s+.+?)?>
-                    .*
-                </ul>
-            }xs', array($this, '_setContentList'), $this->contentBody);
+        $crawler = new Crawler($this->contentBody);
+        $lists = $crawler->filter('ul');
+
+        $self = $this;
+        $lists->each(function(Crawler $ul, $i) use ($self)
+        {
+            return $self->_setContentList($ul, $i);
+        });
+
+        $html = '';
+        foreach ($lists as $ul)
+        {
+            $html .= $ul->ownerDocument->saveHTML($ul) . "\n";
+        }
+        $this->contentBody = $html;
     }
 
-    protected function _setContentList($matches)
+    protected function _setContentList(Crawler $ul, $i)
     {
-        $whole_match = $matches[0];
-        
-        $html = preg_replace_callback('/<ul(?:\s+(.*?))?>/',
-                                      array($this, '_addClassNameOfNavbarList'),
-                                      $whole_match, 1);
+        $self = $this;
 
-/*
-        $html = preg_replace_callback('{
-                (<li(?:.*?)>)     # $1: parent list item
-                    (.+?)         # $2: trigger
-                    (<ul(?:.*?)>) # $3: .dropdown-menu
-                        (.*?)     # $4: ul contents
-                    </ul>
-                </li>
-            }xs',
-            array($this, '_addClassNameOfNavbarDropdownMenu'), $html);
-*/
-        $html = preg_replace_callback('{
-                (<li(?:.*?)>)     # $1: parent list item
-                    (.*?)
-                    (<ul(?:.*?)>) # $3: .dropdown-menu
-                        (.*?)     # $4: ul contents
-                    </ul>\s*
-                </li>
-            }xs',
-            array($this, '_addClassNameOfNavbarDropdownMenu'), $html);
+foreach ($ul as $element) var_dump($element->ownerDocument->saveHTML());
+        $ul->filter('ul ul')->each(function(Crawler $ul, $i) use ($self)
+        {
+            foreach ($ul as $element)
+                $element->removeChild();
+            return;
+            foreach ($ul as $element) var_dump($element->ownerDocument->saveHTML());
+            $self->_addClassNameOfNavbarDropdownMenu($ul, $i);
+            foreach ($ul as $element) var_dump($element->ownerDocument->saveHTML());            
+        });
+foreach ($ul as $element) var_dump($element->ownerDocument->saveHTML());
+        $ul->filter('li')->reduce(function(Crawler $li, $i) use ($self)
+        {
+            return $self->_excludeListItemWithoutLink($li, $i);
+        });
 
-        // exclude list item without link
-        $html = preg_replace_callback('{ <li>(.*?)</li> }xs',
-                                      array($this, '_excludeListItemWithoutLink'),
-                                      $html);
+        foreach ($ul as $element)
+        {
+            $class_attr = 'nav navbar-nav navbar-right';
+            if ($element->hasAttribute('class'))
+            {
+                if (preg_match('{ \b dropdown-menu \b }x', $element->getAttribute('class')))
+                    continue;
+                $class_attr = rtrim($element->getAttribute('class')) . ' ' . $class_attr;
+            }
+            $element->setAttribute('class', $class_attr);
+        }
 
-        return $html;
     }
 
-    protected function _addClassNameOfNavbarList($matches)
+    protected function _addClassNameOfNavbarDropdownMenu(Crawler $ul, $i)
     {
-        $attrs = isset($matches[1]) ? $matches[1] : '';
-        if (preg_match('/\bclass\s*=\s*(\'|")(.*)?\1/', $attrs, $inner_matches))
+        foreach ($ul as $element)
         {
-            $attrs = str_replace($inner_matches[0], '', $attrs);
-            $class_attr = $inner_matches[2] . ' nav navbar-nav navbar-right';
-            $attrs .= 'class="'. e($class_attr) . '"';
+            // ul.dropdown-menu
+            $class_attr = 'dropdown-menu';
+            if ($element->hasAttribute('class'))
+            {
+                $class_attr = rtrim($element->getAttribute('class')) . ' ' . $class_attr;
+            }
+            $element->setAttribute('class', $class_attr);
         }
-        else
+
+        // li.dropdown
+        foreach ($ul->parents() as $parent_li)
         {
-            $attrs .= 'class="nav navbar-nav navbar-right"';
+            if ($parent_li->tagName !== 'li') continue;
+
+            $class_attr = 'dropdown';
+            if ($parent_li->hasAttribute('class'))
+            {
+                $class_attr = rtrim($parent_li->getAttribute('class')) . ' ' . $class_attr;
+            }
+            $parent_li->setAttribute('class', $class_attr);
         }
-        return '<ul '.$attrs.'>';
+
+        // a.dropdown-toggle[data-toggle=dropdown]
+        foreach ($ul->siblings() as $trigger)
+        {
+            if ($trigger->tagName !== 'a') continue;
+
+            $class_attr = 'dropdown-toggle';
+            $data_toggle_attr = 'dropdown';
+            if ($trigger->hasAttribute('class'))
+            {
+                $class_attr = rtrim($trigger->getAttribute('class')) . ' ' . $class_attr;
+            }
+            $trigger->setAttribute('class', $class_attr);
+            $trigger->setAttribute('data-toggle', $data_toggle_attr);
+            $trigger->nodeValue .= ' <b class="caret"></b>';
+        }
+
+        // li.divider
+        $ul->filter('li')->each(function(Crawler $li, $i)
+        {
+            if (count($li->filter('a')) > 0) return;
+
+            $content = trim($li->text());
+            if (preg_match('{ \A\s*-{3,}\s*\z }xs', $content))
+            {
+                foreach ($li as $element)
+                {
+                    $class_attr = 'divider';
+                    if ($element->hasAttribute('class'))
+                    {
+                        $class_attr = rtrim($element->getAttribute('class')) . ' ' . $class_attr;
+                    }
+                    $element->setAttribute('class', $class_attr);
+                    $element->nodeValue = '';
+                }
+            }
+            return;
+        });
     }
 
-    protected function _addClassNameOfNavbarDropdownMenu($matches)
+    protected function _excludeListItemWithoutLink(Crawler $li, $i)
     {
-    var_dump('matches', $matches);
-        $whole_match = $matches[0];
-        $parent_li_open_tag = $matches[1];
-        $trigger_a_tag = $matches[2];
-        $dropdown_ul_open_tag = $matches[3];
-        $ul_contents_tag = $matches[4];
-
-        $parent_li_open_tag = preg_replace_callback('/<li(?:\s+(.*?))?>/',
-                                                    array($this, '_addClassNameOfNavbarDropdownMenuParentListItem'),
-                                                    $parent_li_open_tag);
-        $trigger_a_tag = preg_replace_callback('/<a(?:\s+(.*?))?>/',
-                                               array($this, '_addAttributesOfNavbarDropdownMenuTrigger'),
-                                               $trigger_a_tag, 1);
-        $trigger_a_tag = preg_replace_callback('{ </a> }xs',
-                                               array($this, '_addCaretOfNavbarDropdownMenuTrigger'),
-                                               $trigger_a_tag);
-        $dropdown_ul_open_tag = preg_replace_callback('/<ul(?:\s+(.*?))?>/',
-                                                      array($this, '_addClassNameOfNavbarDropdownMenuList'),
-                                                      $dropdown_ul_open_tag);
-        $ul_contents_tag = preg_replace_callback('{
-                                                  <li>
-                                     				^[ ]{0,3}	# Leading space
-                                    				([-*_])		# $1: First marker
-                                    				(?>			# Repeated marker group
-                                    					[ ]{0,2}	# Zero, one, or two spaces.
-                                    					\1			# Marker character
-                                    				){2,}		# Group repeated at least twice
-                                    				[ ]*		# Tailing spaces
-                                                 </li>
-                                                  }xs',
-                                                 array($this, '_addClassNameOfNavbarDropdownMenuDivider'),
-                                                 $ul_contents_tag);
-
-        return <<< EOD
-{$parent_li_open_tag}
-  {$trigger_a_tag}
-  {$dropdown_ul_open_tag}
-    {$ul_contents_tag}
-  </ul>
-</li>
-EOD;
-    }
-
-    protected function _addClassNameOfNavbarDropdownMenuParentListItem($matches)
-    {
-        $attrs = isset($matches[1]) ? $matches[1] : '';
-        if (preg_match('/\bclass\s*=\s*(\'|")(.*)?\1/', $attrs, $inner_matches))
+        if (count($li->filter('a')) === 0)
         {
-            $attrs = str_replace($inner_matches[0], '', $attrs);
-            $class_attr = $inner_matches[2] . ' dropdown';
-            $attrs .= 'class="'. e($class_attr) . '"';
+            return false;
         }
-        else
-        {
-            $attrs .= 'class="dropdown"';
-        }
-        return '<li '.$attrs.'>';
-    }
-
-    protected function _addAttributesOfNavbarDropdownMenuTrigger($matches)
-    {
-        $attrs = isset($matches[1]) ? $matches[1] : '';
-        if (preg_match('/\bclass\s*=\s*(\'|")(.*)?\1/', $attrs, $inner_matches))
-        {
-            $attrs = str_replace($inner_matches[0], '', $attrs);
-            $class_attr = $inner_matches[2] . ' dropdown-toggle';
-            $attrs .= ' class="'. e($class_attr) . '"';
-        }
-        else
-        {
-            $attrs .= ' class="dropdown-toggle"';
-        }
-
-        if ( ! preg_match('/\bdata-toggle\s*=\s*(\'|")dropdown\1/', $attrs, $inner_matches))
-        {
-            $attrs .= ' data-toggle="dropdown"';
-        }
-
-        return '<a '.$attrs.'>';
-    }
-
-    protected function _addCaretOfNavbarDropdownMenuTrigger($matches)
-    {
-        return ' <b class="caret"></b></a>';
-    }
-
-    protected function _addClassNameOfNavbarDropdownMenuList($matches)
-    {
-        $attrs = isset($matches[1]) ? $matches[1] : '';
-        if (preg_match('/\bclass\s*=\s*(\'|")(.*)?\1/', $attrs, $inner_matches))
-        {
-            $attrs = str_replace($inner_matches[0], '', $attrs);
-            $class_attr = $inner_matches[2] . ' dropdown-menu';
-            $attrs .= 'class="'. e($class_attr) . '"';
-        }
-        else
-        {
-            $attrs .= 'class="dropdown-menu"';
-        }
-        return '<ul '.$attrs.'>';        
-    }
-
-    protected function _addClassNameOfNavbarDropdownMenuDivider($matches)
-    {
-        return '<li class="divider"></li>';
-    }
-
-    protected function _excludeListItemWithoutLink($matches)
-    {
-        $li_content = $matches[1];
-        if ( ! preg_match('{ <a.*?href.*?</a> }xs', $li_content))
-        {
-            return '';
-        }
-        return $matches[0];
+        return $li;
     }
 
     protected function contentParagraphParser()
     {
-        $this->contentBody = preg_replace_callback(
-            '{
-                <p>(.*)</p>
-            }xs', function($matches)
+        $crawler = new Crawler($this->contentBody);
+        $paragraphs = $crawler->filter('p');
+
+        if (count($paragraphs) === 0) return;
+
+        foreach ($paragraphs as $element)
         {
-            return '<p class="navbar-text">' . $matches[1] . '</p>';
-        }, $this->contentBody);
+            $class_attr = 'navbar-text';
+            if ($element->hasAttribute('class'))
+            {
+                $class_attr = rtrim($element->getAttribute()) . ' ' . $class_attr;
+            }
+            $element->setAttribute('class', $class_attr);
+        }
+
+        $html = '';
+        foreach ($paragraphs as $paragraph)
+        {
+            $html .= $paragraph->ownerDocument->saveHTML($paragraph) . "\n";
+        }
+        $this->contentBody = $html;
     }
 
     protected function parseConfigBody()
@@ -354,39 +314,25 @@ EOD;
     {
         $whole_match = $matches[0];
         $brand_title = $this->parser->transform($matches[1]);
-        $brand_title = strip_tags($brand_title, '<img><a>');
 
-        // has link?
-        if ( ! preg_match('/<a\b.*?\bhref\b.*?>.*?<\/a>/', $brand_title, $matches))
-        {
-            return;
-        }
-        // take only first link
-        $brand_title = $matches[0];
+        $crawler = new Crawler($brand_title);
 
-        // has image?
-        if (preg_match('/<img\s*(.*?)>/', $brand_title, $matches))
+        // take top link
+        $brand_link = $crawler->filter('a[href]')->eq(0);
+        $brand_title = '';
+        foreach ($brand_link as $element)
         {
-            $this->hasBrandImage = true;
-        }
-
-        // set navbar-brand class
-        $brand_title = preg_replace_callback('/<a(?:\s+(.*?))?>/', function($matches)
-        {
-            $attrs = $matches[1];
-            if (preg_match('/\bclass\s*=\s*(\'|")(.*)?\1/', $attrs, $inner_matches))
+            $class_attr = 'navbar-brand';
+            if ($element->hasAttribute('class'))
             {
-                $attrs = str_replace($inner_matches[0], '', $attrs);
-                $class_attr = $inner_matches[2] . ' navbar-brand';
-                $attrs .= ' class="'. e($class_attr) . '"';
+                $class_attr = rtrim($element->getAttribute('class')) . ' ' . $class_attr;
             }
-            else
-            {
-                $attrs .= ' class="navbar-brand"';
-            }
-            return '<a ' . $attrs . '>';
-        }, $brand_title);
+            $element->setAttribute('class', $class_attr);
+            $brand_title = $element->ownerDocument->saveHTML($element);
+        }
 
+        $this->hasBrandImage = !!count($brand_link->filter('img'));
+        
         $this->brandTitle = $brand_title;
 
         return '';
@@ -398,15 +344,10 @@ EOD;
             '{
                 (?:\A|\n)
                 ACTION:\s*\n? #config name
-                (?:.*?)
                 (
-                    (?:
-                        <a\b.+?>.*?</a>
-                        (?:.*)
-                    )+
-                ) # $1: buttons
-                (?:.*?)
-                (?:\n|\z)
+                    .*
+                ) # $1: buttons markup
+                (?:\nBRAND:|\z)
             }xs', array($this, '_setActionButtons'), $this->configBody);
     }
 
@@ -414,20 +355,48 @@ EOD;
     {
         $whole_match = $matches[0];
         $html = $this->parser->transform($matches[1]);
-        $links = array();
-        $links_count = preg_match_all('/<a\b.+?>.*?<\/a>/', $html, $matches);
-        if ($links_count > 1)
-        {
-            $this->wrapActionButtons = true;
-        }
-        foreach ($matches[0] as $link)
-        {
-            $links[] = $link;
-        }
-        $links = join("\n", $links);
 
-        // add class name
-        $this->actionButtons = preg_replace_callback('/<a(?:\s+(.*?))?>/', array($this, '_addClassNameOfNavbarButton'), $links);
+        $crawler = new Crawler($html);
+        $links = $crawler->filter('a');
+        $base_class_attr = 'navbar-btn';
+        $wrap_button_group = false;
+        if (count($links) > 1)
+        {
+            $wrap_button_group = true;
+        }
+        else
+        {
+            $base_class_attr .= ' navbar-right';
+        }
+
+        foreach ($links as $element)
+        {
+            $class_attr = $base_class_attr;
+            if ($element->hasAttribute('class'))
+            {
+                $class_attr = rtrim($element->getAttribute('class')) . ' ' . $class_attr;
+            }
+            $element->setAttribute('class', $class_attr);
+        }
+
+        $html = '';
+        if ($wrap_button_group)
+        {
+            $html = '<div class="btn-group navbar-right">';
+            foreach ($links as $element)
+            {
+                $html .= $element->ownerDocument->saveHTML($element) . "\n";
+            }
+            $html .= '</div>';
+            $this->actionButtons = $html;
+        }
+        else
+        {
+            foreach ($links as $element)
+            {
+                $this->actionButtons = $element->ownerDocument->saveHTML($element);
+            }
+        }
 
         return '';
     }

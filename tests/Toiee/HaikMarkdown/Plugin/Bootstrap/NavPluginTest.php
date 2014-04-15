@@ -248,8 +248,10 @@ class NavPluginTest extends PHPUnit_Framework_TestCase {
             'set action buttons' => array(
                 "ACTION:\n" . '<a href="#" class="btn btn-success">Sign Up</a>' . "\n" . '<a href="#" class="btn btn-success">Sign In</a>',
                 'actionButtons',
-                  '<a href="#" class="btn btn-success navbar-btn">Sign Up</a>' . "\n" .
-                  '<a href="#" class="btn btn-success navbar-btn">Sign In</a>',
+                  '<div class="btn-group navbar-right">' . 
+                    '<a href="#" class="btn btn-success navbar-btn">Sign Up</a>' . "\n" .
+                    '<a href="#" class="btn btn-success navbar-btn">Sign In</a>' . "\n" . 
+                  '</div>',
             ),
             'set brand title and image #1' => array(
                 'BRAND: <a href="#"><img src="brand.png" alt="Brand Image"> The Brand</a>',
@@ -272,6 +274,16 @@ class NavPluginTest extends PHPUnit_Framework_TestCase {
                 'ACTION:' . "\n". '<a href="#" class="btn btn-success">Sign Up</a>',
                 'actionButtons',
                 '<a href="#" class="btn btn-success navbar-btn navbar-right">Sign Up</a>',
+            ),
+            'set action buttons and brand title ordered inverse' => array(
+                'ACTION:' . "\n". '<a href="#" class="btn btn-success">Sign Up</a>' . "\n" .
+                                  '<a href="#" class="btn btn-primary">Sign In</a>' . "\n" .
+                'BRAND: <a href="#">The Brand</a>' . "\n",
+                'actionButtons',
+                '<div class="btn-group navbar-right">' .
+                  '<a href="#" class="btn btn-success navbar-btn">Sign Up</a>' . "\n" .
+                  '<a href="#" class="btn btn-primary navbar-btn">Sign In</a>' . "\n" .
+                '</div>',
             ),
             'test invalid: action button and other text' => array(
                 "ACTION:\n" . '<a href="#" class="btn btn-success">Sign Up</a>foo bar buzz',
