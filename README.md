@@ -1,5 +1,6 @@
 haik Markdown
 ==============
+Foo
 
 PHP haik Markdown parser based on PHP Markdown Extra.
 
