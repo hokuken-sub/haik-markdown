@@ -25,7 +25,7 @@ class HaikMarkdown extends MarkdownExtra {
         $this->hardWrap = false;
 
         $this->document_gamut = array_merge($this->document_gamut, array(
-            'doConvertPlugins' => 10,
+            'doConvertPlugins' => 27,
         ));
         $this->block_gamut = array_merge($this->block_gamut, array(
             'doConvertPlugins' => 10,
@@ -54,7 +54,7 @@ class HaikMarkdown extends MarkdownExtra {
     {
         if ($this->running)
         {
-            return $this->runBlockGamut($text);
+            return parent::runBlockGamut($text);
         }
 
         $this->running = true;

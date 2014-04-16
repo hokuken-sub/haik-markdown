@@ -56,4 +56,45 @@ Alert!
         $this->assertTag($expected, $result);
     }
 
+    public function testAvailableReferenceStyleLinkInConvertPlugin()
+    {
+        $markdown = '
+
+[Apple][apple]
+
+::: {#cols}
+
+[Google][google]
+[Yahoo!][yahoo]
+
+:::
+
+[apple]: http://www.apple.com/
+[google]: http://www.google.com/
+[yahoo]: http://www.yahoo.co.jp/ "Yahoo! Japan"
+';
+        $result = $this->parser->transform($markdown);
+
+        // google
+        $expected = [
+            'tag' => 'a',
+            'attributes' => [
+                'href' => 'http://www.google.com/'
+            ],
+            'content' => 'Google',
+        ];
+        $this->assertTag($expected, $result);
+
+        // yahoo
+        $expected = [
+            'tag' => 'a',
+            'attributes' => [
+                'href' => 'http://www.yahoo.co.jp/',
+                'title' => 'Yahoo! Japan'
+            ],
+            'content' => 'Yahoo',
+        ];
+        $this->assertTag($expected, $result);
+    }
+
 }
