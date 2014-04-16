@@ -187,6 +187,15 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                     ),
                 ),
             ),
+            'classname' => array(
+                'params' => array('class=testclass'),
+                'expected' => array(
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'jumbotron testclass',
+                    ),
+                ),
+            ),
             'all_param' => array(
                 'params' => array('center','middle','height=300px'),
                 'expected' => array(
