@@ -27,13 +27,51 @@ These syntaxes are **inline** and **convert** .
 
 ### Inline plugin
 
-In below example, See `&deco(red){...};` and `&br;`,
+In below example, See `/[...](deco red)` and `/(br)`,
 they parse to `<span style="color:red">...</span>` and `<br>\n` .
 
-    Lorem ipsum dolor sit amet, &deco(red){consectetur}; adipisicing elit,
+    Lorem ipsum dolor sit amet, /[consectetur](deco red) adipisicing elit,
     sed do eiusmod tempor incididunt ut labore et dolore magna
-    aliqua.&br; Ut enim ad minim veniam, quis nostrud exercitation
+    aliqua./(br) Ut enim ad minim veniam, quis nostrud exercitation
     ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+
+### Convert plugin
+
+#### One line call
+
+The example text are converted to `<button class="btn btn-block">` .
+
+    ::: button :::
+
+
+#### Contains body
+
+In below example, See `::: section` .
+they wrap plugin body by specified tags `<div class="haik-section">...</div>` .
+
+    ::: section
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+    sed do eiusmod tempor incididunt ut labore et dolore magna
+    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+    ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    :::
+
+
+#### Contains parameters
+
+Plugin body can contain YAML parameters up to 3 hyphens line.
+
+    ::: section
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+    sed do eiusmod tempor incididunt ut labore et dolore magna
+    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+    ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    
+    ---
+    bg-color: #fefefe
+    color: #333
+    :::
 
 
 Usage
