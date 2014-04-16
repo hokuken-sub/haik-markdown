@@ -138,6 +138,10 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
                 'markdown' => '/[body](plugin param1,param2)',
                 'expected'   => '<p><span>inline plugin</span></p>',
             ),
+            'plugin_name_and_body_contains_white_space' => array(
+                'markdown' => '/[body] (plugin)',
+                'expected'   => '<p><span>inline plugin</span></p>',
+            ),
         );
     }
 
