@@ -92,6 +92,7 @@ class HaikMarkdown extends MarkdownExtra {
                         (?P<body>.*)  # $1: body
                     \]
                 )?
+                [ ]?
                 (?:
                     \(
                         (?P<id>[a-zA-Z]\w+)   # $2: plugin name
