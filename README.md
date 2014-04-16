@@ -44,7 +44,7 @@ Usage
     // Preparation to use
     use \Toiee\HaikMarkdown;
     $parser = new HaikMarkdown();
-    $plugin_repository = new Toiee\HaikMarkdown\Plugin\Repositories\BasicPluginRepository($parser);
+    $plugin_repository = new Toiee\HaikMarkdown\Plugin\Basic\PluginRepository($parser);
     $parser->registerPluginRepository($plugin_repository);
     
     // Parsing markdown text

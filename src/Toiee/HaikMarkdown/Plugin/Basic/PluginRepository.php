@@ -1,9 +1,10 @@
 <?php
-namespace Toiee\HaikMarkdown\Plugin\Repositories;
+namespace Toiee\HaikMarkdown\Plugin\Basic;
 
 use Michelf\MarkdownInterface;
+use Toiee\HaikMarkdown\Plugin\Repositories\AbstractPluginRepository;
 
-class BasicPluginRepository extends AbstractPluginRepository {
+class PluginRepository extends AbstractPluginRepository {
 
     public function __construct(MarkdownInterface $parser)
     {
