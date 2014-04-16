@@ -46,6 +46,7 @@ class SectionPlugin extends Plugin {
             ),
             'nojumbotron' => false,
             'align'       => '',
+            'class'       => '',
         );
     }
     
@@ -108,6 +109,11 @@ class SectionPlugin extends Plugin {
                     $mts[1] = $mts[1].'px';
                 } 
                 $this->addConfig('section_style.min-height', $mts[1]);
+            }
+            
+            if (preg_match('/^class=(.+)$/', $param, $mts))
+            {
+                $this->addConfig('class', $mts[1]);
             }
         }
     }
@@ -220,6 +226,7 @@ class SectionPlugin extends Plugin {
         $classes = array();
         $classes[] = ($this->config['nojumbotron']) ? '' : 'jumbotron';
         $classes[] = ($this->config['align']) ? $this->config['align'] : '';
+        $classes[] = ($this->config['class']) ? e($this->config['class']) : '';
         $classes = array_filter($classes);
 
         return join(" ", $classes);
