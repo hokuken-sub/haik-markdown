@@ -1,6 +1,6 @@
 <?php
 use Toiee\HaikMarkdown\HaikMarkdown;
-use Toiee\HaikMarkdown\Plugin\Repositories\BasicPluginRepository;
+use Toiee\HaikMarkdown\Plugin\Basic\PluginRepository as BasicPluginRepository;
 use Toiee\HaikMarkdown\Plugin\Bootstrap\PluginRepository as BootstrapPluginRepository;
 
 class HaikMarkdownIntegrationTest extends PHPUnit_Framework_TestCase {
