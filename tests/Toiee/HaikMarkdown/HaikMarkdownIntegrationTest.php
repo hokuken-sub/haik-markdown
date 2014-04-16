@@ -97,4 +97,52 @@ Alert!
         $this->assertTag($expected, $result);
     }
 
+    public function testCallLinkNestedInlinePlugin()
+    {
+        $markdown = '
+/[[link text](http://www.example.com/)](deco b)
+';
+        $result = $this->parser->transform($markdown);
+
+        $expected = [
+            'tag' => 'span',
+            'attributes' => [
+                'class' => 'haik-plugin-deco',
+            ],
+            'child' => [
+                'tag' => 'strong',
+                'child' => [
+                    'tag' => 'a',
+                    'attributes' => [
+                        'href' => 'http://www.example.com/',
+                    ],
+                    'content' => 'link text'
+                ],
+            ]
+        ];
+        $this->assertTag($expected, $result);
+    }
+
+    public function testCallNestedInlinePlugin()
+    {
+        $markdown = '
+/[/(icon smile) Greet!](button http://www.example.com/,primary,large)
+';
+        $result = $this->parser->transform($markdown);
+
+        $expected = [
+            'tag' => 'a',
+            'attributes' => [
+                'class' => 'haik-plugin-button btn btn-primary btn-lg',
+                'href' => 'http://www.example.com/',
+            ],
+            'child' => [
+                'attributes' => [
+                    'class' => 'haik-plugin-icon glyphicon glyphicon-smile',
+                ],
+            ]
+        ];
+        $this->assertTag($expected, $result);        
+    }
+
 }

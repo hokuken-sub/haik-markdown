@@ -91,7 +91,7 @@ class HaikMarkdown extends MarkdownExtra {
                 \/
                 (?:
                     \[
-                        (?P<body>.*)  # $1: body
+                        (?P<body>'.$this->nested_brackets_re.')  # $1: body
                     \]
                 )?
                 [ ]?

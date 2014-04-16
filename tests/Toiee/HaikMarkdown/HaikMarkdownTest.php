@@ -315,6 +315,10 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals($expected, trim($this->parser->transform($markdown)));
 
+        $markdown = '/[text](plugin param)foo/[text](plugin param)';
+        $expected = '<p><span>inline plugin</span>foo<span>inline plugin</span></p>';
+
+        $this->assertEquals($expected, trim($this->parser->transform($markdown)));
     }
 
     public function testCallInlinePluginWithNotExistedName()
