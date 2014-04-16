@@ -146,14 +146,11 @@ class HaikMarkdown extends MarkdownExtra {
 		$text = preg_replace_callback('/
 				(?:\n|\A)
 				(?:
-				    \{\#
-				        (\w+)   # (1) plugin name
-				        (?:
-				            \(
-				            ([^\n]*) # (2) parameter
-				            \)
-				        )?
-				    \}
+				    (:{3,})        # $1: open colons
+				    [ ]*
+				    (?P<id>[a-zA-Z]\w+)  # id: plugin id
+				    [ ]*
+				    \1             # close colons
 				)
 				[ ]* (?= \n ) # Whitespace and newline following marker.
 			/xm',
@@ -162,31 +159,22 @@ class HaikMarkdown extends MarkdownExtra {
         // multi line
 		$text = preg_replace_callback('/
 				(?:\n|\A)
-				# (1) Opening marker
+				# $1: Opening marker
 				(
-					(?::{3,}) # 3 or more colons.
+					:{3,} # 3 or more colons.
 				)
 				[ ]*
-				(?:
-				    \{\#
-				        (\w+)   # (2) plugin name
-				        (?:
-				            \(
-				            ((?:(?!\n).)*) # (3) parameter
-				            \)
-				        )?
-				    \}
-				)
-				[ :]* \n # Whitespace and newline following marker.
-				
-				# (4) Content
-				(
+			    (?P<id>[a-zA-Z]\w+)  # id: plugin id
+				[ ]* \n # Whitespace and newline following marker.
+
+				# body: Content and Params
+				(?P<body>
 					(?>
 						(?!\1 [ ]* \n)	# Not a closing marker.
 						.*\n+
 					)+
 				)
-				
+
 				# Closing marker.
 				\1 [ ]* (?= \n )
 			/xm',
@@ -198,8 +186,8 @@ class HaikMarkdown extends MarkdownExtra {
     protected function _doConvertPlugin_singleline_callback($matches)
     {
         return $this->_doConvertPlugin(
-            $matches[1],
-            isset($matches[2]) ? $matches[2] : '',
+            $matches['id'],
+            '',
             '',
             $matches[0]
         );
@@ -207,17 +195,62 @@ class HaikMarkdown extends MarkdownExtra {
     
     protected function _doConvertPlugin_multiline_callback($matches)
     {
+        $body = $params = '';
+        if (isset($matches['body']) && trim($matches['body']))
+        {
+            list($params, $body) = $this->_doConvertPlugin_splitBody($matches['body']);
+        }
+
         return $this->_doConvertPlugin(
-            $matches[2],
-            isset($matches[3]) ? $matches[3] : '',
-            isset($matches[4]) ? $matches[4] : '',
+            $matches['id'],
+            $params,
+            $body,
             $matches[0]
         );
+    }
+
+    protected function _doConvertPlugin_splitBody($body)
+    {
+        $params = '';
+        $body = preg_replace_callback('/
+                (?:\n|\A)
+                [ ]*
+                -{3,}
+                [ ]*
+                (?:\n)
+                ((?:
+                    (?!
+                        (?:\n)
+                        [ ]*
+                        -{3,}
+                        [ ]*
+                        (?:\n)
+                    ).
+                )*)
+            /xs', function($matches) use (&$params)
+        {
+            $params = $matches[1];
+            return '';
+        }, $body);
+
+        return array($params, $body);
     }
     
     protected function _doConvertPlugin($plugin_id, $params = '', $body = '', $whole_match = '')
     {
-        $params = ($params !== '') ? str_getcsv($params, ',', '"', '\\') : array();
+        if ($params !== '')
+        {
+            try {
+                $params = Yaml::parse($params);
+            }
+            catch (ParseException $e) {
+                $params = str_getcsv($params, ',', '"', '\\');
+            }
+        }
+        else
+        {
+            $params = array();
+        }
         $body = $this->unHash($body);
 
         try {

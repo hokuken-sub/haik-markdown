@@ -19,9 +19,9 @@ class HaikMarkdownIntegrationTest extends PHPUnit_Framework_TestCase {
     public function testCallInlinePluginInConvertPlugin()
     {
         $markdown = '
-::: {#cols}
+::: cols
 
-Time is &icon(time);.
+Time is /(icon time).
 
 :::
 ';
@@ -38,9 +38,9 @@ Time is &icon(time);.
     public function testCallPluginPluginInConvertPlugin()
     {
         $markdown = '
-::: {#cols}
+::: cols
 
-:::: {#alert}
+:::: alert
 Alert!
 ::::
 

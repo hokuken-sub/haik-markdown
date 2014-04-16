@@ -337,19 +337,66 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
     {
         return array(
             'plugin_name_only' => array(
-                'markdown' => '{#plugin}',
+                'markdown' => ':::plugin:::',
                 'expected' => '<div>convert plugin</div>',
             ),
+            'plugin_name_only_wrapped_by_spaces' => array(
+                'markdown' => '::: plugin :::',
+                'expected' => '<div>convert plugin</div>',
+            ),
+            'plugin_name_only_with_many_colons' => array(
+                'markdown' => ':::: plugin ::::',
+                'expected' => '<div>convert plugin</div>',
+            ),
+            'plugin_name_only_with_differ_open_close_colons' => array(
+                'markdown' => '::: plugin ::::',
+                'expected' => '<p>::: plugin ::::</p>',
+            ),
             'plugin_name_and_params' => array(
-                'markdown' => '{#plugin(param1,param2)}',
+                'markdown' =>
+                    ':::plugin'. "\n".
+                    '---'. "\n".
+                    '- param1'. "\n".
+                    '- param2'. "\n".
+                    ':::',
+                'expected' => '<div>convert plugin</div>',
+            ),
+            'plugin_name_and_params_with_space' => array(
+                'markdown' =>
+                    '::: plugin'. "\n".
+                    '---'. "\n".
+                    '- param1'. "\n".
+                    '- param2'. "\n".
+                    ':::',
                 'expected' => '<div>convert plugin</div>',
             ),
             'plugin_name_and_body' => array(
-                'markdown' => ":::{#plugin}\nbody\n:::",
+                'markdown' =>
+                    ":::plugin\n".
+                    "body\n".
+                    ":::",
                 'expected' => '<div>convert plugin</div>',
             ),
             'plugin_name_and_params_and_body' => array(
-                'markdown' => ":::{#plugin(param1,param2)}\nbody\n:::",
+                'markdown' =>
+                    ":::plugin\n".
+                    "body\n".
+                    "---\n".
+                    "- param1\n".
+                    "- param2\n".
+                    ":::",
+                'expected' => '<div>convert plugin</div>',
+            ),
+            'plugin_name_and_params_and_horizontal_lines' => array(
+                'markdown' =>
+                    ":::plugin\n".
+                    "body\n".
+                    "---\n".
+                    "body\n".
+                    "---\n".
+                    "- param1\n".
+                    "- param2\n".
+                    ":::",
                 'expected' => '<div>convert plugin</div>',
             ),
         );        
@@ -372,12 +419,23 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
                  ->andReturn('<div>convert plugin</div>');
             return $mock;
         });
-        $this->pluginMock = $plugin_mock;
+        $plugin_repository = Mockery::mock('Toiee\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface', function($mock) use ($plugin_mock)
+        {
+            $mock->shouldReceive('exists')->andReturn(true);
+            $mock->shouldReceive('load')->andReturn($plugin_mock);
+            return $mock;
+        });
 
-        $markdown = '{#plugin(param1,param2)}';
+        $markdown = ':::plugin(param1,param2)';
+        $markdown = ":::plugin\n".
+                    "---\n".
+                    "- param1\n".
+                    "- param2\n".
+                    ":::";
         $expected = '<div>convert plugin</div>';
 
-        $this->assertEquals($expected, trim($this->parser->transform($markdown)));    }
+        $this->assertEquals($expected, trim($this->parser->transform($markdown)));
+    }
     
     public function testCallConvertPluginWithBody()
     {
@@ -388,13 +446,21 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
                  ->andReturn('<div>convert plugin</div>');
             return $mock;
         });
-        $this->pluginMock = $plugin_mock;
+        $plugin_repository = Mockery::mock('Toiee\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface', function($mock) use ($plugin_mock)
+        {
+            $mock->shouldReceive('exists')->andReturn(true);
+            $mock->shouldReceive('load')->andReturn($plugin_mock);
+            return $mock;
+        });
 
-        $markdown = ":::{#plugin}\nbody\n:::";
+        $markdown = ":::plugin\n".
+                    "body\n".
+                    ":::";
         $expected = '<div>convert plugin</div>';
 
-        $this->assertEquals($expected, trim($this->parser->transform($markdown)));    }
-    
+        $this->assertEquals($expected, trim($this->parser->transform($markdown)));
+    }
+
     public function testCallConvertPluginWithParamsAndBody()
     {
         $plugin_mock = Mockery::mock('Toiee\HaikMarkdown\Plugin\PluginInterface', function($mock)
@@ -404,9 +470,46 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
                  ->andReturn('<div>convert plugin</div>');
             return $mock;
         });
-        $this->pluginMock = $plugin_mock;
+        $plugin_repository = Mockery::mock('Toiee\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface', function($mock) use ($plugin_mock)
+        {
+            $mock->shouldReceive('exists')->andReturn(true);
+            $mock->shouldReceive('load')->andReturn($plugin_mock);
+            return $mock;
+        });
 
-        $markdown = ":::{#plugin(param1,param2)}\nbody\n:::";
+        $markdown = ":::plugin\n".
+                    "body\n".
+                    "---\n".
+                    "- param1\n".
+                    "- param2\n".
+                    ":::";
+        $expected = '<div>convert plugin</div>';
+
+        $this->assertEquals($expected, trim($this->parser->transform($markdown)));
+    }
+
+    public function testCallConvertPluginWithYamlHashParamsAndBody()
+    {
+        $plugin_mock = Mockery::mock('Toiee\HaikMarkdown\Plugin\PluginInterface', function($mock)
+        {
+            $mock->shouldReceive('convert')
+                 ->with(array('param1'=>'foo', 'param2'=>'bar'), "body\n")
+                 ->andReturn('<div>convert plugin</div>');
+            return $mock;
+        });
+        $plugin_repository = Mockery::mock('Toiee\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface', function($mock) use ($plugin_mock)
+        {
+            $mock->shouldReceive('exists')->andReturn(true);
+            $mock->shouldReceive('load')->andReturn($plugin_mock);
+            return $mock;
+        });
+
+        $markdown = ":::plugin\n".
+                    "body\n".
+                    "---\n".
+                    "param1: foo\n".
+                    "param2: bar\n".
+                    ":::";
         $expected = '<div>convert plugin</div>';
 
         $this->assertEquals($expected, trim($this->parser->transform($markdown)));
@@ -421,36 +524,24 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
                  ->andReturn('<div>convert plugin</div>');
             return $mock;
         });
-        $this->pluginMock = $plugin_mock;
-
-        $markdown = '{#plugin("param,1","param2,")}';
-        $expected = '<div>convert plugin</div>';
-
-        $this->assertEquals($expected, trim($this->parser->transform($markdown)));
-    }
-
-    public function testCallConvertPluginWithParamsContainsEscapedDoubleQuotes()
-    {
-        $plugin_mock = Mockery::mock('Toiee\HaikMarkdown\Plugin\PluginInterface', function($mock)
+        $plugin_repository = Mockery::mock('Toiee\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface', function($mock) use ($plugin_mock)
         {
-            $mock->shouldReceive('convert')
-                 ->with(array('param"1"', 'param2'), '')
-                 ->andReturn('<div>convert plugin</div>');
+            $mock->shouldReceive('exists')->andReturn(true);
+            $mock->shouldReceive('load')->andReturn($plugin_mock);
             return $mock;
         });
-        $this->pluginMock = $plugin_mock;
 
-        $markdown = '{#plugin("param""1""","param2")}';
-        $expected = '<div>convert plugin</div>';
-
-        $this->assertEquals($expected, trim($this->parser->transform($markdown)));
-
-        $markdown = '{#plugin(param"1",param2)}';
+        $markdown = ":::plugin\n".
+                    "body\n".
+                    "---\n".
+                    "- \"param,1\"\n".
+                    "- \"param2,\"\n".
+                    ":::";
         $expected = '<div>convert plugin</div>';
 
         $this->assertEquals($expected, trim($this->parser->transform($markdown)));
     }
-    
+
     public function testCallConvertPluginTwice()
     {
         $plugin_mock = Mockery::mock('Toiee\HaikMarkdown\Plugin\PluginInterface', function($mock)
@@ -460,9 +551,15 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
                  ->andReturn('<div>convert plugin</div>');
             return $mock;
         });
-        $this->pluginMock = $plugin_mock;
+        $plugin_repository = Mockery::mock('Toiee\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface', function($mock) use ($plugin_mock)
+        {
+            $mock->shouldReceive('exists')->andReturn(true);
+            $mock->shouldReceive('load')->andReturn($plugin_mock);
+            return $mock;
+        });
 
-        $markdown = "{#plugin}\n{#plugin}";
+        $markdown = ":::plugin:::\n".
+                    ":::plugin:::";
         $expected = "<div>convert plugin</div>\n\n<div>convert plugin</div>";
 
         $this->assertEquals($expected, trim($this->parser->transform($markdown)));
@@ -481,8 +578,10 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
         $parser = new HaikMarkdown();
         $parser->registerPluginRepository($repository);
 
-        $markdown = "::: {#plugin}\nhoge\n:::";
-        $expected = "<p>::: {#plugin}\nhoge\n:::</p>";
+        $markdown = ":::plugin\n".
+                    "hoge\n".
+                    ":::";
+        $expected = "<p>:::plugin\nhoge\n:::</p>";
         
         $this->assertEquals($expected, trim($parser->transform($markdown)));
     }
@@ -490,12 +589,12 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
     public function testCallNestedConvertPlugins()
     {
         $markdown_inner = <<< EOM
-:::: {#blockquote}
+::::blockquote
 blockquote
 ::::
 EOM;
         $markdown_outer = <<< EOM
-::: {#block}
+:::block
 
 {$markdown_inner}
 
