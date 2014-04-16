@@ -74,7 +74,6 @@ Alert!
 [yahoo]: http://www.yahoo.co.jp/ "Yahoo! Japan"
 ';
         $result = $this->parser->transform($markdown);
-        var_dump($result);
 
         // google
         $expected = [
@@ -82,7 +81,7 @@ Alert!
             'attributes' => [
                 'href' => 'http://www.google.com/'
             ],
-            'content' => 'google',
+            'content' => 'Google',
         ];
         $this->assertTag($expected, $result);
 
@@ -93,7 +92,7 @@ Alert!
                 'href' => 'http://www.yahoo.co.jp/',
                 'title' => 'Yahoo! Japan'
             ],
-            'content' => 'yahoo',
+            'content' => 'Yahoo',
         ];
         $this->assertTag($expected, $result);
     }
