@@ -4,6 +4,8 @@ namespace Toiee\HaikMarkdown;
 use Michelf\MarkdownExtra;
 use Toiee\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface;
 use Toiee\HaikMarkdown\Plugin\Repositories\PluginRepository;
+use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Yaml\Exception\ParseException;
 
 class HaikMarkdown extends MarkdownExtra {
 
@@ -84,21 +86,22 @@ class HaikMarkdown extends MarkdownExtra {
     protected function doInlinePlugins($text)
     {
         $text = preg_replace_callback('/
-                &
-                (      # (1) plain
-                  (\w+) # (2) plugin name
-                  (?:
-                    \(
-                      ((?:(?!\)[;{]).)*) # (3) parameter
-                    \)
-                  )?
-                )
+                \/
                 (?:
-                  \{
-                    ((?:(?R)|(?!};).)*) # (4) body
-                  \}
+                    \[
+                        (?P<body>.*)  # $1: body
+                    \]
                 )?
-                ;
+                (?:
+                    \(
+                        (?P<id>[a-zA-Z]\w+)   # $2: plugin name
+                        (?:
+                            [ ]+
+                            (?P<params>[^)]*) # $3: parameter
+                        )?
+                    \)
+                    
+                )
 			/xs', array(&$this, '_doInlinePlugins_callback'), $text);
 
         return $text;
@@ -107,9 +110,25 @@ class HaikMarkdown extends MarkdownExtra {
     protected function _doInlinePlugins_callback($matches)
     {
         $whole_match = $matches[0];
-        $plugin_id = $matches[2];
-        $params = isset($matches[3]) && $matches[3] ? str_getcsv($matches[3], ',', '"', '\\') : array();
-        $body = isset($matches[4]) ? $this->unhash($this->runSpanGamut($matches[4])) : '';
+        $plugin_id = $matches['id'];
+        $params_str = isset($matches['params']) && $matches['params'] ? $matches['params'] : '';
+        $body = isset($matches['body']) ? $this->unhash($this->runSpanGamut($matches['body'])) : '';
+
+        try {
+            if (strpos($params_str, ':') > 0)
+            {
+                $yaml = '{' . $params_str . '}';
+            }
+            else
+            {
+                $yaml = '[' . $params_str . ']';
+            }
+            $params = Yaml::parse($yaml);
+        }
+        catch (ParseException $e)
+        {
+            $params = str_getcsv($params_str, ',', '"', '\\');
+        }
 
         try {
             $result = with($this->loadPlugin($plugin_id))->inline($params, $body);

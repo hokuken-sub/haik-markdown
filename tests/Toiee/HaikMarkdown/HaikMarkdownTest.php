@@ -123,19 +123,19 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
     {
         return array(
             'plugin_name_only' => array(
-                'markdown' => '&plugin;',
+                'markdown' => '/(plugin)',
                 'expected'   => '<p><span>inline plugin</span></p>',
             ),
             'plugin_name_and_params' => array(
-                'markdown' => '&plugin(param1,param2);',
+                'markdown' => '/(plugin param1,param2)',
                 'expected'   => '<p><span>inline plugin</span></p>',
             ),
             'plugin_name_and_body' => array(
-                'markdown' => '&plugin{body};',
+                'markdown' => '/[body](plugin)',
                 'expected'   => '<p><span>inline plugin</span></p>',
             ),
             'plugin_name_and_params_and_body' => array(
-                'markdown' => '&plugin(param1,param2){body};',
+                'markdown' => '/[body](plugin param1,param2)',
                 'expected'   => '<p><span>inline plugin</span></p>',
             ),
         );
@@ -149,7 +149,7 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, trim($this->parser->transform($markdown)));
     }
 
-    public function testCallInlinePluginWithParams()
+    public function testCallInlinePluginWithCSVParams()
     {
         $plugin_mock = Mockery::mock('Toiee\HaikMarkdown\Plugin\PluginInterface', function($mock)
         {
@@ -158,9 +158,38 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
                  ->andReturn('<span>inline plugin</span>');
             return $mock;
         });
-        $this->pluginMock = $plugin_mock;
+        $plugin_repository = Mockery::mock('Toiee\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface', function($mock) use ($plugin_mock)
+        {
+            $mock->shouldReceive('exists')->andReturn(true);
+            $mock->shouldReceive('load')->andReturn($plugin_mock);
+            return $mock;
+        });
+        $this->parser->registerPluginRepository($plugin_repository);
 
-        $markdown = '&plugin(param1,param2);';
+        $markdown = '/(inline param1,param2)';
+        $expected = '<p><span>inline plugin</span></p>';
+
+        $this->assertEquals($expected, trim($this->parser->transform($markdown)));
+    }
+
+    public function testCallInlinePluginWithYAMLHashParams()
+    {
+        $plugin_mock = Mockery::mock('Toiee\HaikMarkdown\Plugin\PluginInterface', function($mock)
+        {
+            $mock->shouldReceive('inline')
+                 ->with(array('param1'=>'foo','param2'=>'bar'), '')
+                 ->andReturn('<span>inline plugin</span>');
+            return $mock;
+        });
+        $plugin_repository = Mockery::mock('Toiee\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface', function($mock) use ($plugin_mock)
+        {
+            $mock->shouldReceive('exists')->andReturn(true);
+            $mock->shouldReceive('load')->andReturn($plugin_mock);
+            return $mock;
+        });
+        $this->parser->registerPluginRepository($plugin_repository);
+
+        $markdown = '/(inline param1: foo, param2: bar)';
         $expected = '<p><span>inline plugin</span></p>';
 
         $this->assertEquals($expected, trim($this->parser->transform($markdown)));
@@ -177,7 +206,7 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
         });
         $this->pluginMock = $plugin_mock;
 
-        $markdown = '&plugin{body};';
+        $markdown = '/[body](plugin)';
         $expected = '<p><span>inline plugin</span></p>';
 
         $this->assertEquals($expected, trim($this->parser->transform($markdown)));
@@ -194,7 +223,7 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
         });
         $this->pluginMock = $plugin_mock;
 
-        $markdown = '&plugin(param1,param2){body};';
+        $markdown = '/[body](plugin param1,param2)';
         $expected = '<p><span>inline plugin</span></p>';
 
         $this->assertEquals($expected, trim($this->parser->transform($markdown)));
@@ -211,7 +240,7 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
         });
         $this->pluginMock = $plugin_mock;
 
-        $markdown = '&plugin("param,1","param2,");';
+        $markdown = '/(plugin "param,1","param2,")';
         $expected = '<p><span>inline plugin</span></p>';
 
         $this->assertEquals($expected, trim($this->parser->transform($markdown)));
@@ -228,12 +257,12 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
         });
         $this->pluginMock = $plugin_mock;
 
-        $markdown = '&plugin("param""1""","param2");';
+        $markdown = '/(plugin "param""1""","param2")';
         $expected = '<p><span>inline plugin</span></p>';
 
         $this->assertEquals($expected, trim($this->parser->transform($markdown)));
 
-        $markdown = '&plugin(param"1",param2);';
+        $markdown = '/(plugin param"1",param2)';
         $expected = '<p><span>inline plugin</span></p>';
 
         $this->assertEquals($expected, trim($this->parser->transform($markdown)));
@@ -261,7 +290,7 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
         });
         $parser = new HaikMarkdown();
         $parser->registerPluginRepository($plugin_repository);
-        $text = trim($parser->transform('&inline{&icon;};'));
+        $text = trim($parser->transform('/[/(icon)](inline)'));
         $expected = '<p>' . $expected . '</p>';
         $this->assertEquals($expected, $text);
     }
@@ -277,7 +306,7 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
         });
         $this->pluginMock = $plugin_mock;
 
-        $markdown = '&plugin(param);foo&plugin(param);';
+        $markdown = '/(plugin param)foo/(plugin param)';
         $expected = '<p><span>inline plugin</span>foo<span>inline plugin</span></p>';
 
         $this->assertEquals($expected, trim($this->parser->transform($markdown)));
@@ -296,8 +325,8 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
         $parser = new HaikMarkdown();
         $parser->registerPluginRepository($repository);
     
-        $markdown = '&plugin;hr&plugin;';
-        $expected = '<p>&plugin;hr&plugin;</p>';
+        $markdown = '/(plugin)hr/(plugin)';
+        $expected = '<p>/(plugin)hr/(plugin)</p>';
         
         $this->assertEquals($expected, trim($parser->transform($markdown)));
     }
