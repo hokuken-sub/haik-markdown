@@ -9,6 +9,8 @@ use Symfony\Component\Yaml\Exception\ParseException;
 
 class HaikMarkdown extends MarkdownExtra {
 
+    const VERSION = '0.4.0';
+
     /** @var boolean is parser running for prevent recursively parse */
     protected $running;
 
