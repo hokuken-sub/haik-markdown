@@ -434,7 +434,8 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
                     ":::";
         $expected = '<div>convert plugin</div>';
 
-        $this->assertEquals($expected, trim($this->parser->transform($markdown)));    }
+        $this->assertEquals($expected, trim($this->parser->transform($markdown)));
+    }
     
     public function testCallConvertPluginWithBody()
     {
@@ -457,8 +458,9 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
                     ":::";
         $expected = '<div>convert plugin</div>';
 
-        $this->assertEquals($expected, trim($this->parser->transform($markdown)));    }
-    
+        $this->assertEquals($expected, trim($this->parser->transform($markdown)));
+    }
+
     public function testCallConvertPluginWithParamsAndBody()
     {
         $plugin_mock = Mockery::mock('Toiee\HaikMarkdown\Plugin\PluginInterface', function($mock)
