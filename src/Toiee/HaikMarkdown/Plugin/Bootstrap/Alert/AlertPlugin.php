@@ -43,24 +43,48 @@ class AlertPlugin extends Plugin {
 
     protected function parseParams()
     {
-        foreach ($this->params as $param)
+        if ($this->isHash($this->params))
         {
-            switch ($param)
+            foreach ($this->params as $key => $value)
             {
-                case 'success':
-                case 'info'   :
-                case 'warning':
-                case 'danger' :
-                    $this->type = $param;
-                    break;
-                case 'close':
-                    $this->dismissable = true;
-                    break;
-                default:
-                    $this->customCssClassName = trim($this->customCssClassName . ' ' . trim($param));
+                switch ($key)
+                {
+                    case 'type':
+                        $value = trim($value);
+                        if (in_array($value, ['success', 'info', 'warning', 'danger']))
+                        {
+                            $this->type = trim($value);
+                        }
+                        break;
+                    case 'close':
+                        $this->dismissable = true;
+                        break;
+                    case 'class':
+                        $this->customCssClassName = trim($this->customCssClassName . ' ' . trim($value));
+                        break;
+                }
             }
         }
-        
+        else
+        {
+            foreach ($this->params as $param)
+            {
+                switch ($param)
+                {
+                    case 'success':
+                    case 'info'   :
+                    case 'warning':
+                    case 'danger' :
+                        $this->type = $param;
+                        break;
+                    case 'close':
+                        $this->dismissable = true;
+                        break;
+                    default:
+                        $this->customCssClassName = trim($this->customCssClassName . ' ' . trim($param));
+                }
+            }
+        }
     }
 
     /**

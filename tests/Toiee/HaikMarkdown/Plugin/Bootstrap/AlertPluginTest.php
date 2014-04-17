@@ -74,6 +74,43 @@ class AlertPluginTest extends PHPUnit_Framework_TestCase {
                     ),
                 ),
             ),
+            // hash params
+            'success' => array(
+                'alert' => array('type' => 'success'),
+                'expected' => array(
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-alert alert alert-success'
+                    ),
+                ),
+            ),
+            'custom_class' => array(
+                'alert' => array('class' => 'class-name'),
+                'expected' => array(
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-alert alert alert-warning class-name'
+                    ),
+                ),
+            ),
+            'with_close' => array(
+                'alert' => array('type' => 'info', 'close'=>null),
+                'expected' => array(
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-alert alert alert-info alert-dismissable'
+                    ),
+                    'child' => array(
+                        'tag' => 'button',
+                        'attributes' => array(
+                            'class' => 'close',
+                            'data-dismiss' => 'alert',
+                            'aria-hidden' => 'true',
+                        ),
+                        'content' => '×'
+                    ),
+                ),
+            ),
         );
     }
 
