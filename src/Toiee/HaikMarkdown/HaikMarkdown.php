@@ -214,27 +214,30 @@ class HaikMarkdown extends MarkdownExtra {
 
     protected function _doConvertPlugin_splitBody($body)
     {
-        $params = '';
-        $body = preg_replace_callback('/
-                (?:\n|\A)
-                [ ]*
-                -{3,}
-                [ ]*
-                (?:\n)
-                ((?:
-                    (?!
-                        (?:\n)
-                        [ ]*
-                        -{3,}
-                        [ ]*
-                        (?:\n)
-                    ).
-                )*)
-            /xs', function($matches) use (&$params)
+        $lines = explode("\n", trim($body));
+        $params_lines = array();
+        $has_params = false;
+
+        while ($line = array_pop($lines))
         {
-            $params = $matches[1];
-            return '';
-        }, $body);
+            if (preg_match('/\A *-{3,} *\z/', $line))
+            {
+                $has_params = true;
+                break;
+            }
+            array_unshift($params_lines, $line);
+        }
+
+        if ($has_params)
+        {
+            $params = join("\n", $params_lines);
+            $body = join("\n", $lines);
+        }
+        else
+        {
+            $params = '';
+            $body = join("\n", $params_lines);
+        }
 
         return array($params, $body);
     }
