@@ -417,7 +417,40 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
     {
         $this->assertEquals($expected, trim($this->parser->transform($markdown)));
     }
-    
+
+    public function testTakeLastHyphenLine()
+    {
+        $plugin_mock = Mockery::mock('Toiee\HaikMarkdown\Plugin\PluginInterface', function($mock)
+        {
+            $mock->shouldReceive('convert')
+                 ->with(array('param1', 'param2'), "body\n---\nbody")
+                 ->andReturn('<div>convert plugin</div>');
+            return $mock;
+        });
+        $plugin_repository = Mockery::mock('Toiee\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface', function($mock) use ($plugin_mock)
+        {
+            $mock->shouldReceive('exists')->andReturn(true);
+            $mock->shouldReceive('load')->andReturn($plugin_mock);
+            return $mock;
+        });
+        $this->parser->registerPluginRepository($plugin_repository);
+
+        $markdown = ":::plugin\n".
+                    "body\n".
+                    "---\n".
+                    "body\n".
+                    "---\n".
+                    "- param1\n".
+                    "- param2\n".
+                    ":::";
+        $result = $this->parser->transform($markdown);
+        $expected = [
+            'tag' => 'div',
+            'content' => 'convert plugin'
+        ];
+        $this->assertTag($expected, $result);
+    }
+
     public function testCallConvertPluginWithParams()
     {
         $plugin_mock = Mockery::mock('Toiee\HaikMarkdown\Plugin\PluginInterface', function($mock)
@@ -592,57 +625,6 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
         $expected = "<p>:::plugin\nhoge\n:::</p>";
         
         $this->assertEquals($expected, trim($parser->transform($markdown)));
-    }
-
-    public function testCallNestedConvertPlugins()
-    {
-        $markdown_inner = <<< EOM
-::::blockquote
-blockquote
-::::
-EOM;
-        $markdown_outer = <<< EOM
-:::block
-
-{$markdown_inner}
-
-:::
-
-EOM;
-        $expected = array(
-            'tag' => 'div',
-            'attributes' => array('class' => 'block'),
-            'child' => array(
-                'tag' => 'blockquote'
-            )
-        );
-        $convert_plugin1 = Mockery::mock('Toiee\HaikMarkdown\Plugin\PluginInterface', function($mock) use ($markdown_inner)
-        {
-            $mock->shouldReceive('convert')->with(array(), "\n".$markdown_inner."\n\n")->andReturn('<div class="block"><blockquote>blockquote</blockquote></div>');
-            return $mock;
-        });
-        $convert_plugin2 = Mockery::mock('Toiee\HaikMarkdown\Plugin\PluginInterface', function($mock)
-        {
-            $mock->shouldReceive('convert')->with(array(), 'blockquote' . "\n")->andReturn('<blockquote>blockquote</blockquote>');
-            return $mock;
-        });
-        $plugin_repository = Mockery::mock('Toiee\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface', function($mock) use ($convert_plugin1, $convert_plugin2)
-        {
-            $mock->shouldReceive('exists')->andReturn(true);
-            $mock->shouldReceive('load')->once()->andReturn($convert_plugin1);
-            $mock->shouldReceive('load')->twice()->andReturn($convert_plugin2);
-            return $mock;
-        });
-        $parser = new HaikMarkdown();
-        $parser->registerPluginRepository($plugin_repository);
-        $text = trim($parser->transform($markdown_outer));
-        $this->assertTag($expected, $text);
-        
-        $expected = array(
-            'tag' => 'blockquote'
-        );
-        $text = $parser->transform($markdown_inner);
-        $this->assertTag($expected, $text);
     }
 
 }

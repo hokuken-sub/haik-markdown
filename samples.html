@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <meta charset="UTF-8">
+ <title>Bootstrap Navbar Samples</title>
+ <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+
+ <style>
+   body {
+       font-family: sans-serif;
+       padding: 0;
+       margin: 0;
+   }
+   section {
+       position: relative;
+       width: 100%;
+       min-height: 320px;
+       border-bottom: 1px solid #ccc;
+   }
+   section:last-child {
+       border-bottom: none;
+   }
+   .sample-label {
+/*
+       position: absolute;
+       left: 0;
+       top: 0;
+*/
+       width: auto;
+       white-space: nowrap;
+       height: 40px;
+       line-height: 40px;
+       background-color: #bfbfbf;
+       color: #fff;
+       box-sizing: border-box;
+       padding: 3px 8px;
+   }
+ </style>
+</head>
+<body>
+
+ <section>
+  <div class="sample-label">
+   空のナビ
+  </div>
+  <div class="sample-body">
+   <div class="navbar navbar-default navbar-static-top" role="navigation">
+   </div>
+  </div>
+ </section>
+
+ <section>
+  <div class="sample-label">
+   ブランド表記といくつかのナビ項目（全て左寄せ）
+  </div>
+  <div class="sample-body">
+   <div class="navbar navbar-default navbar-static-top" role="navigation">
+       <div class="container">
+           <div class="navbar-header">
+               <a href="#" class="navbar-brand">Brand</a>
+           </div>
+           
+           <ul class="nav navbar-nav">
+               <li class="active"><a href="#">Item1</a></li>
+               <li><a href="#">Item2</a></li>
+               <li><a href="#">Item3</a></li>
+           </ul>
+       </div>
+   </div>
+  </div>
+ </section>
+
+ <section>
+  <div class="sample-label">
+   ブランド表記といくつかのナビ項目（ナビ項目は右寄せ）
+  </div>
+  <div class="sample-body">
+   <div class="navbar navbar-default navbar-static-top" role="navigation">
+       <div class="container">
+           <div class="navbar-header">
+               <a href="#" class="navbar-brand">Brand</a>
+           </div>
+           
+           <ul class="nav navbar-nav navbar-right">
+               <li class="active"><a href="#">Item1</a></li>
+               <li><a href="#">Item2</a></li>
+               <li><a href="#">Item3</a></li>
+           </ul>
+       </div>
+   </div>
+  </div>
+ </section>
+
+ <section>
+  <div class="sample-label">
+   ブランド表記といくつかのナビ項目とドロップダウンメニュー
+  </div>
+  <div class="sample-body">
+   <div class="navbar navbar-default navbar-static-top" role="navigation">
+       <div class="container">
+           <div class="navbar-header">
+               <a href="#" class="navbar-brand">Brand</a>
+           </div>
+           
+           <ul class="nav navbar-nav navbar-right">
+               <li class="active"><a href="#">Item1</a></li>
+               <li><a href="#">Item2</a></li>
+               <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Item3 <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="#">Action1</a></li>
+                    <li><a href="#">Action2</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">Action3</a></li>
+                </ul>
+               </li>
+           </ul>
+       </div>
+   </div>
+  </div>
+ </section>
+
+ <section>
+  <div class="sample-label">
+   反転表示のナビ
+  </div>
+  <div class="sample-body">
+   <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+       <div class="container">
+           <div class="navbar-header">
+               <a href="#" class="navbar-brand">Brand</a>
+           </div>
+           
+           <ul class="nav navbar-nav navbar-right">
+               <li class="active"><a href="#">Item1</a></li>
+               <li><a href="#">Item2</a></li>
+               <li><a href="#">Item3</a></li>
+           </ul>
+       </div>
+   </div>
+  </div>
+ </section>
+
+ <section>
+  <div class="sample-label">
+   ブランドの横にテキスト
+  </div>
+  <div class="sample-body">
+   <div class="navbar navbar-default navbar-static-top" role="navigation">
+       <div class="container">
+           <div class="navbar-header">
+               <a href="#" class="navbar-brand">Brand</a>
+               <p class="navbar-text">The Sample Navigation</p>
+           </div>
+           
+           <ul class="nav navbar-nav navbar-right">
+               <li class="active"><a href="#">Item1</a></li>
+               <li><a href="#">Item2</a></li>
+               <li><a href="#">Item3</a></li>
+           </ul>
+       </div>
+   </div>
+  </div>
+ </section>
+
+ <section>
+  <div class="sample-label">
+   右にテキスト
+  </div>
+  <div class="sample-body">
+   <div class="navbar navbar-default navbar-static-top" role="navigation">
+       <div class="container">
+           <div class="navbar-header">
+               <a href="#" class="navbar-brand">Brand</a>
+           </div>
+           
+           <p class="navbar-text navbar-right">Lorem ipsum doler sit amet.</p>
+       </div>
+   </div>
+  </div>
+ </section>
+
+ <section>
+  <div class="sample-label">
+   ボタンアクション
+  </div>
+  <div class="sample-body">
+   <div class="navbar navbar-default navbar-static-top" role="navigation">
+       <div class="container">
+           <div class="navbar-header">
+               <a href="#" class="navbar-brand">Brand</a>
+           </div>
+           
+           <button class="btn btn-success navbar-btn navbar-right">Sign In</button>
+       </div>
+   </div>
+  </div>
+ </section>
+ 
+
+ <section>
+  <div class="sample-label">
+   複数のボタンアクション
+  </div>
+  <div class="sample-body">
+   <div class="navbar navbar-default navbar-static-top" role="navigation">
+       <div class="container">
+           <div class="navbar-header">
+               <a href="#" class="navbar-brand">Brand</a>
+           </div>
+           
+           <div class="btn-group navbar-right">
+               <a href="#" class="btn btn-success navbar-btn">Sign Up</a>
+               <a href="#" class="btn btn-default navbar-btn">Sign In</a>
+           </div>
+       </div>
+   </div>
+  </div>
+ </section>
+
+
+ <section>
+  <div class="sample-label">
+   レスポンシブなナビ
+  </div>
+  <div class="sample-body">
+   <div class="navbar navbar-default navbar-static-top" role="navigation">
+       <div class="container">
+           <div class="navbar-header">
+            <button type="button" data-toggle="collapse" data-target="#sample_nav_responsive" class="navbar-toggle">
+             <span class="sr-only">Toggle Navigation</span>
+             <span class="icon-bar"></span>
+             <span class="icon-bar"></span>
+             <span class="icon-bar"></span>
+            </button>
+               <a href="#" class="navbar-brand">Brand</a>
+           </div>
+           
+           <div class="collapse navbar-collapse" id="sample_nav_responsive">
+           <ul class="nav navbar-nav navbar-right">
+               <li class="active"><a href="#">Item1</a></li>
+               <li><a href="#">Item2</a></li>
+               <li><a href="#">Item3</a></li>
+           </ul>
+           </div>
+       </div>
+   </div>
+  </div>
+ </section>
+
+
+ <section>
+  <div class="sample-label">
+   レスポンシブでドロップダウンメニューを持つナビ
+  </div>
+  <div class="sample-body">
+   <div class="navbar navbar-default navbar-static-top" role="navigation">
+       <div class="container">
+           <div class="navbar-header">
+            <button type="button" data-toggle="collapse" data-target="#sample_nav_responsive_with_dropdown" class="navbar-toggle">
+             <span class="sr-only">Toggle Navigation</span>
+             <span class="icon-bar"></span>
+             <span class="icon-bar"></span>
+             <span class="icon-bar"></span>
+            </button>
+               <a href="#" class="navbar-brand">Brand</a>
+           </div>
+           
+           <div class="collapse navbar-collapse" id="sample_nav_responsive_with_dropdown">
+           <ul class="nav navbar-nav navbar-right">
+               <li class="active"><a href="#">Item1</a></li>
+               <li><a href="#">Item2</a></li>
+               <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Item3 <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="#">Action1</a></li>
+                    <li><a href="#">Action2</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">Action3</a></li>
+                </ul>
+               </li>
+           </ul>
+           </div>
+       </div>
+   </div>
+  </div>
+ </section>
+
+ <section>
+  <div class="sample-label">
+   ブランドが画像
+  </div>
+  <div class="sample-body">
+   <div class="navbar navbar-default navbar-static-top" role="navigation">
+       <div class="container">
+           <div class="navbar-header">
+            <button type="button" data-toggle="collapse" data-target="#sample_nav_brand_image" class="navbar-toggle">
+             <span class="sr-only">Toggle Navigation</span>
+             <span class="icon-bar"></span>
+             <span class="icon-bar"></span>
+             <span class="icon-bar"></span>
+            </button>
+               <a href="#" class="navbar-brand" style="padding:0">
+                   <img src="http://placehold.it/50" alt="brand">
+               </a>
+           </div>
+           
+           <div class="collapse navbar-collapse" id="sample_nav_brand_image">
+           <ul class="nav navbar-nav navbar-right">
+               <li class="active"><a href="#">Item1</a></li>
+               <li><a href="#">Item2</a></li>
+               <li><a href="#">Item3</a></li>
+           </ul>
+           </div>
+       </div>
+   </div>
+  </div>
+ </section>
+
+ 
+ <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+ <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+</body>
+</html>
