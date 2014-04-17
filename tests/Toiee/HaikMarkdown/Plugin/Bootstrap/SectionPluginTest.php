@@ -19,17 +19,23 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
     {
         $plugin =  new SectionPlugin(new HaikMarkdown);
 
-        $result = $plugin->convert();
-        $this->assertTag(array(
-            'tag' => 'style',
-        ),
-        $result);
+        if (Toiee\HaikMarkdown\Plugin\PluginCounter::getInstance()->get('Toiee\HaikMarkdown\Plugin\Bootstrap\Section\SectionPlugin') === 0)
+        {
+            $result = $plugin->convert();
+            $this->assertTag(array(
+                'tag' => 'style',
+            ),
+            $result);
+        }
+        else
+        {
+            $result = $plugin->convert();
+            $this->assertNotTag(array(
+                'tag' => 'style',
+            ),
+            $result);
+        }
 
-        $result = $plugin->convert();
-        $this->assertNotTag(array(
-            'tag' => 'style',
-        ),
-        $result);
     }
 
 
