@@ -179,7 +179,7 @@ class HaikMarkdown extends MarkdownExtra {
 				)
 
 				# Closing marker.
-				\1 [ ]* (?= \n )
+				\1 [ ]* (?= \n|\z )
 			/xm',
 			array(&$this, '_doConvertPlugin_multiline_callback'), $text);
 

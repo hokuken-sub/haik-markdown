@@ -28,7 +28,7 @@ Time is /(icon time).
         $expected = [
             'tag' => 'i',
             'attributes' => [
-                'class' => 'haik-plugin-icon glyphicon glyphicon-time'
+                'class' => 'haik-plugin-icon glyphicon glyphicon-time',
             ],
         ];
         $result = $this->parser->transform($markdown);
