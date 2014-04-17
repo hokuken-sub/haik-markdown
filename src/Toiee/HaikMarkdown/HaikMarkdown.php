@@ -19,7 +19,6 @@ class HaikMarkdown extends MarkdownExtra {
 
     protected $hardWrap;
 
-
     public function __construct()
     {
         $this->running = false;
@@ -215,29 +214,44 @@ class HaikMarkdown extends MarkdownExtra {
     protected function _doConvertPlugin_splitBody($body)
     {
         $lines = explode("\n", trim($body));
-        $params_lines = array();
+        $body_lines = $params_lines = array();
         $has_params = false;
 
-        while ($line = array_pop($lines))
+        $lines = array_reverse($lines);
+        foreach ($lines as $line)
         {
-            if (preg_match('/\A *-{3,} *\z/', $line))
+            if ( ! $has_params)
             {
-                $has_params = true;
-                break;
+                if (preg_match('/\A *-{3,} *\z/', $line))
+                {
+                    $has_params = true;
+                    continue;
+                }
+                // hit internal convert plugin ending and break
+                else if ( ! $has_params && preg_match('/\A:{3,} *\z/', $line))
+                {
+                    break;
+                }
             }
-            array_unshift($params_lines, $line);
+
+            if ($has_params)
+            {
+                array_unshift($body_lines, $line);
+            }
+            else
+            {
+                array_unshift($params_lines, $line);
+            }
         }
 
-        if ($has_params)
+        if ( ! $has_params)
         {
-            $params = join("\n", $params_lines);
-            $body = join("\n", $lines);
+            $params_lines = array();
+            $body_lines = array_reverse($lines);
         }
-        else
-        {
-            $params = '';
-            $body = join("\n", $params_lines);
-        }
+
+        $params = join("\n", $params_lines);
+        $body = join("\n", $body_lines);
 
         return array($params, $body);
     }

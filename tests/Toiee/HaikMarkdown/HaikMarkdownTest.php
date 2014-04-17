@@ -627,4 +627,44 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, trim($parser->transform($markdown)));
     }
 
+    public function testCatchYamlListInConvertPlugin()
+    {
+        $plugin_mock = Mockery::mock('Toiee\HaikMarkdown\Plugin\PluginInterface', function($mock)
+        {
+            $mock->shouldReceive('convert')
+                 ->with(array('foo', 'bar', 'buzz'), '')
+                 ->andReturn('<div>convert plugin</div>');
+            return $mock;
+        });
+        $plugin_repository = Mockery::mock('Toiee\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface', function($mock) use ($plugin_mock)
+        {
+            $mock->shouldReceive('exists')->andReturn(true);
+            $mock->shouldReceive('load')->andReturn($plugin_mock);
+            return $mock;
+        });
+        $parser = new HaikMarkdown();
+        $parser->registerPluginRepository($plugin_repository);
+
+        $markdown = '
+# Heading
+
+::: plugin
+
+---
+
+- foo
+- bar
+- buzz
+
+:::
+
+
+';
+        $result = $parser->transform($markdown);
+        $not_expected = [
+            'tag' => 'ul'
+        ];
+        $this->assertNotTag($not_expected, $result);
+    }
+
 }
