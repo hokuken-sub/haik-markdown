@@ -53,4 +53,15 @@ abstract class Plugin extends BasePlugin {
         // @codeCoverageIgnoreEnd
     }
 
+    /**
+     * check hash array or not
+     *
+     * @param array $arr i.e plugin params
+     * @return boorean when param is hash return true
+     */
+    public function isHash($arr)
+    {
+        return array_values($arr) !== $arr;
+    }
+
 }
