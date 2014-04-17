@@ -145,4 +145,25 @@ Alert!
         $this->assertTag($expected, $result);        
     }
 
+    public function testCallNestedConvertPlugin()
+    {
+        $markdown = '
+:::section
+
+:::: cols
+cols
+---
+- 6
+::::
+section
+:::
+';
+        $result = $this->parser->transform($markdown);
+        $expected = [
+            'tag' => 'p',
+            'content' => 'section'
+        ];
+        $this->assertTag($expected, $result);
+    }
+
 }
