@@ -174,7 +174,7 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                 ),
             ),
             'height_number' => array(
-                'params' => array('height=500'),
+                'params' => array(array('height'=>'500')),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
@@ -184,7 +184,7 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                 ),
             ),
             'height_px' => array(
-                'params' => array('height=400px'),
+                'params' => array(array('height'=>'400px')),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
@@ -194,7 +194,7 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                 ),
             ),
             'classname' => array(
-                'params' => array('class=testclass'),
+                'params' => array(array('class'=>'testclass')),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
@@ -202,13 +202,43 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                     ),
                 ),
             ),
+            'bg-color' => array(
+                'params' => array(array('bg-color'=>'#ddd')),
+                'expected' => array(
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'jumbotron',
+                        'style' => 'background-color:#ddd',
+                    ),
+                ),
+            ),
+            'bg-image' => array(
+                'params' => array(array('bg-image'=>'image/test.png')),
+                'expected' => array(
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'jumbotron',
+                        'style' => 'background-image:url(image/test.png)',
+                    ),
+                ),
+            ),
+            'color' => array(
+                'params' => array(array('color'=>'#333')),
+                'expected' => array(
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'jumbotron',
+                        'style' => 'color:#333',
+                    ),
+                ),
+            ),
             'all_param' => array(
-                'params' => array('center','middle','height=300px'),
+                'params' => array('center','middle',array('height'=>'300px'),array('color'=>'#555'),array('bg-image'=>'image/hoge.png'),array('bg-color'=>'#ddd')),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
                         'class' => 'jumbotron text-center',
-                        'style' => 'min-height:300px'
+                        'style' => 'color:#555;background-image:url(image/hoge.png);background-color:#ddd;min-height:300px'
                     ),
                     'child' => array(
                         'tag' => 'div',
@@ -219,32 +249,46 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                     ),
                 ),
             ),
-        );
-    }
 
-    /**
-     * @dataProvider configProvider
-     */
-    public function testConfigHtml($body, $expected)
-    {
-        $this->plugin = new SectionPlugin($this->parser);
-        $result = $this->plugin->convert(array(), $body);
-        $this->assertTag($expected, $result);
-    }
-
-    public function configProvider()
-    {
-        $delim = "****";
-        return array(
-            'no_config' => array(
-                'body' => "\ntest\n\n".$delim."\n",
+            'hash_align_center' => array(
+                'params' => array('center'=> null),
                 'expected' => array(
-                    'ancestor' => array(
-                        'tag' => 'div',
-                        'attributes' => array(
-                            'class' => 'haik-plugin-section'
-                        ),
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'jumbotron text-center',
                     ),
+                ),
+            ),
+            'hash_align_left' => array(
+                'params' => array('left'=> null),
+                'expected' => array(
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'jumbotron text-left',
+                    ),
+                ),
+            ),
+            'hash_align_right' => array(
+                'params' => array('right'=> null),
+                'expected' => array(
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'jumbotron text-right',
+                    ),
+                ),
+            ),
+            'hash_nojumbotron' => array(
+                'params' => array('center'=> null, 'nojumbotron'=> null),
+                'expected' => array(
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'text-center',
+                    ),
+                ),
+            ),
+            'hash_valign_top' => array(
+                'params' => array('top'=> null),
+                'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
                         'class' => 'jumbotron',
@@ -253,12 +297,74 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                         'tag' => 'div',
                         'attributes' => array(
                             'class' => 'container',
+                            'style' => 'vertical-align:top',
                         )
                     ),
                 ),
             ),
-            'bg_color' => array(
-                'body' => "\ntest\n\n".$delim."\n"."BG_COLOR: #ddd\n\n",
+            'hash_valign_middle' => array(
+                'params' => array('middle'=> null),
+                'expected' => array(
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'jumbotron',
+                    ),
+                    'child' => array(
+                        'tag' => 'div',
+                        'attributes' => array(
+                            'class' => 'container',
+                            'style' => 'vertical-align:middle',
+                        )
+                    ),
+                ),
+            ),
+            'hash_valign_bottom' => array(
+                'params' => array('bottom'=> null),
+                'expected' => array(
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'jumbotron',
+                    ),
+                    'child' => array(
+                        'tag' => 'div',
+                        'attributes' => array(
+                            'class' => 'container',
+                            'style' => 'vertical-align:bottom',
+                        )
+                    ),
+                ),
+            ),
+            'hash_height_number' => array(
+                'params' => array('height'=>'500'),
+                'expected' => array(
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'jumbotron',
+                        'style' => 'min-height:500px'
+                    ),
+                ),
+            ),
+            'hash_height_px' => array(
+                'params' => array('height'=>'400px'),
+                'expected' => array(
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'jumbotron',
+                        'style' => 'min-height:400px'
+                    ),
+                ),
+            ),
+            'hash_classname' => array(
+                'params' => array('class'=>'testclass'),
+                'expected' => array(
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'jumbotron testclass',
+                    ),
+                ),
+            ),
+            'hash_bg-color' => array(
+                'params' => array('bg-color'=>'#ddd'),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
@@ -267,8 +373,8 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                     ),
                 ),
             ),
-            'bg_image' => array(
-                'body' => "\ntest\n\n".$delim."\n"."BG_IMAGE: image/test.png\n\n",
+            'hash_bg-image' => array(
+                'params' => array('bg-image'=>'image/test.png'),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
@@ -277,8 +383,8 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                     ),
                 ),
             ),
-            'color' => array(
-                'body' => "\ntest\n\n".$delim."\n"."COLOR: #333\n\n",
+            'hash_color' => array(
+                'params' => array('color'=>'#333'),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
@@ -287,104 +393,24 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                     ),
                 ),
             ),
-            'allconfig' => array(
-                'body' => "\ntest\n\n".$delim."\n"."BG_COLOR: #eee\n\n"."BG_IMAGE: image/img.png\n\n"."COLOR: #444\n\n",
+            'hash_all_param' => array(
+                'params' => array('center'=>null,'middle'=>null,'height'=>'300px','color'=>'#555','bg-image'=>'image/hoge.png','bg-color'=>'#ddd'),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
-                        'class' => 'jumbotron',
-                        'style' => 'color:#444;background-image:url(image/img.png);background-color:#eee',
-                    ),
-                ),
-            ),
-        );
-    }
-
-    /**
-     * @dataProvider bodyProvider
-     */
-    public function testBodyHtml($body, $expected)
-    {
-        $this->plugin = new SectionPlugin($this->parser);
-        $result = $this->plugin->convert(array(), $body);
-        $this->assertTag($expected, $result);
-    }
-
-    public function bodyProvider()
-    {
-        $config_delim = "\n****\n";
-        $col_delim = "\n====\n";
-        return array(
-            'col' => array(
-                'body' => "\ntest\n".$col_delim."\ntest\n".$config_delim."\n",
-                'expected' => array(
-                    'tag' => 'div',
-                    'attributes' => array(
-                        'class' => 'container',
+                        'class' => 'jumbotron text-center',
+                        'style' => 'color:#555;background-image:url(image/hoge.png);background-color:#ddd;min-height:300px'
                     ),
                     'child' => array(
                         'tag' => 'div',
                         'attributes' => array(
-                            'class' => 'row'
-                        ),
-                    ),
-                    'descendant' => array(
-                        'tag' => 'div',
-                        'attributes' => array(
-                            'class' => 'row',
-                        ),
-                        'children' => array(
-                            'only' => array(
-                                'tag' => 'div',
-                                'attributes' => array(
-                                    'class' => 'col-sm-6',
-                                ),
-                            ),
-                            'count' => 2,
-                        ),
+                            'class' => 'container',
+                            'style' => 'vertical-align:middle',
+                        )
                     ),
                 ),
             ),
-        );
-    }
 
-    /**
-     * @dataProvider mixProvider
-     */
-    public function testMixedHtml($params, $body, $expected)
-    {
-        $plugin = new SectionPlugin(new HaikMarkdown);
-        $result = $plugin->convert($params, $body);
-        $this->assertTag($expected, $result);
-    }
-
-    public function mixProvider()
-    {
-        $config_delim = "\n****\n";
-        $col_delim = "\n====\n";
-        return array(
-            'test' => array(
-                'params' => array('middle', 'center'),
-                'body'   => "\ntest1\n\n".$config_delim."\n"."BG_COLOR: rgba(255,255,255,0);\n\n"."BG_IMAGE: image/img2.png\n\n"."COLOR: #333\n\n",
-                'expected' => array(
-                    'ancestor' => array(
-                        'tag' => 'div',
-                        'attributes' => array(
-                            'class' => 'jumbotron text-center',
-                            'style' => 'color:#333;background-image:url(image/img2.png);background-color:rgba(255,255,255,0)'
-                        ),
-                    ),
-                    'tag' => 'div',
-                    'attributes' => array(
-                        'class' => 'container',
-                        'style' => 'vertical-align:middle',
-                    ),
-                    'descendant' => array(
-                        'tag' => 'p',
-                        'content' => 'test1',
-                    ),
-                ),
-            ),
         );
     }
 
