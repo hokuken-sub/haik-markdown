@@ -5,6 +5,13 @@ use Toiee\HaikMarkdown\Plugin\Plugin;
 
 class DecoPlugin extends Plugin {
 
+    protected $size = null;
+    protected $strong = false;
+    protected $underline = false;
+    protected $italic = false;
+    protected $color = null;
+    protected $backgroundColor = null;
+
     /**
      * inline call via HaikMarkdown &plugin-name(...){...};
      * @params array $params
@@ -14,60 +21,126 @@ class DecoPlugin extends Plugin {
      */
     function inline($params = array(), $body = '')
     {
-        $strong = false;
+        $this->params = $params;
+        $this->body = $body;
+        $this->parseParams();
+
+        $style_attribute = $this->createStyleAttribute();
+
+        if ($this->strong)
+        {
+            $body = '<strong>'. $body .'</strong>';
+        }
+
+        return '<span class="haik-plugin-deco" style="'.e($style_attribute).'">'.$body.'</span>';
+    }
+
+    protected function parseParams()
+    {
+        if ($this->isHash($this->params))
+        {
+            $this->parseHashParams();
+        }
+        else
+        {
+            $this->parseArrayParams();
+        }
+    }
+
+    protected function parseArrayParams()
+    {
+        $color = array();
         $ccnt = 0;
-        foreach ($params as $v)
+        foreach ($this->params as $value)
         {
-    		if( preg_match('/^\d+$/', $v) )
-    		{
-    			$size = $v.'px';
-    		}
-    		else if (preg_match('/^(\d|\.)/', $v))
-    		{
-    			$size = $v;
-    		}
-    		else if (preg_match('/small|medium|large/', $v))
-    		{
-    			$size = $v;
-    		}
-    		else if ($v=='bold' || $v=='b' ){
-    			$strong = true;
-    		}
-    		else if ($v=='underline' || $v=='u')
-    		{
-    			$underline = 'text-decoration:underline;';
-    		}
-    		else if ($v=='italic' || $v=='i')
-    		{
-    			$italic = 'font-style:italic;';
-    		}
-    		else if (preg_match('/^(#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z-]+)$/i', $v))
-    		{
-    			$color[$ccnt] = $v;
-    			$ccnt++;
-    		}
-    		else if($v==''){
-    			$color[$ccnt] = 'inherit';
-    			$ccnt++;
-    		}
+            $value = trim($value);
+            if( preg_match('/^\d+$/', $value) )
+            {
+                $this->size = $value.'px';
+            }
+            else if (preg_match('/^(\d|\.)/', $value))
+            {
+                $this->size = $value;
+            }
+            else if (preg_match('/small|medium|large/', $value))
+            {
+                $this->size = $value;
+            }
+            else if ($value=='bold' || $value=='b' )
+            {
+                $this->strong = true;
+            }
+            else if ($value=='underline' || $value=='u')
+            {
+                $this->underline = 'text-decoration:underline;';
+            }
+            else if ($value=='italic' || $value=='i')
+            {
+                $this->italic = 'font-style:italic;';
+            }
+            else if (preg_match('/^(#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z-]+)$/i', $value))
+            {
+                $color[$ccnt] = $value;
+                $ccnt++;
+            }
+            else if ($value === '')
+            {
+                $color[$ccnt] = 'inherit';
+                $ccnt++;
+            }
         }
-        
-        $style = array();        
-        if (isset($size)) $style[] = "font-size:{$size};";
-        if (isset($color[0]) && $color[0]!='') $style[] = "color:{$color[0]};";
-        if (isset($color[1]) && $color[1]!='') $style[] = "background-color:{$color[1]};";
-        if (isset($underline)) $style[] = $underline;
-        if (isset($italic)) $style[] = $italic;
-        $style = join('', $style);
-        $style = trim($style, " \t\n\r\0\x0B;");
-        if ($style != '') $style = ' style="'.$style.'"';
-        
-        if ($strong)
+
+        if (isset($color[0]) && $color[0]!='') $this->color = $color[0];
+        if (isset($color[1]) && $color[1]!='') $this->backgroundColor = $color[1];
+
+    }
+
+    protected function parseHashParams()
+    {
+        foreach ($this->params as $key => $value)
         {
-            $body = '<strong>'.$body.'</strong>';
+            $value = trim($value);
+            switch ($key)
+            {
+                case 'size':
+                    $this->size = is_numeric($value) ? "{$value}px" : $value;
+                    break;
+                case 'b':
+                case 'bold':
+                case 'strong':
+                    $this->strong = true;
+                    break;
+                case 'i':
+                case 'italic':
+                    $this->italic = true;
+                    break;
+                case 'u':
+                case 'underline':
+                    $this->underline = true;
+                    break;
+                case 'color':
+                    $this->color = $value;
+                    break;
+                case 'bg-color':
+                case 'background-color':
+                    $this->backgroundColor = $value;
+                    break;
+            }
         }
-	
-        return '<span class="haik-plugin-deco"'.$style.'>'.$body.'</span>';
+    }
+
+    protected function createStyleAttribute()
+    {
+        $props = array();
+        if ($this->size) $props['font-size'] = $this->size;
+        if ($this->color) $props['color'] = $this->color;
+        if ($this->backgroundColor) $props['background-color'] = $this->backgroundColor;
+        if ($this->underline) $props['text-decoration'] = 'underline';
+        if ($this->italic) $props['font-style'] = 'italic';
+        return join(';', array_map(function($key, $value)
+        {
+            return $key . ':' . $value;
+        }, array_keys($props), array_values($props)));
     }
 
 }
