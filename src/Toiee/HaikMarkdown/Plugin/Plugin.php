@@ -56,4 +56,15 @@ abstract class Plugin implements PluginInterface {
         throw new \RuntimeException('not implemented');
     }
 
+    /**
+     * check hash array or not
+     *
+     * @param array $arr i.e plugin params
+     * @return boorean when param is hash return true
+     */
+    public function isHash($arr)
+    {
+        return array_values($arr) !== $arr;
+    }
+
 }
