@@ -75,7 +75,7 @@ class AlertPluginTest extends PHPUnit_Framework_TestCase {
                 ),
             ),
             // hash params
-            'success' => array(
+            '#success' => array(
                 'alert' => array('type' => 'success'),
                 'expected' => array(
                     'tag' => 'div',
@@ -84,7 +84,7 @@ class AlertPluginTest extends PHPUnit_Framework_TestCase {
                     ),
                 ),
             ),
-            'custom_class' => array(
+            '#custom_class' => array(
                 'alert' => array('class' => 'class-name'),
                 'expected' => array(
                     'tag' => 'div',
@@ -93,7 +93,7 @@ class AlertPluginTest extends PHPUnit_Framework_TestCase {
                     ),
                 ),
             ),
-            'with_close' => array(
+            '#with_close' => array(
                 'alert' => array('type' => 'info', 'close'=>null),
                 'expected' => array(
                     'tag' => 'div',
