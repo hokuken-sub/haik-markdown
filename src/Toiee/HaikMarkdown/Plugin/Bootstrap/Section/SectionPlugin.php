@@ -79,41 +79,60 @@ class SectionPlugin extends Plugin {
     {
         foreach ($this->params as $param)
         {
-            switch($param)
+            if (is_array($param))
             {
-                // align
-                case 'left':
-                case 'right':
-                case 'center':
-                    $this->addConfig('align', "text-{$param}");
-                    break;
-                // jumbotron
-                case 'nojumbotron':
-                case 'nojumbo':
-                case 'no-jumbotron':
-                case 'no-jumbo':
-                    $this->addConfig('nojumbotron', true);
-                    break;
-                // vertical align
-                case 'top':
-                case 'middle':
-                case 'bottom':
-                    $this->addConfig('container_style.vertical-align', $param);
-                    break;
-            }
-            
-            if (preg_match('/^height=(.+)$/', $param, $mts))
-            {
-                if (is_numeric($mts[1]))
+                foreach ($param as $key => $value)
                 {
-                    $mts[1] = $mts[1].'px';
-                } 
-                $this->addConfig('section_style.min-height', $mts[1]);
+                    switch($key)
+                    {
+                        case 'height':
+                            if (is_numeric($param['height']))
+                            {
+                                $value = $value.'px';
+                            } 
+                            $this->addConfig('section_style.min-height', $value);
+                            break;
+
+                        case 'class':
+                            $this->addConfig('class', $value);
+                            break;
+
+                        case 'bg_image':
+                        case 'bg_color':
+                            $name = str_replace('bg', 'background', $key);
+                            $this->addConfig('section_style.' . $name, $value);
+                            break;
+
+                        case 'color':
+                            $this->addConfig('section_style.color', $value);
+                            break;
+                    }
+                }
             }
-            
-            if (preg_match('/^class=(.+)$/', $param, $mts))
+            else
             {
-                $this->addConfig('class', $mts[1]);
+                switch($param)
+                {
+                    // align
+                    case 'left':
+                    case 'right':
+                    case 'center':
+                        $this->addConfig('align', "text-{$param}");
+                        break;
+                    // jumbotron
+                    case 'nojumbotron':
+                    case 'nojumbo':
+                    case 'no-jumbotron':
+                    case 'no-jumbo':
+                        $this->addConfig('nojumbotron', true);
+                        break;
+                    // vertical align
+                    case 'top':
+                    case 'middle':
+                    case 'bottom':
+                        $this->addConfig('container_style.vertical-align', $param);
+                        break;
+                }
             }
         }
     }
@@ -123,7 +142,7 @@ class SectionPlugin extends Plugin {
      */
     protected function parseBody()
     {
-        list($body, $config) = array_pad(explode(self::CONFIG_DELIMITER, $this->body), 2, '');
+        $body = $this->body;
 
         $cols = explode(self::COL_DELIMITER, $body);
         $columns = array();
@@ -146,25 +165,6 @@ class SectionPlugin extends Plugin {
         }
         
         // !TODO swap play icon
-        
-        $this->setConfig($config);
-    }
-    
-    /**
-     * set config data
-     * @params string $config config data
-     */
-    protected function setConfig($config)
-    {
-        foreach (self::$CONFIG_STYLE as $key => $style)
-        {
-            $config = preg_replace_callback('{ (?:\A|\n)' . $key . ':(.+)(?:\z|\n) }xm', function($mts) use ($config , $style)
-        		{
-                $value = $mts[1];
-                $this->addConfig("section_style.{$style}", $value);
-                return "\n";
-            }, $config);
-        }
     }
     
     /**
@@ -210,7 +210,7 @@ class SectionPlugin extends Plugin {
         {
             if ($val !== '')
             {
-              $val = rtrim($val, ';');
+              $val = e(rtrim($val, ';'));
               $styles[] = "{$key}:{$val}";
             }
         }
