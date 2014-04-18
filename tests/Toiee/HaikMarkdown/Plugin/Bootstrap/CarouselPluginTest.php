@@ -57,9 +57,21 @@ class CarouselPluginTest extends PHPUnit_Framework_TestCase {
         $this->assertAttributeEquals($expected, 'options', $this->plugin);
     }
 
-    public function testSetOptionsWithNoButtonOption()
+    public function noButtonOptionProvider()
     {
-        $params = array('nobutton');
+        return [
+            [['nobutton']],
+            [['buttons' => 'disabled']],
+            [['buttons' => 'none']],
+            [['buttons' => false]],
+        ];
+    }
+
+    /**
+     * @dataProvider noButtonOptionProvider
+     */
+    public function testSetOptionsWithNoButtonOption($params)
+    {
         $body = 'Body' . "\n"
               . '====' . "\n"
               . 'Body';
@@ -72,9 +84,21 @@ class CarouselPluginTest extends PHPUnit_Framework_TestCase {
         $this->assertAttributeEquals($expected, 'options', $this->plugin);
     }
 
-    public function testSetOptionsWithNoIndicatorOption()
+    public function noIndicatorOptionProvider()
     {
-        $params = array('noindicator');
+        return [
+            [['noindicator']],
+            [['indicator' => 'disabled']],
+            [['indicator' => 'none']],
+            [['indicator' => false]]
+        ];
+    }
+
+    /**
+     * @dataProvider noIndicatorOptionProvider
+     */
+    public function testSetOptionsWithNoIndicatorOption($params)
+    {
         $body = 'Body' . "\n"
               . '====' . "\n"
               . 'Body';
@@ -87,9 +111,24 @@ class CarouselPluginTest extends PHPUnit_Framework_TestCase {
         $this->assertAttributeEquals($expected, 'options', $this->plugin);
     }
 
-    public function testSetOptionsWithNoControlsOption()
+    public function noControlsOptionProvider()
     {
-        $params = array('noslidebutton');
+        return [
+            [['noslidebutton']],
+            [['slidebuttons' => 'disabled']],
+            [['slidebuttons' => 'none']],
+            [['slidebuttons' => false]],
+            [['controls' => 'disabled']],
+            [['controls' => 'none']],
+            [['controls' => false]],
+        ];
+    }
+
+    /**
+     * @dataProvider noControlsOptionProvider
+     */
+    public function testSetOptionsWithNoControlsOption($params)
+    {
         $body = 'Body' . "\n"
               . '====' . "\n"
               . 'Body';
@@ -101,6 +140,117 @@ class CarouselPluginTest extends PHPUnit_Framework_TestCase {
 
         $this->assertAttributeEquals($expected, 'options', $this->plugin);
     }
+
+    public function paramsProvider()
+    {
+        return [
+            'buttons:empty' => [
+                ['buttons' => null],
+                [
+                    'indicatorsSet' => false,
+                    'controlsSet'   => false,
+                ]
+            ],
+            'buttons:enabled' => [
+                ['buttons' => 'enabled'],
+                [
+                    'indicatorsSet' => true,
+                    'controlsSet'   => true,
+                ]
+            ],
+            'buttons:true' => [
+                ['buttons' => true],
+                [
+                    'indicatorsSet' => true,
+                    'controlsSet'   => true,
+                ]
+            ],
+            'indicator:enabled' => [
+                ['indicator' => 'enabled'],
+                [
+                    'indicatorsSet' => true,
+                    'controlsSet'   => true,
+                ]
+            ],
+            'indicator:true' => [
+                ['indicator' => true],
+                [
+                    'indicatorsSet' => true,
+                    'controlsSet'   => true,
+                ]
+            ],
+            'controls:enabled' => [
+                ['controls' => 'enabled'],
+                [
+                    'indicatorsSet' => true,
+                    'controlsSet'   => true,
+                ]
+            ],
+            'controls:true' => [
+                ['controls' => true],
+                [
+                    'indicatorsSet' => true,
+                    'controlsSet'   => true,
+                ]
+            ],
+            'buttons:enabled,indicator:disabled' => [
+                ['buttons' => 'enabled', 'indicator' => 'disabled'],
+                [
+                    'indicatorsSet' => true,
+                    'controlsSet'   => true,
+                ]
+            ],
+            'buttons:enabled,controls:disabled' => [
+                ['buttons' => 'enabled', 'controls' => 'disabled'],
+                [
+                    'indicatorsSet' => true,
+                    'controlsSet'   => true,
+                ]
+            ],
+            'indicator:enabled,controls:disabled' => [
+                ['indicator' => 'enable', 'controls' => 'disabled'],
+                [
+                    'indicatorsSet' => true,
+                    'controlsSet'   => false,
+                ]
+            ],
+            'buttons:disbled,controls:enabled' => [
+                ['buttons' => 'disabled', 'controls' => 'enabled'],
+                [
+                    'indicatorsSet' => false,
+                    'controlsSet'   => false,
+                ]
+            ],
+            'buttons:disabled,indicator:enabled' => [
+                ['buttons' => 'disabled', 'indicator' => 'enabled'],
+                [
+                    'indicatorsSet' => false,
+                    'controlsSet'   => false,
+                ]
+            ],
+            'indicator:enabled,controls:enabled,buttons:disabled' => [
+                ['indicator' => 'enabled', 'controls' => 'enabled', 'buttons' => 'disabled'],
+                [
+                    'indicatorsSet' => false,
+                    'controlsSet'   => false,
+                ]
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider paramsProvider
+     */
+    public function testOptions($params, $expected)
+    {
+        $body = 'Body' . "\n"
+              . '====' . "\n"
+              . 'Body';
+        $this->plugin->convert($params, $body);
+
+        $this->assertAttributeEquals($expected, 'options', $this->plugin);
+    }
+
 
     public function testRenderFullStack()
     {
@@ -547,9 +697,19 @@ class CarouselPluginTest extends PHPUnit_Framework_TestCase {
         $this->assertTag($expected, $result);
     }
 
-    public function testWrapBootstrapRowWithColumnOption()
+    public function columnSpanOptionProvider()
     {
-        $params = array('6');
+        return [
+            [['6']],
+            [['span' => '6']],
+        ];
+    }
+
+    /**
+     * @dataProvider columnSpanOptionProvider
+     */
+    public function testWrapBootstrapRowWithColumnOption($params)
+    {
         $body = '';
         $result = $this->plugin->convert($params, $body);
         $expected = array(
@@ -572,4 +732,5 @@ class CarouselPluginTest extends PHPUnit_Framework_TestCase {
         );
         $this->assertTag($expected, $result);
     }
+
 }
