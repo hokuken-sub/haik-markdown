@@ -251,7 +251,7 @@ class HaikMarkdown extends MarkdownExtra {
         }
 
         $params = join("\n", $params_lines);
-        $body = join("\n", $body_lines);
+        $body = join("\n", $body_lines) . "\n";
 
         return array($params, $body);
     }
@@ -271,6 +271,7 @@ class HaikMarkdown extends MarkdownExtra {
         {
             $params = array();
         }
+
         $body = $this->unHash($body);
 
         try {
