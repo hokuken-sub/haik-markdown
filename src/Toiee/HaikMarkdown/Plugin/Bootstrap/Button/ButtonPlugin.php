@@ -69,6 +69,18 @@ class ButtonPlugin extends Plugin {
 
     public function parseParams()
     {
+        if ($this->isHash($this->params))
+        {
+            $this->parseHashParams();
+        }
+        else
+        {
+            $this->parseArrayParams();
+        }
+    }
+
+    protected function parseArrayParams()
+    {
         $params = $this->params;
         if (count($params) > 0)
         {
@@ -105,6 +117,40 @@ class ButtonPlugin extends Plugin {
                     break;
                 default:
                     $this->customCssClassName = trim($this->customCssClassName . ' ' . trim($param));
+            }
+        }
+    }
+
+    protected function parseHashParams()
+    {
+        foreach($this->params as $key => $value)
+        {
+            $value = trim($value);
+            switch ($key)
+            {
+                case 'url':
+                case 'href':
+                case 'path':
+                    $this->setUrl($value);
+                    break;
+                case 'type':
+                    if (in_array($value, ['primary', 'info', 'success', 'warning', 'danger', 'link', 'default']))
+                    {
+                        $this->type = $value;
+                    }
+                    break;
+                case 'size':
+                    if (in_array($value, ['large', 'lg', 'small', 'sm', 'x-small', 'mini', 'xs']))
+                    {
+                        $this->size = $value;
+                    }
+                    break;
+                case 'block':
+                    $this->block = true;
+                    break;
+                case 'class':
+                    $this->customCssClassName = trim($this->customCssClassName . ' ' . trim($value));
+                    break;
             }
         }        
     }
