@@ -423,7 +423,7 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
         $plugin_mock = Mockery::mock('Toiee\HaikMarkdown\Plugin\PluginInterface', function($mock)
         {
             $mock->shouldReceive('convert')
-                 ->with(array('param1', 'param2'), "body\n---\nbody")
+                 ->with(array('param1', 'param2'), "body\n---\nbody\n")
                  ->andReturn('<div>convert plugin</div>');
             return $mock;
         });
@@ -632,7 +632,7 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
         $plugin_mock = Mockery::mock('Toiee\HaikMarkdown\Plugin\PluginInterface', function($mock)
         {
             $mock->shouldReceive('convert')
-                 ->with(array('foo', 'bar', 'buzz'), '')
+                 ->with(array('foo', 'bar', 'buzz'), "\n")
                  ->andReturn('<div>convert plugin</div>');
             return $mock;
         });
