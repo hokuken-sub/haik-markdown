@@ -166,4 +166,22 @@ section
         $this->assertTag($expected, $result);
     }
 
+    public function testCallNestedHeading()
+    {
+        $markdown = '
+:::section
+
+# Heading
+
+:::
+';
+        $result = $this->parser->transform($markdown);
+        $expected = [
+            'tag' => 'h1',
+            'content' => 'Heading',
+        ];
+        $this->assertTag($expected, $result);
+    }
+
+
 }
