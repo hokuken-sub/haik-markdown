@@ -224,7 +224,7 @@ class SectionPlugin extends Plugin {
     protected function getClassAttribute()
     {
         $classes = array();
-        $classes[] = ($this->config['nojumbotron']) ? '' : 'jumbotron';
+        $classes[] = ($this->config['nojumbotron']) ? '' : 'jumbotron '. self::$PREFIX_CLASS_ATTRIBUTE . '-jumbotron';
         $classes[] = ($this->config['align']) ? $this->config['align'] : '';
         $classes[] = ($this->config['class']) ? e($this->config['class']) : '';
         $classes = array_filter($classes);
@@ -276,7 +276,7 @@ class SectionPlugin extends Plugin {
     width: 100%;
   }
   
-  .##plugin_name## .jumbotron {
+  .##plugin_name##-jumbotron {
     margin-bottom: 0px;
     background-color: #fff;
   }
