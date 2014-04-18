@@ -113,7 +113,85 @@ class ButtonPluginTest extends PHPUnit_Framework_TestCase {
                     ),
                     'content' => 'button',
                 ),
-            ),        
+            ),
+            // hash params
+            '#url' => array(
+                'button' => array('url' => 'http://www.example.com/'),
+                'expected' => array(
+                    'tag' => 'a',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-button btn btn-default',
+                        'href' => 'http://www.example.com/'
+                    ),
+                    'content' => 'button',
+                ),
+            ),
+            '#path' => array(
+                'button' => array('path' => 'http://www.example.com/'),
+                'expected' => array(
+                    'tag' => 'a',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-button btn btn-default',
+                        'href' => 'http://www.example.com/'
+                    ),
+                    'content' => 'button',
+                ),
+            ),
+            '#href' => array(
+                'button' => array('href' => 'http://www.example.com/'),
+                'expected' => array(
+                    'tag' => 'a',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-button btn btn-default',
+                        'href' => 'http://www.example.com/'
+                    ),
+                    'content' => 'button',
+                ),
+            ),
+            '#primary' => array(
+                'button' => array('type' => 'primary'),
+                'expected' => array(
+                    'tag' => 'a',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-button btn btn-primary',
+                        'href' => '#'
+                    ),
+                    'content' => 'button',
+                ),
+            ),
+            '#large' => array(
+                'button' => array('size' => 'large'),
+                'expected' => array(
+                    'tag' => 'a',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-button btn btn-default btn-lg',
+                        'href' => '#'
+                    ),
+                    'content' => 'button',
+                ),
+            ),
+            '#block' => array(
+                'button' => array('block' => null),
+                'expected' => array(
+                    'tag' => 'a',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-button btn btn-default btn-block',
+                        'href' => '#'
+                    ),
+                    'content' => 'button',
+                ),
+            ),
+            '#custom' => array(
+                'button' => array('class' => 'custom'),
+                'expected' => array(
+                    'tag' => 'a',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-button btn btn-default custom',
+                        'href' => '#'
+                    ),
+                    'content' => 'button',
+                ),
+            ),
         );
     }
 
