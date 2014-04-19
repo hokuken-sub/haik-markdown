@@ -147,6 +147,23 @@ class CarouselPlugin extends Plugin {
         if (count($this->items) === 1)
             $this->options['indicatorsSet'] = $this->options['controlsSet'] = false;
 
+        $this->parseParams();
+    }
+
+    protected function parseParams()
+    {
+        if ($this->isHash($this->params))
+        {
+            $this->parseHashParams();
+        }
+        else
+        {
+            $this->parseArrayParams();
+        }
+    }
+
+    protected function parseArrayParams()
+    {
         foreach ($this->params as $i => $param)
         {
             switch ($param)
@@ -164,6 +181,67 @@ class CarouselPlugin extends Plugin {
                     if (Column::isParsable($param))
                     {
                         $this->row = new Row(array(new Column($param)));
+                    }
+            }
+        }
+    }
+
+    protected function parseHashParams()
+    {
+        $set_buttons = null;
+        foreach ($this->params as $key => $value)
+        {
+            $enabled = null;
+            if (is_bool($value))
+            {
+                $enabled = $value;
+            }
+            else if (is_string($value))
+            {
+                $value = trim($value);
+                $enabled = ! in_array($value, ['disabled', 'none']);
+            }
+
+            switch ($key)
+            {
+                case 'buttons':
+                    if ($enabled)
+                    {
+                        $this->options['indicatorsSet'] = $this->options['controlsSet'] = true;
+                    }
+                    else
+                    {
+                        $this->options['indicatorsSet'] = $this->options['controlsSet'] = false;
+                    }
+                    $set_buttons = true;
+                    break;
+                case 'indicator':
+                    if ($set_buttons) break;
+                    if ($enabled)
+                    {
+                        $this->options['indicatorsSet'] =  true;
+                    }
+                    else
+                    {
+                        $this->options['indicatorsSet'] =  false;
+                    }
+                    break;
+                case 'slidebuttons':
+                case 'controls':
+                    if ($set_buttons) break;
+                    if ($enabled)
+                    {
+                        $this->options['controlsSet'] = true;
+                    }
+                    else
+                    {
+                        $this->options['controlsSet'] = false;
+                    }
+                    break;
+                case 'span':
+                    if (Column::isParsable($value))
+                    {
+                        $this->row = new Row(array(new Column($value)));
                     }
             }
         }
