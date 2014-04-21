@@ -75,6 +75,55 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
                     new Column("6+6.class-name")
                 )))->prependClassAttribute('haik-plugin-cols')
             ),
+            // hash params
+            [
+                ['columns' => '6, 6'],
+                with(new Row(array(
+                    new Column("6"),
+                    new Column("6")
+                )))->prependClassAttribute('haik-plugin-cols')
+            ],
+            [
+                ['cols' => '3, 9'],
+                with(new Row(array(
+                    new Column("3"),
+                    new Column("9")
+                )))->prependClassAttribute('haik-plugin-cols')
+            ],
+            [
+                ['cols' => '6.class-name1, 6.class-name2'],
+                with(new Row(array(
+                    new Column("6.class-name1"),
+                    new Column("6.class-name2")
+                )))->prependClassAttribute('haik-plugin-cols')
+            ],
+            [
+                ['cols' => '3+3, 3+3'],
+                with(new Row(array(
+                    new Column("3+3"),
+                    new Column("3+3")
+                )))->prependClassAttribute('haik-plugin-cols')
+            ],
+            [
+                ['cols' => [
+                    ['span' => 4],
+                    ['span' => 4, 'class' => 'class-name'],
+                    ['span' => 4, 'style' => 'text-align:center']
+                ]],
+                with(new Row(array(
+                    new Column("4"),
+                    new Column("4.class-name"),
+                    with(new Column("4"))->addStyleAttribute('text-align:center')
+                )))->prependClassAttribute('haik-plugin-cols')
+            ],
+            [
+                ['cols' => [
+                    ['span' => '6.class-name'],
+                ]],
+                with(new Row(array(
+                    new Column("6.class-name")
+                )))->prependClassAttribute('haik-plugin-cols')
+            ],            
         );
     }
 
@@ -91,12 +140,16 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
     public function pluginClassProvider()
     {
         $tests = array(
-            'classname' => array(
-                'cols'   => array('class=test-class'),
+            'classname #1' => array(
+                'cols'   => array('class' => 'test-class'),
+                'assert' => with(new Row(array(new Column)))->prependClassAttribute('haik-plugin-cols')->addClassAttribute('test-class'),
+            ),
+            'classname #2' => array(
+                'cols'   => array(array('class' => 'test-class')),
                 'assert' => with(new Row(array(new Column)))->prependClassAttribute('haik-plugin-cols')->addClassAttribute('test-class'),
             ),
             'no-classname' => array(
-                'cols'   => array('class='),
+                'cols'   => array('class' => null),
                 'assert' => with(new Row(array(new Column)))->prependClassAttribute('haik-plugin-cols')->addClassAttribute(''),
             ),
         );
@@ -117,14 +170,55 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
     public function delimiterProvider()
     {
         $tests = array(
-            'delimiter' => array(
-                'cols'   => array('++++'),
-                'assert' => "\n++++\n",
-            ),
             'no-delimiter' => array(
                 'cols'   => array(),
                 'assert' => "\n====\n",
             ),
+            'delimiter:' => array(
+                'cols'   => [['delimiter' => '++++']],
+                'assert' => "\n++++\n",
+            ),
+            'delim:' => array(
+                'cols'   => [['delim' => '++++']],
+                'assert' => "\n++++\n",
+            ),
+            'separator:' => array(
+                'cols'   => [['separator' => '++++']],
+                'assert' => "\n++++\n",
+            ),
+            'sep:' => array(
+                'cols'   => [['sep' => '++++']],
+                'assert' => "\n++++\n",
+            ),
+            // hash param
+            '#delimiter' => [
+                ['delimiter' => '++++'],
+                "\n++++\n",
+            ],
+            '#delimiter:null' => [
+                ['delimiter' => null],
+                "\n====\n",
+            ],
+            '#delimiter:empty' => [
+                ['delimiter' => ''],
+                "\n====\n",
+            ],
+            '#delimiter:space_only' => [
+                ['delimiter' => '   '],
+                "\n====\n",
+            ],
+            '#delim' => [
+                ['delim' => '++++'],
+                "\n++++\n",
+            ],
+            '#separator' => [
+                ['separator' => '++++'],
+                "\n++++\n",
+            ],
+            '#sep' => [
+                ['sep' => '++++'],
+                "\n++++\n",
+            ],
         );
         
         return $tests;
@@ -161,20 +255,6 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
                 'expected' => with(new Row(array(
                     with(new Column())->setColumnWidth(6),
                     with(new Column())->setColumnWidth(6)
-                )))->prependClassAttribute('haik-plugin-cols')
-            ),
-            array(
-                'body'     => "STYLE:color:red\n====\nSTYLE:background-color:#eee",
-                'expected' => with(new Row(array(
-                    with(new Column())->setColumnWidth(6)->addStyleAttribute('color:red'),
-                    with(new Column())->setColumnWidth(6)->addStyleAttribute('background-color:#eee')
-                )))->prependClassAttribute('haik-plugin-cols')
-            ),
-            array(
-                'body'     => "CLASS:class-name\n====\nCLASS:class-name1 class-name2",
-                'expected' => with(new Row(array(
-                    with(new Column())->setColumnWidth(6)->addClassAttribute('class-name'),
-                    with(new Column())->setColumnWidth(6)->addClassAttribute('class-name1 class-name2')
                 )))->prependClassAttribute('haik-plugin-cols')
             ),
         );
