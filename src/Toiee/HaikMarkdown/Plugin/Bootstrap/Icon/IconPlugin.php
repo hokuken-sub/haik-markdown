@@ -30,6 +30,19 @@ class IconPlugin extends Plugin {
 
     protected function parseParams()
     {
+        if ($this->isHash($this->params))
+        {
+            $this->parseHashParams();
+        }
+        else
+        {
+            $this->parseArrayParams();
+        }
+        return $this;
+    }
+
+    protected function parseArrayParams()
+    {
         foreach ($this->params as $param)
         {
             $icon_name = trim($param);
@@ -39,7 +52,23 @@ class IconPlugin extends Plugin {
                 break;
             }
         }
-        return $this;
+    }
+
+    protected function parseHashParams()
+    {
+        foreach ($this->params as $key => $value)
+        {
+            $value = trim($value);
+            switch ($key)
+            {
+                case 'icon':
+                case 'name':
+                    if ($this->validateIconName($value))
+                    {
+                        $this->iconName = $value;
+                    }
+            }
+        }
     }
 
     protected function validateIconName($icon_name)

@@ -34,7 +34,6 @@ class IconPluginTest extends PHPUnit_Framework_TestCase {
     {
         $result = $this->plugin->inline($params);
         $this->assertTag($expected, $result);
-
     }
 
     public function paramProvider()
@@ -78,7 +77,29 @@ class IconPluginTest extends PHPUnit_Framework_TestCase {
                         'class' => 'haik-plugin-icon glyphicon glyphicon-time',
                         'content' => ''
                     ),
-                )            ),
+                )
+            ),
+            // #hash params
+            '#icon' => array(
+                'icon' => array('icon' => 'search'),
+                'expected' => array(
+                    'tag' => 'i',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-icon glyphicon glyphicon-search',
+                        'content' => ''
+                    ),
+                )
+            ),
+            '#name' => array(
+                'icon' => array('name' => 'search'),
+                'expected' => array(
+                    'tag' => 'i',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-icon glyphicon glyphicon-search',
+                        'content' => ''
+                    ),
+                )
+            ),
         );
     }
 
@@ -120,6 +141,7 @@ class IconPluginTest extends PHPUnit_Framework_TestCase {
             array('http://www.example.com/'),
             array('# headings'),
             array('* list'),
+            array('name' => 'time$'),
         );
     }
 
