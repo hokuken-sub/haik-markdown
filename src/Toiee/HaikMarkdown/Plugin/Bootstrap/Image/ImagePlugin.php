@@ -15,6 +15,7 @@ class ImagePlugin extends Plugin {
     protected $type;
     protected $customClass;
     protected $float;
+    protected $titleText;
     protected $altText;
     protected $style;
 
@@ -26,7 +27,8 @@ class ImagePlugin extends Plugin {
         parent::__construct($parser);
 
         $this->imagePath = self::$DEFAULT_IMAGE;
-        $this->type = $this->customClass = $this->float = $this->altText = $this->style = '';
+        $this->type = $this->customClass = $this->float = '';
+        $this->titleText = $this->altText = $this->style = '';
         $this->block = false;
     }
     /**
@@ -41,8 +43,7 @@ class ImagePlugin extends Plugin {
         $this->params = $params;
         $this->body = $body;
 
-/*         var_dump($this->parseParams()->renderView()); */
-        return $this->parseParams()->renderView();
+        return $this->setAltText()->parseParams()->renderView();
     }
 
     /**
@@ -59,7 +60,18 @@ class ImagePlugin extends Plugin {
         $this->params = $params;
         $this->body = $body;
 
-        return $this->parseParams()->renderView();
+        return $this->setAltText()->parseParams()->renderView();
+    }
+
+    /**
+     * Set alt text from body
+     *
+     * @return $this for method chain
+     */
+    protected function setAltText()
+    {
+        $this->titleText = $this->altText = e(strip_tags($this->body));
+        return $this;
     }
 
     protected function parseParams()
@@ -69,11 +81,33 @@ class ImagePlugin extends Plugin {
             return $this;
         }
 
+        if ($this->isHash($this->params))
+        {
+            $this->parseHashParams();
+        }
+        else
+        {
+            $this->parseArrayParams();
+        }
+        return $this;
+    }
+
+    protected function parseArrayParams()
+    {
         $tmpParams = $this->params;
         $issetType = false;
         $issetFloat = false;
         foreach ($this->params as $key => $param)
         {
+            if (is_array($param))
+            {
+                if (isset($param['class']))
+                {
+                    $this->customClass = $param['class'];
+                }
+                unset($tmpParams[$key]);
+                continue;
+            }
             $param = trim($param);
 
             switch ($param)
@@ -100,23 +134,48 @@ class ImagePlugin extends Plugin {
                     continue 2;
                     break;
             }
-
-            if (preg_match('{ ^class=(.*)$ }mx', $param, $matches))
-            {
-                $param = $matches[1];
-                $this->customClass = $param;
-                unset($tmpParams[$key]);
-                continue;
-            }
         }
 
         if (count($tmpParams) > 0)
         {
             $this->imagePath = array_shift($tmpParams);
-            $this->altText = join(' ', $tmpParams);
+            $this->titleText = join(' ', $tmpParams);
         }
+    }
 
-        return $this;
+    public function parseHashParams()
+    {
+        foreach ($this->params as $key => $param)
+        {
+            $param = trim($param);
+
+            switch ($key)
+            {
+                case 'url':
+                case 'path':
+                case 'image':
+                    $this->imagePath = $param;
+                    break;
+                case 'type':
+                    if (in_array($param, ['rounded', 'thumbnail', 'circle']))
+                    {
+                        $this->type = self::$PREFIX_CSS_CLASS_NAME . $param;
+                    }
+                    break;
+                case 'pull':
+                case 'align':
+                    if ($this->block)
+                    {
+                        $this->float = 'pull-' . $param;
+                    }
+                    break;
+                case 'class':
+                    $this->customClass = $param;
+                    break;
+                case 'title':
+                    $this->titleText = $param;
+            }
+        }
     }
 
     public function createClassAttribute()
@@ -152,6 +211,6 @@ class ImagePlugin extends Plugin {
     {
         $class_attr = $this->createClassAttribute();
         $style = $this->createImageStyle();
-        return '<img src="'.e($this->imagePath).'" alt="'.e($this->altText).'" class="'.e($class_attr).'" '.$style.'>';
+        return '<img src="'.e($this->imagePath).'" alt="'.e($this->altText).'" title="'.e($this->titleText).'" class="'.e($class_attr).'" '.$style.'>';
     }
 }

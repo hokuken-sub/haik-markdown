@@ -323,7 +323,7 @@ class ImagePluginTest extends PHPUnit_Framework_TestCase {
                 ),
             ),
             'circle_custom_image_title' => array(
-                'image' => array('circle', 'class=custom', 'http://placehold.jp/200x200.png', 'title text'),
+                'image' => array('circle', ['class'=>'custom'], 'http://placehold.jp/200x200.png', 'title text'),
                 'expected' => array(
                     'tag' => 'img',
                     'attributes' => array(
@@ -609,28 +609,32 @@ class ImagePluginTest extends PHPUnit_Framework_TestCase {
                 [
                     'tag' => 'img',
                     'attributes' => [
-                        'alt' => 'alt text'
+                        'alt' => 'alt text',
+                        'title' => 'alt text',
                     ]
                 ],
                 'alt <span>text</span>',
                 [
                     'tag' => 'img',
                     'attributes' => [
-                        'alt' => 'alt text'
+                        'alt' => 'alt text',
+                        'title' => 'alt text',
                     ]
                 ],
                 '<img src="sample.jpg" alt="alt text">',
                 [
                     'tag' => 'img',
                     'attributes' => [
-                        'alt' => ''
+                        'alt' => '',
+                        'title' => '',
                     ]
                 ],
                 '>here',
                 [
                     'tag' => 'img',
                     'attributes' => [
-                        'alt' => '&gt;here'
+                        'alt' => '&gt;here',
+                        'title' => '&gt;here'
                     ]
                 ],
             ]
@@ -643,6 +647,21 @@ class ImagePluginTest extends PHPUnit_Framework_TestCase {
     public function testBody($body, $expected)
     {
         $params = ['url' => 'sample.jpg'];
+        $result = $this->plugin->inline($params, $body);
+        $this->assertTag($expected, $result);
+    }
+
+    public function testAltAndTitle()
+    {
+        $params = ['url' => 'sample.jpg', 'title' => 'title text'];
+        $body = 'alt text';
+        $expected = [
+            'tag' => 'img',
+            'attributes' => [
+                'alt' => 'alt text',
+                'title' => 'title text'
+            ]
+        ];
         $result = $this->plugin->inline($params, $body);
         $this->assertTag($expected, $result);
     }
