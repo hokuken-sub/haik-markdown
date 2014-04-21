@@ -265,4 +265,20 @@ class PanelPluginTest extends PHPUnit_Framework_TestCase {
         $this->assertTag($expected, $result);
     }
 
+    public function testPanelWithColumnHash()
+    {
+        $params = array('span' => '6');
+        $body = "body";
+        $result = $this->plugin->convert($params, $body);
+        $expected = array(
+            'tag' => 'div',
+            'attributes' => array('class' => 'row'),
+            'child' => array(
+                'tag' => 'div',
+                'attributes' => array('class' => 'col-sm-6'),
+            ),
+        );
+        $this->assertTag($expected, $result);
+    }
+
 }
