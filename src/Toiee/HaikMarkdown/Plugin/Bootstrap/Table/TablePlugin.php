@@ -46,6 +46,53 @@ class TablePlugin extends Plugin {
      */
     protected function parseParams()
     {
+        if ($this->isHash($this->params))
+        {
+            $this->parseHashParams();
+        }
+        else
+        {
+            $this->parseArrayParams();
+        }
+
+        return $this;
+    }
+    
+    /**
+     * parse hash array params
+     */
+    protected function parseHashParams()
+    {
+        foreach ($this->params as $key => $value)
+        {
+            $value = trim($value);
+            switch ($key)
+            {
+                case 'type':
+                    if (in_array($value, array('striped', 'bordered', 'hover')))
+                    {
+                        $this->type = $value;
+                    }
+                    break;
+                case 'condensed':
+                    $this->isCondensed = true;
+                    break;
+                case 'responsive':
+                    $this->forResponsive = true;
+                    break;
+                case 'class':
+                    $this->customCssClassName = trim($this->customCssClassName . ' ' . $value);
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * parse array params
+     * @return $this for method chain
+     */
+    protected function parseArrayParams()
+    {
         $type_set = false;
         foreach ($this->params as $param)
         {
