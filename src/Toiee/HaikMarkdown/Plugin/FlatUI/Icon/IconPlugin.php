@@ -29,7 +29,7 @@ class IconPlugin extends BootstrapIconPlugin {
         $offset = array_search('glyphicon', $params);
         if ($offset !== false)
         {
-            unset($params[$offset]);
+            array_splice($params, $offset, 1);
             return $this->bootstrap_icon->inline($params, $body);
         }
 
