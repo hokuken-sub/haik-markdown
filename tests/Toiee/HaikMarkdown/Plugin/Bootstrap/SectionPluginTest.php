@@ -417,10 +417,10 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
     /**
      * @dataProvider delimProvider
      */
-    public function testDelimitorTest($params)
+    public function testDelimiterTest($params)
     {
         $body = "test1\n" . "\n\n++++\n\n" . "test2\n";
-        $this->plugin = new SectionPlugin($this->parser);
+        $this->plugin = new SectionPlugin(new Toiee\HaikMarkdown\HaikMarkdown);
         $expected = array(
             'tag' => 'div',
             'attributes' => array(
@@ -467,5 +467,27 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
             ),
         );
     }
+
+    public function testDelimiterWithNullTest()
+    {
+        $body = "test1\n" . "\n\n++++\n\n" . "test2\n";
+        $this->plugin = new SectionPlugin(new Toiee\HaikMarkdown\HaikMarkdown);
+        $params =  array('sep' => '');
+
+        $expected = array(
+            'tag' => 'div',
+            'attributes' => array(
+                'class' => 'haik-plugin-section'
+            ),
+            'descendant' => array(
+                'tag' => 'p',
+                'content' => "++++",
+            )
+        );
+        
+        $result = $this->plugin->convert($params, $body);
+        $this->assertTag($expected, $result);
+    }
+
 
 }

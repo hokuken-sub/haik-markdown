@@ -138,7 +138,10 @@ class SectionPlugin extends Plugin {
                 case 'delim':
                 case 'separator':
                 case 'sep':
-                    $this->col_delimitor = "\n" . $value . "\n";
+                    if (! is_null($value) && $value !== '')
+                    {
+                      $this->col_delimitor = "\n" . $value . "\n";
+                    }
                     break;
                 
             }
@@ -186,9 +189,11 @@ class SectionPlugin extends Plugin {
                         case 'delim':
                         case 'separator':
                         case 'sep':
-                            $this->col_delimitor = "\n" . $value . "\n";
+                            if (! is_null($value) && $value !== '')
+                            {
+                                $this->col_delimitor = "\n" . $value . "\n";
+                            }
                             break;
-
                     }
                 }
             }
