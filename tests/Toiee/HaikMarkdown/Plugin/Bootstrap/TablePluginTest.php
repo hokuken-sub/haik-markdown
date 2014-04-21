@@ -227,6 +227,167 @@ class TablePluginTest extends PHPUnit_Framework_TestCase {
                     )
                 ),
             ),
+
+            array(
+                array('type' => 'striped'),
+                array(
+                    'tag' => 'table',
+                    'attributes' => array(
+                        'class' => 'table table-striped'
+                    )
+                ),
+            ),
+            array(
+                array('type' => 'bordered'),
+                array(
+                    'tag' => 'table',
+                    'attributes' => array(
+                        'class' => 'table table-bordered'
+                    )
+                ),
+            ),
+            array(
+                array('type' => 'hover'),
+                array(
+                    'tag' => 'table',
+                    'attributes' => array(
+                        'class' => 'table table-hover'
+                    )
+                ),
+            ),
+            array(
+                array('type' => 'hoge'),
+                array(
+                    'tag' => 'table',
+                    'attributes' => array(
+                        'class' => 'table'
+                    )
+                ),
+            ),
+            array(
+                array('condensed' => null),
+                array(
+                    'tag' => 'table',
+                    'attributes' => array(
+                        'class' => 'table table-condensed'
+                    )
+                ),
+            ),
+            array(
+                array('type' => 'bordered', 'type' => 'striped'),
+                array(
+                    'tag' => 'table',
+                    'attributes' => array(
+                        'class' => 'table table-striped'
+                    )
+                ),
+            ),
+            array(
+                array('type' => 'bordered', 'condensed' => null),
+                array(
+                    'tag' => 'table',
+                    'attributes' => array(
+                        'class' => 'table table-bordered table-condensed'
+                    )
+                ),
+            ),
+            array(
+                array('class' => 'class-name'),
+                array(
+                    'tag' => 'table',
+                    'attributes' => array(
+                        'class' => 'table class-name'
+                    )
+                ),
+            ),
+            array(
+                array('type' => 'bordered', 'class' => 'class-name'),
+                array(
+                    'tag' => 'table',
+                    'attributes' => array(
+                        'class' => 'table table-bordered class-name'
+                    )
+                ),
+            ),
+            array(
+                array('class' => 'class-name1', 'class' => 'class-name2'),
+                array(
+                    'tag' => 'table',
+                    'attributes' => array(
+                        'class' => 'table class-name2'
+                    )
+                ),
+            ),
+            array(
+                array('class' => 'class-name1 class-name2'),
+                array(
+                    'tag' => 'table',
+                    'attributes' => array(
+                        'class' => 'table class-name1 class-name2'
+                    )
+                ),
+            ),
+            array(
+                array('responsive' => 'null'),
+                array(
+                    'tag' => 'table',
+                    'attributes' => array(
+                        'class' => 'table'
+                    ),
+                    'parent' => array(
+                        'tag' => 'div',
+                        'attributes' => array(
+                            'class' => 'table-responsive'
+                        ),
+                    )
+                ),
+            ),
+            array(
+                array('responsive' => null, 'type' => 'bordered'),
+                array(
+                    'tag' => 'table',
+                    'attributes' => array(
+                        'class' => 'table table-bordered'
+                    ),
+                    'parent' => array(
+                        'tag' => 'div',
+                        'attributes' => array(
+                            'class' => 'table-responsive'
+                        ),
+                    )
+                ),
+            ),
+            array(
+                array('responsive' => null, 'class' => 'class-name'),
+                array(
+                    'tag' => 'table',
+                    'attributes' => array(
+                        'class' => 'table class-name'
+                    ),
+                    'parent' => array(
+                        'tag' => 'div',
+                        'attributes' => array(
+                            'class' => 'table-responsive'
+                        ),
+                    )
+                ),
+            ),
+            array(
+                array('responsive' => null, 'type' => 'striped', 'class' => 'class-name'),
+                array(
+                    'tag' => 'table',
+                    'attributes' => array(
+                        'class' => 'table table-striped class-name'
+                    ),
+                    'parent' => array(
+                        'tag' => 'div',
+                        'attributes' => array(
+                            'class' => 'table-responsive'
+                        ),
+                    )
+                ),
+            ),
+
         );
     }
 
