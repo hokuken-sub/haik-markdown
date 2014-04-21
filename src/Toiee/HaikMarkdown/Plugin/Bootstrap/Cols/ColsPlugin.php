@@ -6,6 +6,8 @@ use Toiee\HaikMarkdown\Plugin\Bootstrap\Plugin;
 use Toiee\HaikMarkdown\Plugin\Bootstrap\Row;
 use Toiee\HaikMarkdown\Plugin\Bootstrap\Column;
 use Michelf\MarkdownInterface;
+use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Yaml\Exception\ParseException;
 
 class ColsPlugin extends Plugin {
 
@@ -31,7 +33,7 @@ class ColsPlugin extends Plugin {
 
         $class_name = get_called_class();
         $this->row = $this->createRow()->prependClassAttribute($class_name::$PREFIX_CLASS_ATTRIBUTE);
-        $this->delimiter = self::COL_DELIMITER;
+        $this->setDelimiter(self::COL_DELIMITER);
         $this->violateColumnSize = false;
     }
 
@@ -106,26 +108,116 @@ class ColsPlugin extends Plugin {
      */
     protected function parseParams()
     {
+        if ($this->isHash($this->params))
+        {
+            $this->parseHashParams();
+        }
+        else
+        {
+            $this->parseArrayParams();
+        }
+    }
+
+    protected function parseArrayParams()
+    {
         foreach ($this->params as $param)
         {
+            if (is_array($param))
+            {
+                foreach ($param as $key => $value)
+                {
+                    switch ($key)
+                    {
+                        case 'class':
+                            $this->row->addClassAttribute($value);
+                            break;
+                        case 'delimiter':
+                        case 'delim':
+                        case 'separator':
+                        case 'sep':
+                            $this->setDelimiter($value);
+                    }
+                }
+                continue;
+            }
             if ($this->columnIsParsable($param))
             {
                 $this->addColumns($param);
             }
             else
             {
-                if (preg_match('/^class=(.+)$/', $param, $mts))
-                {
-                    // if you want add class to top div
-                    $this->row->addClassAttribute(trim($mts[1]));
-                }
-                else
-                {
-                    // if you want change delimiter
-                    $this->delimiter = "\n" . trim($param) . "\n";
-                }
+                // if you want change delimiter
+                $this->setDelimiter($param);
             }
         }
+    }
+
+    protected function parseHashParams()
+    {
+        foreach ($this->params as $key => $value)
+        {
+            switch ($key)
+            {
+                case 'class':
+                    $this->row->addClassAttribute($value);
+                    break;
+                case 'style':
+                    $this->row->addStyleAttribute($value);
+                    break;
+                case 'delimiter':
+                case 'delim':
+                case 'separator':
+                case 'sep':
+                    $this->setDelimiter($value);
+                    break;
+                case 'cols':
+                case 'columns':
+                    if (is_array($value) && ! $this->isHash($value))
+                    {
+                        foreach ($value as $column)
+                        {
+                            if (is_string($column) && $this->columnIsParsable($column))
+                            {
+                                $this->addColumns($column);
+                            }
+                            else if (is_array($column) && isset($column['span']) && $this->columnIsParsable($column['span']))
+                            {
+                                $column_obj = $this->createColumn($column['span']);
+                                if (isset($column['offset'])) $column_obj->setOffsetWidth($column['offset']);
+                                if (isset($column['class'])) $column_obj->addClassAttribute($column['class']);
+                                if (isset($column['style'])) $column_obj->addStyleAttribute($column['style']);
+                                $this->row[] = $column_obj;
+                            }
+                        }
+                    }
+                    else if ($this->columnIsParsable($value))
+                    {
+                        $this->addColumns($value);
+                    }
+                    else
+                    {
+                        try {
+                            $columns = Yaml::parse('[' . $value . ']');
+                            foreach ($columns as $column)
+                            {
+                                if ($this->columnIsParsable($column))
+                                {
+                                    $this->addColumns($column);
+                                }
+                            }
+                        }
+                        catch (ParseException $e) {}
+                    }
+                
+            }
+        }        
+    }
+
+    protected function setDelimiter($delimiter)
+    {
+        $delimiter = trim((string)$delimiter);
+        if ($delimiter === '') return;
+        $this->delimiter = "\n" . $delimiter . "\n";
     }
 
     protected function columnIsParsable($text)
@@ -136,7 +228,7 @@ class ColsPlugin extends Plugin {
     /**
      * Add columns by text
      *
-     * @param string $text Column::isParsable is true
+     * @param string|ColumnInterface $text Column::isParsable is true or Column object
      * @return void
      */
     protected function addColumns($text)
