@@ -2,6 +2,8 @@
 use Toiee\HaikMarkdown\Plugin\Bootstrap\Section\SectionPlugin;
 use Michelf\MarkdownExtra;
 use Toiee\HaikMarkdown\HaikMarkdown;
+use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Yaml\Exception\ParseException;
 
 class SectionPluginTest extends PHPUnit_Framework_TestCase {
 
@@ -486,6 +488,30 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
         );
         
         $result = $this->plugin->convert($params, $body);
+        $this->assertTag($expected, $result);
+    }
+
+    public function testColumnCols()
+    {
+        $body = "test1\n" . "\n\n====\n\n" . "test2\n";
+        $this->plugin = new SectionPlugin(new Toiee\HaikMarkdown\HaikMarkdown);
+        $params =  array('column' => array(array('span'=>'3'), array('span'=>'9')));
+
+        $expected = array(
+            'tag' => 'div',
+            'attributes' => array(
+                'class' => 'haik-plugin-section'
+            ),
+            'descendant' => array(
+                'tag' => 'div',
+                'attributes' => array(
+                    'class' => 'col-sm-9',
+                ),
+            )
+        );
+        
+        $result = $this->plugin->convert($params, $body);
+var_dump($result);
         $this->assertTag($expected, $result);
     }
 

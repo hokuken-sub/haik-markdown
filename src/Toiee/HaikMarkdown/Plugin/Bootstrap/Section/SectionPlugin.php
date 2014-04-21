@@ -88,7 +88,10 @@ class SectionPlugin extends Plugin {
     {
         foreach ($this->params as $key => $value)
         {
-            $value = trim($value);
+            if (! is_array($value))
+            {
+                $value = trim($value);
+            }
             switch ($key)
             {
                 case 'align':
@@ -143,6 +146,45 @@ class SectionPlugin extends Plugin {
                       $this->col_delimitor = "\n" . $value . "\n";
                     }
                     break;
+                // column
+                case 'cols':
+                case 'columns':
+                    if (is_array($value) && ! $this->isHash($value))
+                    {
+                        foreach ($value as $column)
+                        {
+                            if (is_string($column) && $this->columnIsParsable($column))
+                            {
+                                $this->addColumns($column);
+                            }
+                            else if (is_array($column) && isset($column['span']) && $this->columnIsParsable($column['span']))
+                            {
+                                $column_obj = $this->createColumn($column['span']);
+                                if (isset($column['offset'])) $column_obj->setOffsetWidth($column['offset']);
+                                if (isset($column['class'])) $column_obj->addClassAttribute($column['class']);
+                                if (isset($column['style'])) $column_obj->addStyleAttribute($column['style']);
+                                $this->row[] = $column_obj;
+                            }
+                        }
+                    }
+                    else if ($this->columnIsParsable($value))
+                    {
+                        $this->addColumns($value);
+                    }
+                    else
+                    {
+                        try {
+                            $columns = Yaml::parse('[' . $value . ']');
+                            foreach ($columns as $column)
+                            {
+                                if ($this->columnIsParsable($column))
+                                {
+                                    $this->addColumns($column);
+                                }
+                            }
+                        }
+                        catch (ParseException $e) {}
+                    }
                 
             }
         }
