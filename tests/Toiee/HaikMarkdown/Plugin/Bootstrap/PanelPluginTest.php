@@ -71,6 +71,23 @@ class PanelPluginTest extends PHPUnit_Framework_TestCase {
                 array('invalid-type', 'danger'),
                 'danger'
             ),
+
+            array(
+                array('type' => 'primary'),
+                'primary'
+            ),
+            array(
+                array('type' => 'info', 'type' => 'success'),
+                'success'
+            ),
+            array(
+                array('type' => 'invalid-type'),
+                'default'
+            ),
+            array(
+                array('type' => 'invalid-type', 'type' => 'danger'),
+                'danger'
+            ),
         );
     }
 
