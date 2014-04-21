@@ -33,6 +33,7 @@ class FlatUIIconPluginTest extends PHPUnit_Framework_TestCase {
     public function testParameter($params, $expected)
     {
         $result = $this->plugin->inline($params);
+        var_dump($result);
         $this->assertTag($expected, $result);
 
     }
