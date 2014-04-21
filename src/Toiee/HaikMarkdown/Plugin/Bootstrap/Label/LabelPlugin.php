@@ -40,6 +40,19 @@ class LabelPlugin extends Plugin {
 
     protected function parseParams()
     {
+        if ($this->isHash($this->params))
+        {
+            $this->parseHashParams();
+        }
+        else
+        {
+            $this->parseArrayParams();
+        }
+        return $this;
+    }
+
+    protected function parseArrayParams()
+    {
         foreach ($this->params as $param)
         {
             $param = trim($param);
@@ -57,8 +70,25 @@ class LabelPlugin extends Plugin {
                     $this->customCssClassName = trim($this->customCssClassName . ' ' . trim($param));
             }
         }
+    }
 
-        return $this;
+    protected function parseHashParams()
+    {
+        foreach ($this->params as $key => $value)
+        {
+            $value = trim($value);
+            switch ($key)
+            {
+                case 'type':
+                    if (in_array($value, ['default', 'primary', 'success', 'info', 'warning', 'danger']))
+                    {
+                        $this->type = $value;
+                    }
+                    break;
+                case 'class':
+                    $this->customCssClassName = trim($this->customCssClassName . ' ' . trim($value));
+            }
+        }
     }
 
     protected function getTypeClassName()
