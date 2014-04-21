@@ -915,4 +915,30 @@ class MediaListPluginTest extends PHPUnit_Framework_TestCase {
         $this->assertTag($expected, $result);
     }
 
+    public function testWrapBootstrapRowWithHashColumnOption()
+    {
+        $params = array('span' => '6');
+        $body = '';
+        $result = $this->plugin->convert($params, $body);
+        $expected = array(
+            'tag' => 'div',
+            'attributes' => array(
+                'class' => 'row'
+            ),
+            'child' => array(
+                'tag' => 'div',
+                'attributes' => array(
+                    'class' => 'col-sm-6',
+                ),
+                'child' => array(
+                    'tag' => 'div',
+                    'attributes' => array(
+                        'class' => 'haik-plugin-media-list'
+                    ),
+                ),
+            )
+        );
+        $this->assertTag($expected, $result);
+    }
+
 }
