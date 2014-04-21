@@ -12,8 +12,9 @@ class SectionPlugin extends Plugin {
 
     protected static $PREFIX_CLASS_ATTRIBUTE = 'haik-plugin-section';
 
-    const COL_DELIMITER      = "\n====\n";
     const PlAY_MARK          = "{play}";
+
+    protected $col_delimitor  = "\n====\n";
 
     protected $params;
     protected $body;
@@ -132,6 +133,14 @@ class SectionPlugin extends Plugin {
                 case 'color':
                     $this->addConfig('section_style.color', $value);
                     break;
+                // cols delimiter
+                case 'delimiter':
+                case 'delim':
+                case 'separator':
+                case 'sep':
+                    $this->col_delimitor = "\n" . $value . "\n";
+                    break;
+                
             }
         }
     }
@@ -172,6 +181,14 @@ class SectionPlugin extends Plugin {
                         case 'color':
                             $this->addConfig('section_style.color', $value);
                             break;
+                        // cols delimiter
+                        case 'delimiter':
+                        case 'delim':
+                        case 'separator':
+                        case 'sep':
+                            $this->col_delimitor = "\n" . $value . "\n";
+                            break;
+
                     }
                 }
             }
@@ -210,7 +227,7 @@ class SectionPlugin extends Plugin {
     {
         $body = $this->body;
 
-        $cols = explode(self::COL_DELIMITER, $body);
+        $cols = explode($this->col_delimitor, $body);
         $columns = array();
         if (count($cols) > 1)
         {

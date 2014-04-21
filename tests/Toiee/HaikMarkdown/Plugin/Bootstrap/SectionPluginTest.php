@@ -414,4 +414,58 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
         );
     }
 
+    /**
+     * @dataProvider delimProvider
+     */
+    public function testDelimitorTest($params)
+    {
+        $body = "test1\n" . "\n\n++++\n\n" . "test2\n";
+        $this->plugin = new SectionPlugin($this->parser);
+        $expected = array(
+            'tag' => 'div',
+            'attributes' => array(
+                'class' => 'haik-plugin-section'
+            ),
+            'descendant' => array(
+                'tag' => 'div',
+                'attributes' => array(
+                    'class' => 'col-sm-6',
+                ),
+            )
+        );
+        
+        $result = $this->plugin->convert($params, $body);
+        $this->assertTag($expected, $result);
+    }
+    
+    public function delimProvider()
+    {
+        return array(
+            array(
+              'params' => array( array('delim' => '++++'))
+            ),
+            array(
+              'params' => array( array('delimiter' => '++++'))
+            ),
+            array(
+              'params' => array( array('separator' => '++++'))
+            ),
+            array(
+              'params' => array('sep' => '++++')
+            ),
+            array(
+              'params' => array('delim' => '++++')
+            ),
+            array(
+              'params' => array('delimiter' => '++++')
+            ),
+            array(
+              'params' => array('separator' => '++++')
+            ),
+            array(
+              'params' => array('sep' => '++++')
+            ),
+        );
+    }
+
 }
