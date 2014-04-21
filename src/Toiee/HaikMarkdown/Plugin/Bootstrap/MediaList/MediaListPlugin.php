@@ -61,7 +61,45 @@ class MediaListPlugin extends CarouselPlugin {
         return $itemData;
     }
 
+    /**
+     * check params
+     */
     protected function checkParams()
+    {
+        if ($this->isHash($this->params))
+        {
+            $this->parseHashParams();
+        }
+        else
+        {
+            $this->parseArrayParams();
+        }
+    }
+
+    /**
+     * parse hash array params
+     */
+    protected function parseHashParams()
+    {
+        foreach ($this->params as $key => $value)
+        {
+            $value = trim($value);
+            switch ($key)
+            {
+                case 'span':
+                    if (Column::isParsable($value))
+                    {
+                        $this->row = new Row(array(new Column($value)));
+                    }
+                    break;
+            }
+        }
+    }
+
+    /**
+     * parse array params
+     */
+    protected function parseArrayParams()
     {
         foreach ($this->params as $i => $param)
         {
