@@ -90,11 +90,11 @@ class SectionPlugin extends Plugin {
             $value = trim($value);
             switch ($key)
             {
-                // align
-                case 'left':
-                case 'right':
-                case 'center':
-                    $this->addConfig('align', "text-{$key}");
+                case 'align':
+                    if (in_array($value, array('left', 'right', 'center')))
+                    {
+                        $this->addConfig('align', "text-{$value}");
+                    }
                     break;
                 // jumbotron
                 case 'nojumbotron':
@@ -104,10 +104,11 @@ class SectionPlugin extends Plugin {
                     $this->addConfig('nojumbotron', true);
                     break;
                 // vertical align
-                case 'top':
-                case 'middle':
-                case 'bottom':
-                    $this->addConfig('container_style.vertical-align', $key);
+                case 'valign':
+                    if (in_array($value, array('top', 'middle', 'bottom')))
+                    {
+                        $this->addConfig('container_style.vertical-align', $value);
+                    }
                     break;
                 // height
                 case 'height':

@@ -251,7 +251,7 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
             ),
 
             'hash_align_center' => array(
-                'params' => array('center'=> null),
+                'params' => array('align' => 'center'),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
@@ -260,7 +260,7 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                 ),
             ),
             'hash_align_left' => array(
-                'params' => array('left'=> null),
+                'params' => array('align' => 'left'),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
@@ -269,7 +269,7 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                 ),
             ),
             'hash_align_right' => array(
-                'params' => array('right'=> null),
+                'params' => array('align' => 'right'),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
@@ -278,7 +278,7 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                 ),
             ),
             'hash_nojumbotron' => array(
-                'params' => array('center'=> null, 'nojumbotron'=> null),
+                'params' => array('align' => 'center', 'nojumbotron'=> null),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
@@ -287,7 +287,7 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                 ),
             ),
             'hash_valign_top' => array(
-                'params' => array('top'=> null),
+                'params' => array('valign' => 'top'),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
@@ -303,7 +303,7 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                 ),
             ),
             'hash_valign_middle' => array(
-                'params' => array('middle'=> null),
+                'params' => array('valign' => 'middle'),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
@@ -319,7 +319,7 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                 ),
             ),
             'hash_valign_bottom' => array(
-                'params' => array('bottom'=> null),
+                'params' => array('valign' => 'bottom'),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
@@ -394,7 +394,7 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                 ),
             ),
             'hash_all_param' => array(
-                'params' => array('center'=>null,'middle'=>null,'height'=>'300px','color'=>'#555','bg-image'=>'image/hoge.png','bg-color'=>'#ddd'),
+                'params' => array('align' => 'center','valign' => 'middle','height'=>'300px','color'=>'#555','bg-image'=>'image/hoge.png','bg-color'=>'#ddd'),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
