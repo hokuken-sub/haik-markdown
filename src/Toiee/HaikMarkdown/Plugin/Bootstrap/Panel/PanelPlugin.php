@@ -51,7 +51,54 @@ class PanelPlugin extends Plugin {
         return $this->renderView();
     }
 
+    /**
+     * Parse params and set options
+     *
+     * @return $this for method chain
+     */
     protected function parseParams()
+    {
+        if ($this->isHash($this->params))
+        {
+            $this->parseHashParams();
+        }
+        else
+        {
+            $this->parseArrayParams();
+        }
+    }
+
+    /**
+     * parse hash array params
+     */
+    protected function parseHashParams()
+    {
+        foreach ($this->params as $key => $value)
+        {
+            $value = trim($value);
+            switch ($key)
+            {
+                case 'type':                
+                    if (in_array($value, array('default', 'primary', 'success', 'info', 'warning', 'danger')))
+                    {
+                        $this->type = $value;
+                    }
+                    break;
+                case 'span':
+                    if (Column::isParsable($value))
+                    {
+                        $this->row = new Row(array(new Column($value)));
+                    }
+                    break;
+            }
+        }
+    }
+
+    /**
+     * parse array params
+     * @return $this for method chain
+     */
+    protected function parseArrayParams()
     {
         $init_type = false;
         foreach ($this->params as $param)
