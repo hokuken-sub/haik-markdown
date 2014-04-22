@@ -191,6 +191,8 @@ class SectionPlugin extends Plugin {
                     $this->colsParams['columns'] = $value;
                     break;
                 case 'behavior':
+                case 'as':
+                case 'type':
                     if (in_array($value, ['section', 'cols']))
                         $this->behavior = $value;
             }
