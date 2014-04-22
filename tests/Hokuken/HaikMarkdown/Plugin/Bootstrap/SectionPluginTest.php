@@ -514,4 +514,26 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
         $this->assertTag($expected, $result);
     }
 
+    public function testBehaveAsColsPlugin()
+    {
+        $params = ['behavior' => 'cols', 'columns' => ['6, 6']];
+        $body = "test1\n" . "\n\n====\n\n" . "test2\n";
+        $result = $this->plugin->convert($params, $body);
+        $expected = [
+            'tag' => 'div',
+            'attributes' => [
+                'class' => 'haik-plugin-cols row'
+            ],
+        ];
+        $this->assertTag($expected, $result);
+
+        $not_expected = [
+            'tag' => 'div',
+            'attributes' => [
+                'class' => 'haik-plugin-section'
+            ],
+        ];
+        $this->assertNotTag($not_expected, $result);
+    }
+
 }
