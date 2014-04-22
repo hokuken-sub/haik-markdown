@@ -80,9 +80,9 @@ Usage
 ### With basic plugins
 
     // Preparation to use
-    use \Toiee\HaikMarkdown;
+    use \Hokuken\HaikMarkdown;
     $parser = new HaikMarkdown();
-    $plugin_repository = new Toiee\HaikMarkdown\Plugin\Basic\PluginRepository($parser);
+    $plugin_repository = new Hokuken\HaikMarkdown\Plugin\Basic\PluginRepository($parser);
     $parser->registerPluginRepository($plugin_repository);
     
     // Parsing markdown text
@@ -93,9 +93,9 @@ Usage
 
 
     // Preparation to use
-    use \Toiee\HaikMarkdown;
+    use \Hokuken\HaikMarkdown;
     $parser = new HaikMarkdown();
-    $plugin_repository = new Toiee\HaikMarkdown\Plugin\Bootstrap\PluginRepository($parser);
+    $plugin_repository = new Hokuken\HaikMarkdown\Plugin\Bootstrap\PluginRepository($parser);
     $parser->registerPluginRepository($plugin_repository);
     
     // Parsing markdown text
