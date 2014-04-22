@@ -18,6 +18,7 @@ class SectionPlugin extends Plugin {
     protected $params;
     protected $body;
 
+    protected $behavior = 'section';
     protected $colsParams = array();
     
     protected $config = array();
@@ -62,9 +63,41 @@ class SectionPlugin extends Plugin {
         $this->body = $body;
         
         $this->parseParams();
-        $this->parseBody();
         
+        return $this->behave();
+    }
+
+    /**
+     * behave as X
+     *
+     * @return result of behavior
+     * @throws \RuntimeException when unknown behavior specified
+     */
+    protected function behave()
+    {
+        $method = 'behaveAs' . ucfirst($this->behavior);
+        if (method_exists($this, $method))
+        {
+            return $this->{$method}();
+        }
+        throw new \RuntimeException("Section plugin cannot behave as {$this->behavior}");
+    }
+
+    protected function behaveAsSection()
+    {
+        $this->parseBody();
         return $this->renderView();
+    }
+
+    protected function behaveAsCols()
+    {
+        $plugin = $this->createColsPlugin();
+        return $plugin->convert($this->colsParams, $this->body);
+    }
+
+    protected function createColsPlugin()
+    {
+        return new ColsPlugin($this->parser);
     }
     
     /**
@@ -156,6 +189,10 @@ class SectionPlugin extends Plugin {
                 case 'cols':
                 case 'columns':
                     $this->colsParams['columns'] = $value;
+                    break;
+                case 'behavior':
+                    if (in_array($value, ['section', 'cols']))
+                        $this->behavior = $value;
             }
         }
     }
@@ -208,7 +245,7 @@ class SectionPlugin extends Plugin {
 
         if (count($this->colsParams) > 0)
         {
-            $this->content = with(new ColsPlugin($this->parser))->convert($this->colsParams, $body);
+            $this->content = $this->createColsPlugin()->convert($this->colsParams, $body);
         }
         else 
         {
