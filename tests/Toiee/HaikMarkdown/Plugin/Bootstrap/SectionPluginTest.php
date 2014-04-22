@@ -2,6 +2,8 @@
 use Toiee\HaikMarkdown\Plugin\Bootstrap\Section\SectionPlugin;
 use Michelf\MarkdownExtra;
 use Toiee\HaikMarkdown\HaikMarkdown;
+use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Yaml\Exception\ParseException;
 
 class SectionPluginTest extends PHPUnit_Framework_TestCase {
 
@@ -251,7 +253,7 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
             ),
 
             'hash_align_center' => array(
-                'params' => array('center'=> null),
+                'params' => array('align' => 'center'),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
@@ -260,7 +262,7 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                 ),
             ),
             'hash_align_left' => array(
-                'params' => array('left'=> null),
+                'params' => array('align' => 'left'),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
@@ -269,7 +271,7 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                 ),
             ),
             'hash_align_right' => array(
-                'params' => array('right'=> null),
+                'params' => array('align' => 'right'),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
@@ -278,7 +280,7 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                 ),
             ),
             'hash_nojumbotron' => array(
-                'params' => array('center'=> null, 'nojumbotron'=> null),
+                'params' => array('align' => 'center', 'nojumbotron'=> null),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
@@ -287,7 +289,7 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                 ),
             ),
             'hash_valign_top' => array(
-                'params' => array('top'=> null),
+                'params' => array('valign' => 'top'),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
@@ -303,7 +305,7 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                 ),
             ),
             'hash_valign_middle' => array(
-                'params' => array('middle'=> null),
+                'params' => array('valign' => 'middle'),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
@@ -319,7 +321,7 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                 ),
             ),
             'hash_valign_bottom' => array(
-                'params' => array('bottom'=> null),
+                'params' => array('valign' => 'bottom'),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
@@ -394,7 +396,7 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                 ),
             ),
             'hash_all_param' => array(
-                'params' => array('center'=>null,'middle'=>null,'height'=>'300px','color'=>'#555','bg-image'=>'image/hoge.png','bg-color'=>'#ddd'),
+                'params' => array('align' => 'center','valign' => 'middle','height'=>'300px','color'=>'#555','bg-image'=>'image/hoge.png','bg-color'=>'#ddd'),
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
@@ -412,6 +414,104 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
             ),
 
         );
+    }
+
+    /**
+     * @dataProvider delimProvider
+     */
+    public function testDelimiterTest($params)
+    {
+        $body = "test1\n" . "\n\n++++\n\n" . "test2\n";
+        $this->plugin = new SectionPlugin(new Toiee\HaikMarkdown\HaikMarkdown);
+        $expected = array(
+            'tag' => 'div',
+            'attributes' => array(
+                'class' => 'haik-plugin-section'
+            ),
+            'descendant' => array(
+                'tag' => 'div',
+                'attributes' => array(
+                    'class' => 'col-sm-6',
+                ),
+            )
+        );
+        
+        $result = $this->plugin->convert($params, $body);
+        $this->assertTag($expected, $result);
+    }
+    
+    public function delimProvider()
+    {
+        return array(
+            array(
+              'params' => array( array('delim' => '++++'))
+            ),
+            array(
+              'params' => array( array('delimiter' => '++++'))
+            ),
+            array(
+              'params' => array( array('separator' => '++++'))
+            ),
+            array(
+              'params' => array('sep' => '++++')
+            ),
+            array(
+              'params' => array('delim' => '++++')
+            ),
+            array(
+              'params' => array('delimiter' => '++++')
+            ),
+            array(
+              'params' => array('separator' => '++++')
+            ),
+            array(
+              'params' => array('sep' => '++++')
+            ),
+        );
+    }
+
+    public function testDelimiterWithNullTest()
+    {
+        $body = "test1\n" . "\n\n++++\n\n" . "test2\n";
+        $this->plugin = new SectionPlugin(new Toiee\HaikMarkdown\HaikMarkdown);
+        $params =  array('sep' => '');
+
+        $expected = array(
+            'tag' => 'div',
+            'attributes' => array(
+                'class' => 'haik-plugin-section'
+            ),
+            'descendant' => array(
+                'tag' => 'p',
+                'content' => "++++",
+            )
+        );
+        
+        $result = $this->plugin->convert($params, $body);
+        $this->assertTag($expected, $result);
+    }
+
+    public function testColumnCols()
+    {
+        $body = "test1\n" . "\n\n====\n\n" . "test2\n";
+        $this->plugin = new SectionPlugin(new Toiee\HaikMarkdown\HaikMarkdown);
+        $params =  array('columns' => array(array('span'=>'3'), array('span'=>'9')));
+
+        $expected = array(
+            'tag' => 'div',
+            'attributes' => array(
+                'class' => 'haik-plugin-section'
+            ),
+            'descendant' => array(
+                'tag' => 'div',
+                'attributes' => array(
+                    'class' => 'col-sm-9',
+                ),
+            )
+        );
+        
+        $result = $this->plugin->convert($params, $body);
+        $this->assertTag($expected, $result);
     }
 
 }

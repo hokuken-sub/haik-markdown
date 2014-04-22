@@ -6,17 +6,19 @@ use Toiee\HaikMarkdown\Plugin\PluginCounter;
 use Toiee\HaikMarkdown\Plugin\Bootstrap\Plugin;
 use Toiee\HaikMarkdown\Plugin\Bootstrap\Row;
 use Toiee\HaikMarkdown\Plugin\Bootstrap\Column;
+use Toiee\HaikMarkdown\Plugin\Bootstrap\Cols\ColsPlugin;
 use Michelf\MarkdownInterface;
 
 class SectionPlugin extends Plugin {
 
     protected static $PREFIX_CLASS_ATTRIBUTE = 'haik-plugin-section';
 
-    const COL_DELIMITER      = "\n====\n";
     const PlAY_MARK          = "{play}";
 
     protected $params;
     protected $body;
+
+    protected $colsParams = array();
     
     protected $config = array();
     protected $counter;
@@ -29,13 +31,13 @@ class SectionPlugin extends Plugin {
         $this->counter = PluginCounter::getInstance();
         $this->config = array(
             'section_style' => array(
-              'color'            => '',
-              'background-image' => '',
-              'background-color' => '',
-              'min-height'       => '',
+                'color'            => '',
+                'background-image' => '',
+                'background-color' => '',
+                'min-height'       => '',
             ),
             'container_style' => array(
-              'vertical-align'   => '',
+                'vertical-align'   => '',
             ),
             'nojumbotron' => false,
             'align'       => '',
@@ -83,18 +85,25 @@ class SectionPlugin extends Plugin {
     /**
      * parse hash array params
      */
-    protected function parseHashParams()
+    protected function parseHashParams($params = null)
     {
-        foreach ($this->params as $key => $value)
+        if ($params === null OR ! is_array($params))
         {
-            $value = trim($value);
+            $params = $this->params;
+        }
+        foreach ($params as $key => $value)
+        {
+            if (! is_array($value))
+            {
+                $value = trim($value);
+            }
             switch ($key)
             {
-                // align
-                case 'left':
-                case 'right':
-                case 'center':
-                    $this->addConfig('align', "text-{$key}");
+                case 'align':
+                    if (in_array($value, array('left', 'right', 'center')))
+                    {
+                        $this->addConfig('align', "text-{$value}");
+                    }
                     break;
                 // jumbotron
                 case 'nojumbotron':
@@ -104,10 +113,12 @@ class SectionPlugin extends Plugin {
                     $this->addConfig('nojumbotron', true);
                     break;
                 // vertical align
-                case 'top':
-                case 'middle':
-                case 'bottom':
-                    $this->addConfig('container_style.vertical-align', $key);
+                case 'vertical-align':
+                case 'valign':
+                    if (in_array($value, array('top', 'middle', 'bottom')))
+                    {
+                        $this->addConfig('container_style.vertical-align', $value);
+                    }
                     break;
                 // height
                 case 'height':
@@ -131,6 +142,20 @@ class SectionPlugin extends Plugin {
                 case 'color':
                     $this->addConfig('section_style.color', $value);
                     break;
+                // cols delimiter
+                case 'delimiter':
+                case 'delim':
+                case 'separator':
+                case 'sep':
+                    if (! is_null($value) && $value !== '')
+                    {
+                        $this->colsParams['delimiter'] = $value;
+                    }
+                    break;
+                // column
+                case 'cols':
+                case 'columns':
+                    $this->colsParams['columns'] = $value;
             }
         }
     }
@@ -144,35 +169,7 @@ class SectionPlugin extends Plugin {
         {
             if (is_array($param))
             {
-                foreach ($param as $key => $value)
-                {
-                    $value = trim($value);
-                    switch($key)
-                    {
-                        // height
-                        case 'height':
-                            if (is_numeric($param['height']))
-                            {
-                                $value = $value.'px';
-                            } 
-                            $this->addConfig('section_style.min-height', $value);
-                            break;
-                        // section class
-                        case 'class':
-                            $this->addConfig('class', $value);
-                            break;
-                        // background style
-                        case 'bg-image':
-                        case 'bg-color':
-                            $name = str_replace('bg', 'background', $key);
-                            $this->addConfig('section_style.' . $name, $value);
-                            break;
-                        // font color
-                        case 'color':
-                            $this->addConfig('section_style.color', $value);
-                            break;
-                    }
-                }
+                $this->parseHashParams($param);
             }
             else
             {
@@ -209,20 +206,9 @@ class SectionPlugin extends Plugin {
     {
         $body = $this->body;
 
-        $cols = explode(self::COL_DELIMITER, $body);
-        $columns = array();
-        if (count($cols) > 1)
+        if (count($this->colsParams) > 0)
         {
-        		$col_width = (int)(Row::$COLUMN_SIZE / count($cols));
-        		for ($i = 0; $i < count($cols); $i++)
-        		{
-        		    $column = new Column();
-        		    $column->setColumnWidth($col_width);
-                $column->setContent(trim($this->parser->transform($cols[$i])));
-                $columns[$i] = $column;
-        		}
-            $row = new Row($columns);
-        		$this->content = $row->render();
+            $this->content = with(new ColsPlugin($this->parser))->convert($this->colsParams, $body);
         }
         else 
         {
