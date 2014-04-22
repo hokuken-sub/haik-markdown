@@ -495,7 +495,7 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
     {
         $body = "test1\n" . "\n\n====\n\n" . "test2\n";
         $this->plugin = new SectionPlugin(new Toiee\HaikMarkdown\HaikMarkdown);
-        $params =  array('column' => array(array('span'=>'3'), array('span'=>'9')));
+        $params =  array('columns' => array(array('span'=>'3'), array('span'=>'9')));
 
         $expected = array(
             'tag' => 'div',
@@ -511,9 +511,7 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
         );
         
         $result = $this->plugin->convert($params, $body);
-var_dump($result);
         $this->assertTag($expected, $result);
     }
-
 
 }
