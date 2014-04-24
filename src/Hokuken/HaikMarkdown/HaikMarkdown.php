@@ -131,7 +131,7 @@ class HaikMarkdown extends MarkdownExtra {
     {
         // single line
 		$text = preg_replace_callback('/
-				(?:\n|\A)
+				^
 				(?:
 				    (:{3,})        # $1: open colons
 				    [ ]*
