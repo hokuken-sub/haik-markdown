@@ -3,13 +3,14 @@ namespace Hokuken\HaikMarkdown\Plugin\Bootstrap\Section;
 
 use Hokuken\HaikMarkdown\HaikMarkdown;
 use Hokuken\HaikMarkdown\Plugin\PluginCounter;
+use Hokuken\HaikMarkdown\Plugin\SpecialAttributeInterface;
 use Hokuken\HaikMarkdown\Plugin\Bootstrap\Plugin;
 use Hokuken\HaikMarkdown\Plugin\Bootstrap\Row;
 use Hokuken\HaikMarkdown\Plugin\Bootstrap\Column;
 use Hokuken\HaikMarkdown\Plugin\Bootstrap\Cols\ColsPlugin;
 use Michelf\MarkdownInterface;
 
-class SectionPlugin extends Plugin {
+class SectionPlugin extends Plugin implements SpecialAttributeInterface {
 
     protected static $PREFIX_CLASS_ATTRIBUTE = 'haik-plugin-section';
 
@@ -25,6 +26,9 @@ class SectionPlugin extends Plugin {
     protected $counter;
 
     protected $content = '';
+
+    protected $specialIdAttribute;
+    protected $specialClassAttribute;
 
     public function __construct(MarkdownInterface $parser)
     {
@@ -44,6 +48,22 @@ class SectionPlugin extends Plugin {
             'align'       => '',
             'class'       => '',
         );
+        $this->specialIdAttribute = $this->specialClassAttribute = null;
+    }
+
+    public function setSpecialIdAttribute($id)
+    {
+        $this->specialIdAttribute = $id;
+    }
+
+    /**
+     * Set special class attribute
+     *
+     * @param string $class special class attribute
+     */
+    public function setSpecialClassAttribute($class)
+    {
+        $this->specialClassAttribute = $class;
     }
     
     /**
@@ -317,16 +337,26 @@ class SectionPlugin extends Plugin {
         $classes[] = ($this->config['nojumbotron']) ? '' : 'jumbotron '. self::$PREFIX_CLASS_ATTRIBUTE . '-jumbotron';
         $classes[] = ($this->config['align']) ? $this->config['align'] : '';
         $classes[] = ($this->config['class']) ? e($this->config['class']) : '';
+        $classes[] = $this->specialClassAttribute;
         $classes = array_filter($classes);
 
         return join(" ", $classes);
     }
 
+    protected function getIdAttribute()
+    {
+        if ( ! empty($this->specialIdAttribute))
+        {
+            return $this->specialIdAttribute;
+        }
+    }
     /**
      * render
      */
     public function renderView($data = array())
     {
+        $id_attr = $this->getIdAttribute();
+        $id_attr_str = $id_attr ? ' id="' . $id_attr .'"' : '';
         $section_style_attr   = $this->getStyleAttribute('section');
         $container_style_attr = $this->getStyleAttribute('container');
         $section_class_attr   = $this->getClassAttribute();
@@ -334,7 +364,7 @@ class SectionPlugin extends Plugin {
         // if first section plugin is called,  output section stylesheet
         $html  = $this->getPluginStylesheet();
         $html .= '
-<div class="'. self::$PREFIX_CLASS_ATTRIBUTE . '">
+<div'. $id_attr_str .' class="'. self::$PREFIX_CLASS_ATTRIBUTE . '">
   <div class="'. $section_class_attr . '" style="' . $section_style_attr . '">
     <div class="container" style="' . $container_style_attr . '">
       '. $this->content .'
