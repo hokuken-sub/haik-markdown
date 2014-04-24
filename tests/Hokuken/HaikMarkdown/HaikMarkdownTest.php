@@ -757,6 +757,81 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
         $this->assertTag($expected, $result);
     }
 
+    public function specialAttributeOfMultiLineConvertProvider()
+    {
+        return [
+            [
+                ':::plugin {#id}' . "\n" .
+                'body' . "\n" .
+                ':::' . "\n",
+                ['id' => 'id']
+            ],
+            [
+                ':::plugin {.class}' . "\n" .
+                'body' . "\n" .
+                ':::' . "\n",
+                ['class' => 'class']
+            ],
+            [
+                ':::plugin {#id .class}' . "\n" .
+                'body' . "\n" .
+                ':::' . "\n",
+                ['id' => 'id', 'class' => 'class']
+            ],
+            [
+                ':::plugin  {#id} ' . "\n" .
+                'body' . "\n" .
+                ':::' . "\n",
+                ['id' => 'id']
+            ],
+            [
+                '::: plugin {.class1 .class2}' . "\n" .
+                'body' . "\n" .
+                ':::' . "\n",
+                ['class' => 'class1 class2']
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider specialAttributeOfMultiLineConvertProvider
+     */
+    public function testSpecialAttributeOfMultiLineConvertPlugin($markdown, $expected)
+    {
+        $plugin_mock = Mockery::mock('Hokuken\HaikMarkdown\Plugin\PluginInterface, Hokuken\HaikMarkdown\Plugin\SpecialAttributeInterface', function($mock) use ($expected)
+        {
+            $mock->shouldReceive('convert')
+                 ->andReturn('<div>convert plugin</div>');
+            if (isset($expected['id']))
+            {
+                $mock->shouldReceive('setSpecialIdAttribute')
+                     ->with($expected['id']);
+            }
+            if (isset($expected['class']))
+            {
+                $mock->shouldReceive('setSpecialClassAttribute')
+                     ->with($expected['class']);
+            }
+            return $mock;
+        });
+        $plugin_repository = Mockery::mock('Hokuken\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface', function($mock) use ($plugin_mock)
+        {
+            $mock->shouldReceive('exists')->andReturn(true);
+            $mock->shouldReceive('load')->andReturn($plugin_mock);
+            return $mock;
+        });
+        $parser = new HaikMarkdown();
+        $parser->registerPluginRepository($plugin_repository);
+
+        $markdown = "\n\n" . $markdown . "\n\n";
+        $result = $parser->transform($markdown);
+        $expected = [
+            'tag' => 'div',
+            'content' => 'convert plugin'
+        ];
+        $this->assertTag($expected, $result);
+    }
+
     
 
 }
