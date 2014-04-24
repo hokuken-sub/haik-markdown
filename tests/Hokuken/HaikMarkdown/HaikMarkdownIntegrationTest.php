@@ -183,5 +183,35 @@ section
         $this->assertTag($expected, $result);
     }
 
+    public function testCallSingleLineConvertMultiply()
+    {
+        $markdown = '
+:::section
+
+:::: image http://www.example.com/hoge.jpg, hoge ::::
+
+:::: image http://example.jp/fuga.png, fuga ::::
+
+:::
+';
+        $result = $this->parser->transform($markdown);
+        $expected = [
+            'tag' => 'img',
+            'attributes' => [
+                'src' => 'http://www.example.com/hoge.jpg',
+                'title' => 'hoge'
+            ],
+        ];
+        $this->assertTag($expected, $result);
+
+        $expected = [
+            'tag' => 'img',
+            'attributes' => [
+                'src' => 'http://example.jp/fuga.png',
+                'title' => 'fuga'
+            ],
+        ];
+        $this->assertTag($expected, $result);
+    }
 
 }
