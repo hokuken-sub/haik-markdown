@@ -263,7 +263,6 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
 
         $markdown = '/(plugin "param""1""","param2")';
         $expected = '<p><span>inline plugin</span></p>';
-
         $this->assertEquals($expected, trim($this->parser->transform($markdown)));
 
         $markdown = '/(plugin param"1",param2)';
@@ -665,6 +664,37 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
             'tag' => 'ul'
         ];
         $this->assertNotTag($not_expected, $result);
+    }
+
+    public function testSingleLineConvertPluginCall()
+    {
+        $plugin_mock = Mockery::mock('Hokuken\HaikMarkdown\Plugin\PluginInterface', function($mock)
+        {
+            $mock->shouldReceive('convert')
+                 ->with(array('foo', 'bar', 'buzz'), "")
+                 ->andReturn('<div>convert plugin</div>');
+            return $mock;
+        });
+        $plugin_repository = Mockery::mock('Hokuken\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface', function($mock) use ($plugin_mock)
+        {
+            $mock->shouldReceive('exists')->andReturn(true);
+            $mock->shouldReceive('load')->andReturn($plugin_mock);
+            return $mock;
+        });
+        $parser = new HaikMarkdown();
+        $parser->registerPluginRepository($plugin_repository);
+
+        $markdown = '
+
+:::plugin foo, bar, buzz:::
+
+';
+        $result = $parser->transform($markdown);
+        $expected = [
+            'tag' => 'div',
+            'content' => 'convert plugin'
+        ];
+        $this->assertTag($expected, $result);
     }
 
 }
