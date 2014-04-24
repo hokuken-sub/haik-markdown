@@ -186,6 +186,7 @@ class HaikMarkdown extends MarkdownExtra {
 				)
 				[ ]*
 			    (?P<id>[a-zA-Z]\w+)  # id: plugin id
+                (?:[ ]+ '.$this->id_class_attr_catch_re.' )?	 # $4 = id or class attributes
 				[ ]* \n # Whitespace and newline following marker.
 
 				# body: Content and Params
@@ -219,6 +220,7 @@ class HaikMarkdown extends MarkdownExtra {
     
     protected function _doConvertPlugin_multiline_callback($matches)
     {
+        $special_attr = isset($matches[3]) ? $matches[3] : '';
         $body = $params = '';
         if (isset($matches['body']) && trim($matches['body']))
         {
@@ -229,7 +231,7 @@ class HaikMarkdown extends MarkdownExtra {
             $matches['id'],
             $params,
             $body,
-            '',
+            $special_attr,
             $matches[0]
         );
     }
