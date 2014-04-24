@@ -4,6 +4,7 @@ namespace Hokuken\HaikMarkdown;
 use Michelf\MarkdownExtra;
 use Hokuken\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface;
 use Hokuken\HaikMarkdown\Plugin\Repositories\PluginRepository;
+use Hokuken\HaikMarkdown\Plugin\SpecialAttributeInterface;
 
 class HaikMarkdown extends MarkdownExtra {
 
@@ -70,7 +71,8 @@ class HaikMarkdown extends MarkdownExtra {
     /**
      * @see Michelf\Markdown::doHardBreaks
      */
-	protected function doHardBreaks($text) {
+	protected function doHardBreaks($text)
+	{
 		# Do hard breaks:
 		# when hardWrap is true then replace all break lines
 		$regex = '/ {2,}\n/';
@@ -81,6 +83,34 @@ class HaikMarkdown extends MarkdownExtra {
 		return preg_replace_callback($regex, 
 			array(&$this, '_doHardBreaks_callback'), $text);
 	}
+
+    /**
+     *
+     */
+    protected function parseSpecialAttribute($special_attr)
+    {
+        if (empty($special_attr)) return [];
+
+        # Split on components
+        preg_match_all('/[#.][-_:a-zA-Z0-9]+/', $special_attr, $matches);
+        $elements = $matches[0];
+
+        # handle classes and ids (only first id taken into account)
+        $classes = array();
+        $id = false;
+        foreach ($elements as $element) {
+            if ($element{0} == '.') {
+                $classes[] = substr($element, 1);
+            } else if ($element{0} == '#') {
+                if ($id === false) $id = substr($element, 1);
+            }
+        }
+
+        return [
+            'id' => $id,
+            'class' => join(" ", $classes)
+        ];
+    }
 
     protected function doInlinePlugins($text)
     {
@@ -141,6 +171,7 @@ class HaikMarkdown extends MarkdownExtra {
 				    \b
 				    (?:[ ]*)
 				    \1             # close colons
+                    (?:[ ]+ '.$this->id_class_attr_catch_re.' )?	 # $4 = id or class attributes
 				)
 				[ ]* (?= \n ) # Whitespace and newline following marker.
 			/xm',
@@ -175,11 +206,13 @@ class HaikMarkdown extends MarkdownExtra {
     
     protected function _doConvertPlugin_singleline_callback($matches)
     {
+        $special_attr = isset($matches[4]) ? $matches[4] : '';
         $params_str = YamlParams::adjustAsFlow($matches['params']);
         return $this->_doConvertPlugin(
             $matches['id'],
             $params_str,
             '',
+            $special_attr,
             $matches[0]
         );
     }
@@ -196,6 +229,7 @@ class HaikMarkdown extends MarkdownExtra {
             $matches['id'],
             $params,
             $body,
+            '',
             $matches[0]
         );
     }
@@ -245,7 +279,7 @@ class HaikMarkdown extends MarkdownExtra {
         return array($params, $body);
     }
     
-    protected function _doConvertPlugin($plugin_id, $params = '', $body = '', $whole_match = '')
+    protected function _doConvertPlugin($plugin_id, $params = '', $body = '', $special_attr = '', $whole_match = '')
     {
         if ($params !== '')
         {
@@ -258,7 +292,18 @@ class HaikMarkdown extends MarkdownExtra {
         $body = $this->unHash($body);
 
         try {
-            $result = with($this->loadPlugin($plugin_id))->convert($params, $body);
+            $plugin = $this->loadPlugin($plugin_id);
+            if ($plugin instanceof SpecialAttributeInterface && $special_attr !== '')
+            {
+                $attrs = $this->parseSpecialAttribute($special_attr);
+                foreach ($attrs as $attr => $value)
+                {
+                    if (empty($value)) continue;
+                    $method = 'setSpecial' . ucfirst($attr) . 'Attribute';
+                    $plugin->$method($value);
+                }
+            }
+            $result = $plugin->convert($params, $body);
             return "\n\n".$this->hashBlock($result)."\n\n";
         }
         catch (\RuntimeException $e) {}
