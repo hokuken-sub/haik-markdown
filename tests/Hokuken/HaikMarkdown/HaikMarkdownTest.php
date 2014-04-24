@@ -666,7 +666,21 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
         $this->assertNotTag($not_expected, $result);
     }
 
-    public function testSingleLineConvertPluginCall()
+    public function singleLineConvertProvider()
+    {
+        return [
+            [':::plugin foo, bar, buzz:::'],
+            ['::: plugin foo, bar, buzz :::'],
+            [':::plugin foo, bar, buzz::: '],
+            [':::plugin foo, bar, buzz:::  '],
+            ['::: plugin foo, bar, buzz ::: '],
+        ];
+    }
+
+    /**
+     * @dataProvider singleLineConvertProvider
+     */
+    public function testSingleLineConvertPluginCall($markdown)
     {
         $plugin_mock = Mockery::mock('Hokuken\HaikMarkdown\Plugin\PluginInterface', function($mock)
         {
@@ -684,11 +698,7 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
         $parser = new HaikMarkdown();
         $parser->registerPluginRepository($plugin_repository);
 
-        $markdown = '
-
-:::plugin foo, bar, buzz:::
-
-';
+        $markdown = "\n\n" . $markdown . "\n\n";
         $result = $parser->transform($markdown);
         $expected = [
             'tag' => 'div',
