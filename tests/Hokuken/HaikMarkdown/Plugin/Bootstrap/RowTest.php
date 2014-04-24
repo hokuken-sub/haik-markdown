@@ -117,7 +117,7 @@ class RowTest extends PHPUnit_Framework_TestCase {
 
     public function testStyleAttribute()
     {
-        $column = new Column();
+        $column = new Row();
         $column->addStyleAttribute('color:white;');
         $style_attr = $column->getStyleAttribute();
         $expected = 'color:white';
@@ -184,4 +184,21 @@ class RowTest extends PHPUnit_Framework_TestCase {
         );
         $this->assertTag($expected, $html);
     }
+
+    public function testIdAttribute()
+    {
+        $row = new Row();
+        $id = 'row_id';
+        $row->setIdAttribute($id);
+        $this->assertEquals($id, $row->getIdAttribute());
+        $html = $row->render();
+        $expected = [
+            'tag' => 'div',
+            'attributes' => [
+                'id' => $id,
+                'class' => 'row'
+            ]
+        ];
+    }
+
 }
