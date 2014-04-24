@@ -112,6 +112,8 @@ class SectionPlugin extends Plugin implements SpecialAttributeInterface {
     protected function behaveAsCols()
     {
         $plugin = $this->createColsPlugin();
+        $plugin->setSpecialIdAttribute($this->specialIdAttribute);
+        $plugin->setSpecialClassAttribute($this->specialClassAttribute);
         return $plugin->convert($this->colsParams, $this->body);
     }
 

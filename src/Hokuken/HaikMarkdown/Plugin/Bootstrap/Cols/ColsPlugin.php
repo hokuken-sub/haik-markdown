@@ -5,11 +5,12 @@ use Hokuken\HaikMarkdown\HaikMarkdown;
 use Hokuken\HaikMarkdown\Plugin\Bootstrap\Plugin;
 use Hokuken\HaikMarkdown\Plugin\Bootstrap\Row;
 use Hokuken\HaikMarkdown\Plugin\Bootstrap\Column;
+use Hokuken\HaikMarkdown\Plugin\SpecialAttributeInterface;
 use Michelf\MarkdownInterface;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
 
-class ColsPlugin extends Plugin {
+class ColsPlugin extends Plugin implements SpecialAttributeInterface {
 
     const COL_DELIMITER   = "\n====\n";
 
@@ -22,6 +23,9 @@ class ColsPlugin extends Plugin {
     
     protected $params;
     protected $body;
+
+    protected $specialIdAttribute;
+    protected $specialClassAttribute;
     
     protected $violateColumnSize;
 
@@ -82,6 +86,21 @@ class ColsPlugin extends Plugin {
         $html = $this->renderView();
 
         return $html;
+    }
+
+    public function setSpecialIdAttribute($id)
+    {
+        $this->row->setIdAttribute($id);
+    }
+
+    /**
+     * Set special class attribute
+     *
+     * @param string $class special class attribute
+     */
+    public function setSpecialClassAttribute($class)
+    {
+        $this->row->addClassAttribute($class);
     }
 
     protected function validatesColumnSize()

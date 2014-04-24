@@ -14,6 +14,7 @@ class Row implements ArrayAccess, IteratorAggregate, Countable {
     public static $COLUMN_SIZE     = 12;
     public static $CLASS_ATTRIBUTE = 'row';
 
+    protected $idAttribute = '';
     protected $classAttribute = '';
     protected $styleAttribute = '';
 
@@ -52,6 +53,17 @@ class Row implements ArrayAccess, IteratorAggregate, Countable {
     protected function initialize()
     {
         $this->addClassAttribute(self::$CLASS_ATTRIBUTE);
+    }
+
+    public function setIdAttribute($id_attr)
+    {
+        $this->idAttribute = $id_attr;
+        return $this;
+    }
+
+    public function getIdAttribute()
+    {
+        return $this->idAttribute;
     }
 
     public function addClassAttribute($class_attr = '')
@@ -167,12 +179,13 @@ class Row implements ArrayAccess, IteratorAggregate, Countable {
      */
     public function render()
     {
+        $id_attr_str = empty($this->idAttribute) ? '' : ' id="' . $this->idAttribute . '"';
         $class_attr = $this->createClassAttribute();
         $style_attr = $this->createStyleAttribute();
         $style_attr = $style_attr ? ' style="' . e($style_attr) . '"' : '';
 
         $columns_html = $this->renderColumns();
-        return '<div class="' . e($class_attr) . '"'.$style_attr.'>' . $columns_html . '</div>';
+        return '<div'.$id_attr_str.' class="' . e($class_attr) . '"'.$style_attr.'>' . $columns_html . '</div>';
     }
 
 }
