@@ -536,4 +536,61 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
         $this->assertNotTag($not_expected, $result);
     }
 
+    public function specialAttributeProvider()
+    {
+        return [
+            [
+                ['id' => 'section_id'],
+                [
+                    'tag' => 'div',
+                    'attributes' => [
+                        'id' => 'section_id',
+                        'class' => 'haik-plugin-section'
+                    ]
+                ]
+            ],
+            [
+                ['class' => 'section-class'],
+                [
+                    'tag' => 'div',
+                    'attributes' => [
+                        'class' => 'section-class'
+                    ],
+                    'ancestor' => [
+                        'tag' => 'div',
+                        'attributes' => ['class' => 'haik-plugin-section'],
+                    ],
+                ]
+            ],
+            [
+                ['id' => 'section_id', 'class' => 'section-class'],
+                [
+                    'tag' => 'div',
+                    'attributes' => [
+                        'class' => 'section-class'
+                    ],
+                    'ancestor' => [
+                        'tag' => 'div',
+                        'attributes' => [
+                            'id' => 'section_id',
+                            'class' => 'haik-plugin-section'
+                        ],
+                    ],
+                ]
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider specialAttributeProvider
+     */
+    public function testSpecialAttribute($attrs, $expected)
+    {
+        $body = "\n\n";
+        isset($attrs['id']) && $this->plugin->setSpecialIdAttribute($attrs['id']);
+        isset($attrs['class']) && $this->plugin->setSpecialClassAttribute($attrs['class']);
+        $result = $this->plugin->convert([], $body);
+        $this->assertTag($expected, $result);
+    }
+
 }
