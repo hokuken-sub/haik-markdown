@@ -1,7 +1,7 @@
 {
     "name": "toiee/haik-markdown",
     "description": "PHP haik Markdown parser",
-    "version": "0.4.0",
+    "version": "0.5.1",
     "type": "library",
     "keywords": ["markdown", "haik"],
     "time": "2014-04-16",
