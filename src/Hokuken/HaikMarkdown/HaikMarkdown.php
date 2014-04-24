@@ -4,8 +4,6 @@ namespace Hokuken\HaikMarkdown;
 use Michelf\MarkdownExtra;
 use Hokuken\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface;
 use Hokuken\HaikMarkdown\Plugin\Repositories\PluginRepository;
-use Symfony\Component\Yaml\Yaml;
-use Symfony\Component\Yaml\Exception\ParseException;
 
 class HaikMarkdown extends MarkdownExtra {
 
@@ -116,21 +114,8 @@ class HaikMarkdown extends MarkdownExtra {
         $params_str = isset($matches['params']) && $matches['params'] ? $matches['params'] : '';
         $body = isset($matches['body']) ? $this->unhash($this->runSpanGamut($matches['body'])) : '';
 
-        try {
-            if (strpos($params_str, ':') > 0)
-            {
-                $yaml = '{' . $params_str . '}';
-            }
-            else
-            {
-                $yaml = '[' . $params_str . ']';
-            }
-            $params = Yaml::parse($yaml);
-        }
-        catch (ParseException $e)
-        {
-            $params = str_getcsv($params_str, ',', '"', '\\');
-        }
+        $yaml = YamlParams::adjustAsFlow($params_str);
+        $params = YamlParams::parse($yaml);
 
         try {
             $result = with($this->loadPlugin($plugin_id))->inline($params, $body);
@@ -152,6 +137,9 @@ class HaikMarkdown extends MarkdownExtra {
 				    [ ]*
 				    (?P<id>[a-zA-Z]\w+)  # id: plugin id
 				    [ ]*
+				    (?P<params>.*)   # params
+				    \b
+				    (?:[ ]*)
 				    \1             # close colons
 				)
 				[ ]* (?= \n ) # Whitespace and newline following marker.
@@ -187,9 +175,10 @@ class HaikMarkdown extends MarkdownExtra {
     
     protected function _doConvertPlugin_singleline_callback($matches)
     {
+        $params_str = YamlParams::adjustAsFlow($matches['params']);
         return $this->_doConvertPlugin(
             $matches['id'],
-            '',
+            $params_str,
             '',
             $matches[0]
         );
@@ -260,18 +249,12 @@ class HaikMarkdown extends MarkdownExtra {
     {
         if ($params !== '')
         {
-            try {
-                $params = Yaml::parse($params);
-            }
-            catch (ParseException $e) {
-                $params = str_getcsv($params, ',', '"', '\\');
-            }
+            $params = YamlParams::parse($params);
         }
         else
         {
             $params = array();
         }
-
         $body = $this->unHash($body);
 
         try {
