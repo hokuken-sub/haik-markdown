@@ -593,4 +593,22 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
         $this->assertTag($expected, $result);
     }
 
+    public function testSpecialAttributeBehavingAsCols()
+    {
+        $params = [
+            'as' => 'cols'
+        ];
+        $body = "\n\n";
+        $this->plugin->setSpecialIdAttribute('section_id');
+        $this->plugin->setSpecialClassAttribute('section-class');
+        $result = $this->plugin->convert($params, $body);
+        $expected = [
+            'tag' => 'div',
+            'attributes' => [
+                'id' => 'section_id',
+                'class' => 'haik-plugin-cols row section-class'
+            ],
+        ];
+        $this->assertTag($expected, $result);
+    }
 }

@@ -308,4 +308,53 @@ class ColsPluginTest extends PHPUnit_Framework_TestCase {
         );
     }
 
+    public function specialAttributeProvider()
+    {
+        return [
+            [
+                ['id' => 'cols_id'],
+                [
+                    'tag' => 'div',
+                    'attributes' => [
+                        'id' => 'cols_id',
+                        'class' => 'haik-plugin-cols'
+                    ]
+                ]
+            ],
+            [
+                ['class' => 'cols-class'],
+                [
+                    'tag' => 'div',
+                    'attributes' => [
+                        'class' => 'haik-plugin-cols cols-class'
+                    ],
+                ]
+            ],
+            [
+                ['id' => 'cols_id', 'class' => 'cols-class'],
+                [
+                    'tag' => 'div',
+                    'attributes' => [
+                        'id' => 'cols_id',
+                        'class' => 'haik-plugin-cols cols-class'
+                    ],
+                ]
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider specialAttributeProvider
+     */
+    public function testSpecialAttribute($attrs, $expected)
+    {
+        $plugin = new ColsPlugin($this->parser);
+        $body = "\n\n";
+        isset($attrs['id']) && $plugin->setSpecialIdAttribute($attrs['id']);
+        isset($attrs['class']) && $plugin->setSpecialClassAttribute($attrs['class']);
+        $result = $plugin->convert([], $body);
+        $this->assertTag($expected, $result);
+    }
+
+
 }
