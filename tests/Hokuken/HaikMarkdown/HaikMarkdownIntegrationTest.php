@@ -226,6 +226,12 @@ This is the /[button][plugin1].
 This is using confusable-plugin-referenced-link-define as link [link text][link3_confusable_plugin].
 This is using confusable-plugin-referenced-link-define as plugin /[link text][link3_confusable_plugin].
 
+::: [plugin2]
+This is the contents.
+:::
+
+This is the [link 4][link4].
+
 
 [link1]: http://www.example.com/ "Example"
 [link2]: http://example.jp/
@@ -233,6 +239,12 @@ This is using confusable-plugin-referenced-link-define as plugin /[link text][li
 [image2]: http://www.example.com/fuga.png
 [plugin1]: button http://www.example.com/, primary, large
 [link3_confusable_plugin]: button
+[plugin2]: section
+---
+bg-color: red
+class: class-name
+---
+[link4]: http://www.example.com/whatsnew.html "New commers"
 EOM;
 
         $result = $this->parser->transform($markdown);
@@ -304,6 +316,31 @@ EOM;
             'content' => 'link text'
         ];
         $this->assertNotTag($not_expected, $result);
+
+        $expected = [
+            'tag' => 'div',
+            'attributes' => [
+                'class' => 'class-name',
+            ],
+            'child' => [
+                'tag' => 'div',
+                'attributes' => [
+                    'style' => 'background-color:red',
+                ],
+            ],
+        ];
+        $this->assertTag($expected, $result);
+
+        $expected = [
+            'tag' => 'a',
+            'attributes' => [
+                'href' => 'http://www.example.com/whatsnew.html',
+                'title' => 'New commers',
+            ],
+            'content' => 'link 4',
+        ];
+        $this->assertTag($expected, $result);
+
     }
 
 }

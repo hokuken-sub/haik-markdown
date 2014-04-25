@@ -40,7 +40,7 @@ class HaikMarkdown extends MarkdownExtra {
             'doInlinePlugins' => 2,
         ));
 
-		parent::__construct();
+        parent::__construct();
     }
 
     /**
@@ -74,59 +74,103 @@ class HaikMarkdown extends MarkdownExtra {
     /**
      * @see Michelf\Markdown::doHardBreaks
      */
-	protected function doHardBreaks($text)
-	{
-		# Do hard breaks:
-		# when hardWrap is true then replace all break lines
-		$regex = '/ {2,}\n/';
-		if ($this->hardWrap)
-		{
-    		$regex = '/ *\n/';
-		}
-		return preg_replace_callback($regex, 
-			array(&$this, '_doHardBreaks_callback'), $text);
-	}
+    protected function doHardBreaks($text)
+    {
+        # Do hard breaks:
+        # when hardWrap is true then replace all break lines
+        $regex = '/ {2,}\n/';
+        if ($this->hardWrap)
+        {
+            $regex = '/ *\n/';
+        }
+        return preg_replace_callback($regex,
+            array(&$this, '_doHardBreaks_callback'), $text);
+    }
 
     /**
      * Strip plugin definition from text,
      * stores the plugin-ID and params in hash references.
      */
-	protected function stripLinkDefinitions($text) {
-	    $text = parent::stripLinkDefinitions($text);
+    protected function stripLinkDefinitions($text) {
+        $less_than_tab = $this->tab_width - 1;
 
-		$less_than_tab = $this->tab_width - 1;
+        // First, catch the multi line YAML params
+        //
+        // [id]: plugin-name
+        // ------
+        // foo: bar
+        // hoge: fuga
+        // ------
 
-		# Link defs are in the form: ^[id]: plugin-name params, params, params ...
-		# must have one more params
-		$text = preg_replace_callback('{
-							^[ ]{0,'.$less_than_tab.'}\[(.+)\][ ]?:	# id = $1
-							  [ ]*
-							  \n?				# maybe *one* newline
-							  [ ]*
-							(?:
-							  (\S+?)			# plugin-name = $2
-							)
-							  [ ]*
-							  \n?				# maybe one newline
-							  [ ]*
-							(?:
-								(?<=\s)			# lookbehind for whitespace
-								(.*?)			# params = $3
-								[ ]*
-							)	# params is required
-							(?:\n+|\Z)
-			}xm',
-			array(&$this, '_stripPluginDefinitions_callback'),
-			$text);
-		return $text;
-	}
+        $text = preg_replace_callback('{
+                            (?:\A|\n)
+                            [ ]{0,'.$less_than_tab.'}\[([^\n]+?)\][ ]?:    # id = $1
+                              [ ]*
+                              \n?                # maybe *one* newline
+                              [ ]*
+                              (?:
+                                (\S+?)            # plugin-name = $2
+                              )
+                              [ ]*
+                              \n                # *one* newline
+                                (-{3,})             # delimiter line = $3
+                                [ ]*
+                              \n
+                                ([\w\W]*)               # YAML structure = $4
+                              \n
+                                \3
+                                [ ]*
+                              (\n|\z)
+            }x', array($this, '_stripPluginYamlDefinitions_callback'), $text);
 
-    protected function _stripPluginDefinitions_callback($matches)
+        // Second, strip link definitions
+        $text = parent::stripLinkDefinitions($text);
+
+        // Last, strip normal plugin definitions
+        // Link defs are in the form: ^[id]: plugin-name params, params, params ...
+        // must have one more params
+
+        $text = preg_replace_callback('{
+                            ^[ ]{0,'.$less_than_tab.'}\[(.+)\][ ]?:    # id = $1
+                              [ ]*
+                              \n?                # maybe *one* newline
+                              [ ]*
+                            (?:
+                              (\S+?)            # plugin-name = $2
+                            )
+                              [ ]*
+                              \n?                # maybe one newline
+                              [ ]*
+                            (?:
+                                (?<=\s)            # lookbehind for whitespace
+                                (.*?)            # params = $3
+                                [ ]*
+                            )    # params is required
+                            (?:\n+|\Z)
+            }xm',
+            array(&$this, '_stripPluginDefinitions_callback'),
+            $text);
+        return $text;
+    }
+
+    protected function _stripPluginYamlDefinitions_callback($matches)
     {
-        $ref_id = $matches[1];
+        $ref_id = strtolower($matches[1]);
         $plugin = array(
             'id' => $matches[2],
-            'params' => $matches[3]
+            'params' => $matches[4],
+            'isFlow' => false,
+        );
+        $this->plugins[$ref_id] = $plugin;
+        return "\n";
+    }
+    protected function _stripPluginDefinitions_callback($matches)
+    {
+        $ref_id = strtolower($matches[1]);
+        $plugin = array(
+            'id' => $matches[2],
+            'params' => $matches[3],
+            'isFlow' => true,
         );
         $this->plugins[$ref_id] = $plugin;
         return '';
@@ -166,17 +210,17 @@ class HaikMarkdown extends MarkdownExtra {
         $text = preg_replace_callback('{
             /
             \[
-                ('.$this->nested_brackets_re.')	# $1: body
+                ('.$this->nested_brackets_re.')    # $1: body
             \]
 
-            [ ]?				# one optional space
-            (?:\n[ ]*)?		    # one optional newline followed by spaces
+            [ ]?                # one optional space
+            (?:\n[ ]*)?            # one optional newline followed by spaces
 
             \[
-                (.*?)		# $2: id
+                (.*?)        # $2: id
             \]
             }xs',
-			array(&$this, '_doInlinePlugin_reference_callback'), $text);
+            array(&$this, '_doInlinePlugin_reference_callback'), $text);
 
         $text = preg_replace_callback('/
                 \/
@@ -196,14 +240,14 @@ class HaikMarkdown extends MarkdownExtra {
                     \)
                     
                 )
-                (?:[ ]? '.$this->id_class_attr_catch_re.' )?	 # $4 = id or class attributes
+                (?:[ ]? '.$this->id_class_attr_catch_re.' )?     # $4 = id or class attributes
                 /xs', array(&$this, '_doInlinePlugin_normal_callback'), $text);
 
         //last, handle reference-style shortcut: /[]
-		$text = preg_replace_callback('{
-		    /
+        $text = preg_replace_callback('{
+            /
             \[
-                ([^\[\]]+)		# $1: id; can\'t contain [ or ]
+                ([^\[\]]+)        # $1: id; can\'t contain [ or ]
             \]
             }xs',
             array(&$this, '_doInlinePlugin_reference_callback'), $text);
@@ -228,7 +272,10 @@ class HaikMarkdown extends MarkdownExtra {
 
         if (isset($this->plugins[$ref_id])) {
             $plugin = $this->plugins[$ref_id];
-            return $this->_doInlinePlugins($plugin['id'], $plugin['params'], $body, '', $whole_match);
+            $params = $plugin['params'];
+            if ($plugin['isFlow'])
+                $params = YamlParams::adjustAsFlow($params);
+            return $this->_doInlinePlugin($plugin['id'], $params, $body, '', $whole_match);
         }
 
         return $this->hashPart($whole_match);
@@ -239,18 +286,18 @@ class HaikMarkdown extends MarkdownExtra {
         $whole_match = $matches[0];
         $plugin_id = $matches['id'];
         $params_str = isset($matches['params']) && $matches['params'] ? $matches['params'] : '';
+        $params_str = YamlParams::adjustAsFlow($params_str);
         $body = isset($matches['body']) ? $matches['body'] : '';
         $special_attr = isset($matches[4]) ? $matches[4] : '';
 
-        return $this->_doInlinePlugins($plugin_id, $params_str, $body, $special_attr, $whole_match);
+        return $this->_doInlinePlugin($plugin_id, $params_str, $body, $special_attr, $whole_match);
     }
 
-    protected function _doInlinePlugins($plugin_id, $params = '', $body = '', $special_attr = '', $whole_match = '')
+    protected function _doInlinePlugin($plugin_id, $params = '', $body = '', $special_attr = '', $whole_match = '')
     {
         $body = $this->unhash($this->runSpanGamut($body));
 
-        $yaml = YamlParams::adjustAsFlow($params);
-        $params = YamlParams::parse($yaml);
+        $params = YamlParams::parse($params);
 
         try {
             $plugin = $this->loadPlugin($plugin_id);
@@ -276,51 +323,114 @@ class HaikMarkdown extends MarkdownExtra {
     protected function doConvertPlugins($text)
     {
         // single line
-		$text = preg_replace_callback('/
-				^
-				(?:
-				    (:{3,})        # $1: open colons
-				    [ ]*
-				    (?P<id>[a-zA-Z]\w+)  # id: plugin id
-				    [ ]*
-				    (?P<params>.*)   # params
-				    \b
-				    (?:[ ]*)
-				    \1             # close colons
-                    (?:[ ]+ '.$this->id_class_attr_catch_re.' )?	 # $4 = id or class attributes
-				)
-				[ ]* (?= \n ) # Whitespace and newline following marker.
-			/xm',
-			array(&$this, '_doConvertPlugin_singleline_callback'), $text);
-       
+        $text = preg_replace_callback('/
+                ^
+                (?:
+                    (:{3,})        # $1: open colons
+                    [ ]*
+                    (?P<id>[a-zA-Z]\w+)  # id: plugin id
+                    [ ]*
+                    (?P<params>.*)   # params
+                    \b
+                    (?:[ ]*)
+                    \1             # close colons
+                    (?:[ ]+ '.$this->id_class_attr_catch_re.' )?     # $4 = id or class attributes
+                )
+                [ ]* (?= \n ) # Whitespace and newline following marker.
+            /xm',
+            array(&$this, '_doConvertPlugin_singleline_callback'), $text);
+
+        // single line reference-style
+        $text = preg_replace_callback('/
+                ^
+                (?:
+                    (:{3,})        # $1: open colons
+                    [ ]*
+                    \[
+                        (.*?)	       # id = $3
+                    \]
+                    [ ]*
+                    \1             # close colons
+                )
+                [ ]* (?= \n ) # Whitespace and newline following marker.
+            /xm',
+            array(&$this, '_doConvertPlugin_reference_singleline_callback'), $text);
+
         // multi line
-		$text = preg_replace_callback('/
-				(?:\n|\A)
-				# $1: Opening marker
-				(
-					:{3,} # 3 or more colons.
-				)
-				[ ]*
-			    (?P<id>[a-zA-Z]\w+)  # id: plugin id
-                (?:[ ]+ '.$this->id_class_attr_catch_re.' )?	 # $4 = id or class attributes
-				[ ]* \n # Whitespace and newline following marker.
+        $text = preg_replace_callback('/
+                (?:\n|\A)
+                # $1: Opening marker
+                (
+                    :{3,} # 3 or more colons.
+                )
+                [ ]*
+                (?P<id>[a-zA-Z]\w+)  # id: plugin id
+                (?:[ ]+ '.$this->id_class_attr_catch_re.' )?     # $4 = id or class attributes
+                [ ]* \n # Whitespace and newline following marker.
 
-				# body: Content and Params
-				(?P<body>
-					(?>
-						(?!\1 [ ]* \n)	# Not a closing marker.
-						.*\n+
-					)+
-				)
+                # body: Content and Params
+                (?P<body>
+                    (?>
+                        (?!\1 [ ]* \n)    # Not a closing marker.
+                        .*\n+
+                    )+
+                )
 
-				# Closing marker.
-				\1 [ ]* (?= \n|\z )
-			/xm',
-			array(&$this, '_doConvertPlugin_multiline_callback'), $text);
+                # Closing marker.
+                \1 [ ]* (?= \n|\z )
+            /xm',
+            array(&$this, '_doConvertPlugin_multiline_callback'), $text);
 
-		return $text;
+        // multi line
+        $text = preg_replace_callback('/
+                (?:\n|\A)
+                # $1: Opening marker
+                (
+                    :{3,} # 3 or more colons. = $1
+                )
+                [ ]*
+                \[
+                    (.*?)	       # id = $2
+                \]
+                [ ]* \n # Whitespace and newline following marker.
+
+                # body: Content and Params
+                (?P<body>
+                    (?>
+                        (?!\1 [ ]* \n)    # Not a closing marker.
+                        .*\n+
+                    )+
+                )
+
+                # Closing marker.
+                \1 [ ]* (?= \n|\z )
+            /xm',
+            array(&$this, '_doConvertPlugin_reference_multiline_callback'), $text);
+
+        return $text;
     }
-    
+
+    protected function _doConvertPlugin_reference_singleline_callback($matches)
+    {
+        $whole_match = $matches[0];
+        $body = '';
+        $ref_id = $matches[2];
+
+        # lower-case and turn embedded newlines into spaces
+        $ref_id = strtolower($ref_id);
+        $ref_id = preg_replace('{[ ]?\n}', ' ', $ref_id);
+
+        if (isset($this->plugins[$ref_id])) {
+            $plugin = $this->plugins[$ref_id];
+            $params = $plugin['params'];
+            if ($plugin['isFlow'])
+                $params = YamlParams::adjustAsFlow($params);
+            return $this->_doConvertPlugin($plugin['id'], $params, $body, '', $whole_match);
+        }
+
+        return $this->hashPart($whole_match);
+    }
+
     protected function _doConvertPlugin_singleline_callback($matches)
     {
         $special_attr = isset($matches[4]) ? $matches[4] : '';
@@ -332,6 +442,27 @@ class HaikMarkdown extends MarkdownExtra {
             $special_attr,
             $matches[0]
         );
+    }
+
+    protected function _doConvertPlugin_reference_multiline_callback($matches)
+    {
+        $whole_match = $matches[0];
+        $ref_id = $matches[2];
+        $body = isset($matches['body']) ? $matches['body']: '';
+
+        # lower-case and turn embedded newlines into spaces
+        $ref_id = strtolower($ref_id);
+        $ref_id = preg_replace('{[ ]?\n}', ' ', $ref_id);
+
+        if (isset($this->plugins[$ref_id])) {
+            $plugin = $this->plugins[$ref_id];
+            $params = $plugin['params'];
+            if ($plugin['isFlow'])
+                $params = YamlParams::adjustAsFlow($params);
+            return $this->_doConvertPlugin($plugin['id'], $params, $body, '', $whole_match);
+        }
+
+        return $this->hashPart($whole_match);
     }
     
     protected function _doConvertPlugin_multiline_callback($matches)
