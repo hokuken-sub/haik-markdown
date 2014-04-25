@@ -1006,4 +1006,107 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
         $this->assertTag($expected, $result);        
     }
 
+    public function referenceStyledConvertProvier()
+    {
+        return [
+            [
+                '::: [refname] :::',
+                [
+                    'foo', 'bar', 'buzz'
+                ],
+                '',
+            ],
+            [
+                '::: [refname]' . "\n" .
+                'text' . "\n" .
+                ':::',
+                [
+                    'foo', 'bar', 'buzz'
+                ],
+                'text' . "\n",
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider referenceStyledConvertProvier
+     */
+    public function testReferenceStyledConvertPlugin($markdown, $expected_params, $expected_body)
+    {
+        $plugin_mock = Mockery::mock('Hokuken\HaikMarkdown\Plugin\PluginInterface', function($mock) use ($expected_params, $expected_body)
+        {
+            $mock->shouldReceive('convert')
+                 ->with($expected_params, $expected_body)
+                 ->andReturn('<div>convert plugin</div>');
+            return $mock;
+        });
+        $plugin_repository = Mockery::mock('Hokuken\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface', function($mock) use ($plugin_mock)
+        {
+            $mock->shouldReceive('exists')->andReturn(true);
+            $mock->shouldReceive('load')->andReturn($plugin_mock);
+            return $mock;
+        });
+        $parser = new HaikMarkdown();
+        $parser->registerPluginRepository($plugin_repository);
+
+        $org_markdown = $markdown;
+        $markdown = "\n\n" . $org_markdown . "\n\n";
+        $markdown .= "[refname]: plugin foo, bar, buzz\n";
+        $result = $parser->transform($markdown);
+        $expected = [
+            'tag' => 'div',
+            'content' => 'convert plugin'
+        ];
+        $this->assertTag($expected, $result);
+
+        $markdown = "\n\n" . $org_markdown . "\n\n";
+        $markdown .= "[refname]: plugin\n----\n- foo\n- bar\n- buzz\n----\n";
+        $result = $parser->transform($markdown);
+        $expected = [
+            'tag' => 'div',
+            'content' => 'convert plugin'
+        ];
+        $this->assertTag($expected, $result);
+    }
+
+    public function testConvertReferenceIdToLowerCase()
+    {
+        $plugin_mock = Mockery::mock('Hokuken\HaikMarkdown\Plugin\PluginInterface', function($mock)
+        {
+            $mock->shouldReceive('convert')
+                 ->with(array('foo'), 'text'. "\n")
+                 ->andReturn('<div>convert plugin</div>');
+            $mock->shouldReceive('inline')
+                 ->with(array('foo'), 'body'. "\n")
+                 ->andReturn('<span>inline plugin</span>');
+            return $mock;
+        });
+        $plugin_repository = Mockery::mock('Hokuken\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface', function($mock) use ($plugin_mock)
+        {
+            $mock->shouldReceive('exists')->andReturn(true);
+            $mock->shouldReceive('load')->andReturn($plugin_mock);
+            return $mock;
+        });
+        $parser = new HaikMarkdown();
+        $parser->registerPluginRepository($plugin_repository);
+
+        $markdown = <<< EOM
+::: [ref-id]
+text
+:::
+
+This is a /[body][ref-id].
+
+[REF-ID]: plugin foo
+
+EOM;
+
+        $result = $parser->transform($markdown);
+        $expected = [
+            'tag' => 'div',
+            'content' => 'convert plugin'
+        ];
+        $this->assertTag($expected, $result);
+    }
+
 }
