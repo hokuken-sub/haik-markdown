@@ -18,6 +18,9 @@ class HaikMarkdown extends MarkdownExtra {
 
     protected $hardWrap;
 
+    /** @var array internal hashes of plugin definition */
+    protected $plugins = array();
+
     public function __construct()
     {
         $this->running = false;
@@ -85,6 +88,51 @@ class HaikMarkdown extends MarkdownExtra {
 	}
 
     /**
+     * Strip plugin definition from text,
+     * stores the plugin-ID and params in hash references.
+     */
+	protected function stripLinkDefinitions($text) {
+	    $text = parent::stripLinkDefinitions($text);
+
+		$less_than_tab = $this->tab_width - 1;
+
+		# Link defs are in the form: ^[id]: plugin-name params, params, params ...
+		# must have one more params
+		$text = preg_replace_callback('{
+							^[ ]{0,'.$less_than_tab.'}\[(.+)\][ ]?:	# id = $1
+							  [ ]*
+							  \n?				# maybe *one* newline
+							  [ ]*
+							(?:
+							  (\S+?)			# plugin-name = $2
+							)
+							  [ ]*
+							  \n?				# maybe one newline
+							  [ ]*
+							(?:
+								(?<=\s)			# lookbehind for whitespace
+								(.*?)			# params = $3
+								[ ]*
+							)	# params is required
+							(?:\n+|\Z)
+			}xm',
+			array(&$this, '_stripPluginDefinitions_callback'),
+			$text);
+		return $text;
+	}
+
+    protected function _stripPluginDefinitions_callback($matches)
+    {
+        $ref_id = $matches[1];
+        $plugin = array(
+            'id' => $matches[2],
+            'params' => $matches[3]
+        );
+        $this->plugins[$ref_id] = $plugin;
+        return '';
+    }
+
+    /**
      *
      */
     protected function parseSpecialAttribute($special_attr)
@@ -114,11 +162,27 @@ class HaikMarkdown extends MarkdownExtra {
 
     protected function doInlinePlugins($text)
     {
+        // first, handle reference-style inline plugin
+        $text = preg_replace_callback('{
+            /
+            \[
+                ('.$this->nested_brackets_re.')	# $1: body
+            \]
+
+            [ ]?				# one optional space
+            (?:\n[ ]*)?		    # one optional newline followed by spaces
+
+            \[
+                (.*?)		# $2: id
+            \]
+            }xs',
+			array(&$this, '_doInlinePlugin_reference_callback'), $text);
+
         $text = preg_replace_callback('/
                 \/
                 (?:
                     \[
-                        (?P<body>'.$this->nested_brackets_re.')  # $1: body
+                        (?P<body>'.$this->nested_brackets_re.')  # $body
                     \]
                 )?
                 [ ]?
@@ -132,21 +196,60 @@ class HaikMarkdown extends MarkdownExtra {
                     \)
                     
                 )
-			    (?:[ ]? '.$this->id_class_attr_catch_re.' )?	 # $4 = id or class attributes
-			/xs', array(&$this, '_doInlinePlugins_callback'), $text);
+                (?:[ ]? '.$this->id_class_attr_catch_re.' )?	 # $4 = id or class attributes
+                /xs', array(&$this, '_doInlinePlugin_normal_callback'), $text);
+
+        //last, handle reference-style shortcut: /[]
+		$text = preg_replace_callback('{
+		    /
+            \[
+                ([^\[\]]+)		# $1: id; can\'t contain [ or ]
+            \]
+            }xs',
+            array(&$this, '_doInlinePlugin_reference_callback'), $text);
 
         return $text;
     }
 
-    protected function _doInlinePlugins_callback($matches)
+    protected function _doInlinePlugin_reference_callback($matches)
+    {
+        $whole_match = $matches[0];
+        $body = $matches[1];
+        $ref_id = isset($matches[2]) ? $matches[2] : '';
+        
+        if ($ref_id === '')
+        {
+            $ref_id = $body;
+        }
+
+        # lower-case and turn embedded newlines into spaces
+        $ref_id = strtolower($ref_id);
+        $ref_id = preg_replace('{[ ]?\n}', ' ', $ref_id);
+
+        if (isset($this->plugins[$ref_id])) {
+            $plugin = $this->plugins[$ref_id];
+            return $this->_doInlinePlugins($plugin['id'], $plugin['params'], $body, '', $whole_match);
+        }
+
+        return $this->hashPart($whole_match);
+    }
+
+    protected function _doInlinePlugin_normal_callback($matches)
     {
         $whole_match = $matches[0];
         $plugin_id = $matches['id'];
         $params_str = isset($matches['params']) && $matches['params'] ? $matches['params'] : '';
-        $body = isset($matches['body']) ? $this->unhash($this->runSpanGamut($matches['body'])) : '';
+        $body = isset($matches['body']) ? $matches['body'] : '';
         $special_attr = isset($matches[4]) ? $matches[4] : '';
 
-        $yaml = YamlParams::adjustAsFlow($params_str);
+        return $this->_doInlinePlugins($plugin_id, $params_str, $body, $special_attr, $whole_match);
+    }
+
+    protected function _doInlinePlugins($plugin_id, $params = '', $body = '', $special_attr = '', $whole_match = '')
+    {
+        $body = $this->unhash($this->runSpanGamut($body));
+
+        $yaml = YamlParams::adjustAsFlow($params);
         $params = YamlParams::parse($yaml);
 
         try {

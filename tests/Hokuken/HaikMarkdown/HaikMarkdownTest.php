@@ -941,4 +941,69 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
         $this->assertTag($expected, $result);
     }
 
+    public function referenceStyledInlineProvier()
+    {
+        return [
+            [
+                '/[refname]',
+                [
+                    'foo', 'bar', 'buzz'
+                ],
+                'refname',
+            ],
+            [
+                '/[text][refname]',
+                [
+                    'foo', 'bar', 'buzz'
+                ],
+                'text',
+            ],
+            [
+                '/[text] [refname]',
+                [
+                    'foo', 'bar', 'buzz'
+                ],
+                'text',
+            ],
+            [
+                "/[text]\n[refname]",
+                [
+                    'foo', 'bar', 'buzz'
+                ],
+                'text',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider referenceStyledInlineProvier
+     */
+    public function testReferenceStyledInlinePlugin($markdown, $expected_params, $expected_body)
+    {
+        $plugin_mock = Mockery::mock('Hokuken\HaikMarkdown\Plugin\PluginInterface', function($mock) use ($expected_params, $expected_body)
+        {
+            $mock->shouldReceive('inline')
+                 ->with($expected_params, $expected_body)
+                 ->andReturn('<span>inline plugin</span>');
+            return $mock;
+        });
+        $plugin_repository = Mockery::mock('Hokuken\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface', function($mock) use ($plugin_mock)
+        {
+            $mock->shouldReceive('exists')->andReturn(true);
+            $mock->shouldReceive('load')->andReturn($plugin_mock);
+            return $mock;
+        });
+        $parser = new HaikMarkdown();
+        $parser->registerPluginRepository($plugin_repository);
+
+        $markdown = "\n\n" . $markdown . "\n\n";
+        $markdown .= "[refname]: plugin foo, bar, buzz\n";
+        $result = $parser->transform($markdown);
+        $expected = [
+            'tag' => 'span',
+            'content' => 'inline plugin'
+        ];
+        $this->assertTag($expected, $result);        
+    }
+
 }
