@@ -214,4 +214,96 @@ section
         $this->assertTag($expected, $result);
     }
 
+    public function testDefineReferenceIdOfLinkAndImageAndPlugin()
+    {
+        $markdown = <<< EOM
+This is the [link1], and [link 2][link2].
+
+This is the ![with title][image1], and ![without title][image2].
+
+This is the /[button][plugin1].
+
+This is using confusable-plugin-referenced-link-define as link [link text][link3_confusable_plugin].
+This is using confusable-plugin-referenced-link-define as plugin /[link text][link3_confusable_plugin].
+
+
+[link1]: http://www.example.com/ "Example"
+[link2]: http://example.jp/
+[image1]: http://example.jp/hoge.jpg "Title"
+[image2]: http://www.example.com/fuga.png
+[plugin1]: button http://www.example.com/, primary, large
+[link3_confusable_plugin]: button
+EOM;
+
+        $result = $this->parser->transform($markdown);
+        $expected = [
+            'tag' => 'a',
+            'attributes' => [
+                'href' => 'http://www.example.com/',
+                'title' => 'Example',
+            ],
+            'content' => 'link1',
+        ];
+        $this->assertTag($expected, $result);
+
+        $expected = [
+            'tag' => 'a',
+            'attributes' => [
+                'href' => 'http://example.jp/',
+                'title' => '',
+            ],
+            'content' => 'link 2',
+        ];
+        $this->assertTag($expected, $result);
+
+        $expected = [
+            'tag' => 'img',
+            'attributes' => [
+                'src' => 'http://example.jp/hoge.jpg',
+                'title' => 'Title',
+                'alt' => 'with title'
+            ],
+        ];
+        $this->assertTag($expected, $result);
+
+        $expected = [
+            'tag' => 'img',
+            'attributes' => [
+                'src' => 'http://www.example.com/fuga.png',
+                'title' => '',
+                'alt' => 'without title'
+            ],
+        ];
+        $this->assertTag($expected, $result);
+
+        $expected = [
+            'tag' => 'a',
+            'attributes' => [
+                'href' => 'http://www.example.com/',
+                'class' => 'btn btn-primary btn-lg',
+            ],
+            'content' => 'button'
+        ];
+        $this->assertTag($expected, $result);
+
+        $expected = [
+            'tag' => 'a',
+            'attributes' => [
+                'href' => 'button',
+            ],
+            'content' => 'link text'
+        ];
+        $this->assertTag($expected, $result);
+
+        $not_expected = [
+            'tag' => 'a',
+            'attributes' => [
+                'href' => 'button',
+                'class' => 'btn btn-default',
+            ],
+            'content' => 'link text'
+        ];
+        $this->assertNotTag($not_expected, $result);
+    }
+
 }
