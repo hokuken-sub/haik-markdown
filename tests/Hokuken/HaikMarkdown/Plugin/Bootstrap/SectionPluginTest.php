@@ -200,7 +200,13 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
-                        'class' => 'jumbotron testclass',
+                        'class' => 'jumbotron',
+                    ),
+                    'ancestor' => array(
+                      'tag' => 'div',
+                      'attributes' => array(
+                          'class' => 'testclass',
+                      ),
                     ),
                 ),
             ),
@@ -361,7 +367,13 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                 'expected' => array(
                     'tag' => 'div',
                     'attributes' => array(
-                        'class' => 'jumbotron testclass',
+                        'class' => 'jumbotron',
+                    ),
+                    'ancestor' => array(
+                      'tag' => 'div',
+                      'attributes' => array(
+                          'class' => 'testclass',
+                      ),
                     ),
                 ),
             ),
@@ -554,12 +566,8 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                 [
                     'tag' => 'div',
                     'attributes' => [
-                        'class' => 'section-class'
-                    ],
-                    'ancestor' => [
-                        'tag' => 'div',
-                        'attributes' => ['class' => 'haik-plugin-section'],
-                    ],
+                        'class' => 'haik-plugin-section section-class'
+                    ]
                 ]
             ],
             [
@@ -567,15 +575,9 @@ class SectionPluginTest extends PHPUnit_Framework_TestCase {
                 [
                     'tag' => 'div',
                     'attributes' => [
-                        'class' => 'section-class'
-                    ],
-                    'ancestor' => [
-                        'tag' => 'div',
-                        'attributes' => [
-                            'id' => 'section_id',
-                            'class' => 'haik-plugin-section'
-                        ],
-                    ],
+                        'id'    => 'section_id',
+                        'class' => 'haik-plugin-section section-class'
+                    ]
                 ]
             ],
         ];
