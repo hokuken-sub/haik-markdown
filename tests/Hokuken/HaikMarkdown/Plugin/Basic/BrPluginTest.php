@@ -6,28 +6,29 @@ class BrPluginTest extends PHPUnit_Framework_TestCase {
     public function setUp()
     {
         $this->parser = Mockery::mock('Michelf\MarkdownInterface');
+        $this->plugin = new BrPlugin($this->parser);
     }
 
     public function testInlineMethodExists()
     {
-        $this->assertInternalType('string', with(new BrPlugin($this->parser))->inline());
+        $this->assertInternalType('string', $this->plugin->inline());
     }
     
     public function testConvertMethodExists()
     {
-        $this->assertInternalType('string', with(new BrPlugin($this->parser))->convert());
+        $this->assertInternalType('string', $this->plugin->convert());
     }
     
     public function testIsInlineMethodReturnRight()
     {
         $normal = array('br' => array(), 'assert' => "<br>\n");
-        $this->assertEquals($normal['assert'], with(new BrPlugin($this->parser))->inline());
+        $this->assertEquals($normal['assert'], $this->plugin->inline());
     }
 
     public function testIsConvertMethodReturnRight()
     {
         $normal = array('br' => array(), 'assert' => '<br>');
-        $this->assertEquals($normal['assert'], with(new BrPlugin($this->parser))->convert());
+        $this->assertEquals($normal['assert'], $this->plugin->convert());
     }
 
 }

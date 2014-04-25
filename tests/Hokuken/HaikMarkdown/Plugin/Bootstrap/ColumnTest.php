@@ -72,7 +72,8 @@ class ColumnTest extends PHPUnit_Framework_TestCase {
      */
     public function testParseText($string, $expected, $attribute)
     {
-        $column = with(new Column())->parseText($string);
+        $column = new Column();
+        $column->parseText($string);
         $this->assertAttributeEquals($expected, $attribute, $column);
     }
 

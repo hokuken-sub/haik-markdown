@@ -58,7 +58,8 @@ abstract class AbstractPluginRepository implements PluginRepositoryInterface {
         $plugins = array();
         foreach ($dirs as $dir)
         {
-            $plugin_id = snake_case(basename($dir));
+            $class_file = basename($dir);
+            $plugin_id = ctype_lower($class_file) ? $class_file : strtolower(preg_replace('/(.)([A-Z])/', '$1_$2', $class_file));
             if ($this->exists($plugin_id))
             {
                 $plugins[] = $plugin_id;

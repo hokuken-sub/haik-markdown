@@ -70,7 +70,7 @@ class ImagePlugin extends Plugin {
      */
     protected function setAltText()
     {
-        $this->titleText = $this->altText = e(strip_tags($this->body));
+        $this->titleText = $this->altText = htmlentities(strip_tags($this->body), ENT_QUOTES, 'UTF-8', false);
         return $this;
     }
 
@@ -211,6 +211,10 @@ class ImagePlugin extends Plugin {
     {
         $class_attr = $this->createClassAttribute();
         $style = $this->createImageStyle();
-        return '<img src="'.e($this->imagePath).'" alt="'.e($this->altText).'" title="'.e($this->titleText).'" class="'.e($class_attr).'" '.$style.'>';
+        $image_path = htmlentities($this->imagePath, ENT_QUOTES, 'UTF-8', false);
+        $alt_text = htmlentities($this->altText, ENT_QUOTES, 'UTF-8', false);
+        $title_text = htmlentities($this->titleText, ENT_QUOTES, 'UTF-8', false);
+        $class_attr = htmlentities($class_attr, ENT_QUOTES, 'UTF-8', false);
+        return '<img src="'.$image_path.'" alt="'.$alt_text.'" title="'.$title_text.'" class="'.$class_attr.'" '.$style.'>';
     }
 }

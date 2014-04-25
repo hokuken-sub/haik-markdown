@@ -101,7 +101,7 @@ class IconPlugin extends Plugin {
         if ( ! $this->iconName) return '';
 
         $class_attr = $this->createClassAttribute();
-        return '<i class="'.e($class_attr).'"></i>';
+        return '<i class="'.htmlentities($class_attr, ENT_QUOTES, 'UTF-8', false).'"></i>';
     }
 
 }

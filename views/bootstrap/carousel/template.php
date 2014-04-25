@@ -1,10 +1,10 @@
-<div id="haik_plugin_carousel_<?php echo e($this->getId())?>" class="haik-plugin-carousel carousel slide" data-ride="carousel">
+<div id="haik_plugin_carousel_<?php echo $this->getId()?>" class="haik-plugin-carousel carousel slide" data-ride="carousel">
 
     <?php if ($this->options['indicatorsSet']): ?>
     <!-- Indicators -->
     <ol class="carousel-indicators">
       <?php foreach ($this->items as $i => $item): ?>
-        <li data-target="#haik_plugin_carousel_<?php echo e($i)?>" data-slide-to="<?php echo e($i)?>"></li>
+        <li data-target="#haik_plugin_carousel_<?php echo $i?>" data-slide-to="<?php echo $i?>"></li>
       <?php endforeach ?>
     </ol>
     <?php endif ?>
@@ -26,10 +26,10 @@
 
     <?php if ($this->options['controlsSet']): ?>
     <!-- Controls -->
-    <a class="left carousel-control" href="#haik_plugin_carousel_<?php echo e($this->getId())?>" data-slide="prev">
+    <a class="left carousel-control" href="#haik_plugin_carousel_<?php echo $this->getId()?>" data-slide="prev">
       <span class="glyphicon glyphicon-chevron-left"></span>
     </a>
-    <a class="right carousel-control" href="#haik_plugin_carousel_<?php echo e($this->getId())?>" data-slide="next">
+    <a class="right carousel-control" href="#haik_plugin_carousel_<?php echo $this->getId()?>" data-slide="next">
       <span class="glyphicon glyphicon-chevron-right"></span>
     </a>
     <?php endif ?>

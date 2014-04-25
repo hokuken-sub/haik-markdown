@@ -32,7 +32,7 @@ class DecoPlugin extends Plugin {
             $body = '<strong>'. $body .'</strong>';
         }
 
-        return '<span class="haik-plugin-deco" style="'.e($style_attribute).'">'.$body.'</span>';
+        return '<span class="haik-plugin-deco" style="'.htmlentities($style_attribute, ENT_QUOTES, 'UTF-8', false).'">'.$body.'</span>';
     }
 
     protected function parseParams()

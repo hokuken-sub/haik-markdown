@@ -158,8 +158,8 @@ class Column implements ColumnInterface {
     {
         $class_attr = $this->createClassAttribute();
         $style_attr = $this->getStyleAttribute();
-        $style_attr = $style_attr ? ' style="' . e($style_attr) . '"' : '';
-        return '<div class="' . e($class_attr) . '"'.$style_attr.'>' . $this->content . '</div>';
+        $style_attr = $style_attr ? ' style="' . htmlentities($style_attr, ENT_QUOTES, 'UTF-8', false) . '"' : '';
+        return '<div class="' . htmlentities($class_attr, ENT_QUOTES, 'UTF-8', false) . '"'.$style_attr.'>' . $this->content . '</div>';
     }
 
     public static function isParsable($text)
