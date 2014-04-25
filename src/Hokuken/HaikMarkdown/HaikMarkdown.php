@@ -132,6 +132,7 @@ class HaikMarkdown extends MarkdownExtra {
                     \)
                     
                 )
+			    (?:[ ]? '.$this->id_class_attr_catch_re.' )?	 # $4 = id or class attributes
 			/xs', array(&$this, '_doInlinePlugins_callback'), $text);
 
         return $text;
@@ -143,12 +144,24 @@ class HaikMarkdown extends MarkdownExtra {
         $plugin_id = $matches['id'];
         $params_str = isset($matches['params']) && $matches['params'] ? $matches['params'] : '';
         $body = isset($matches['body']) ? $this->unhash($this->runSpanGamut($matches['body'])) : '';
+        $special_attr = isset($matches[4]) ? $matches[4] : '';
 
         $yaml = YamlParams::adjustAsFlow($params_str);
         $params = YamlParams::parse($yaml);
 
         try {
-            $result = with($this->loadPlugin($plugin_id))->inline($params, $body);
+            $plugin = $this->loadPlugin($plugin_id);
+            if ($plugin instanceof SpecialAttributeInterface && $special_attr !== '')
+            {
+                $attrs = $this->parseSpecialAttribute($special_attr);
+                foreach ($attrs as $attr => $value)
+                {
+                    if (empty($value)) continue;
+                    $method = 'setSpecial' . ucfirst($attr) . 'Attribute';
+                    $plugin->$method($value);
+                }
+            }
+            $result = $plugin->inline($params, $body);
             return $this->hashPart($result);
         }
         catch (\RuntimeException $e) {}
