@@ -104,7 +104,7 @@ class HaikMarkdown extends MarkdownExtra {
 
         $text = preg_replace_callback('{
                             (?:\A|\n)
-                            [ ]{0,'.$less_than_tab.'}\[(.+)\][ ]?:    # id = $1
+                            [ ]{0,'.$less_than_tab.'}\[([^\n]+?)\][ ]?:    # id = $1
                               [ ]*
                               \n?                # maybe *one* newline
                               [ ]*
@@ -116,12 +116,12 @@ class HaikMarkdown extends MarkdownExtra {
                                 (-{3,})             # delimiter line = $3
                                 [ ]*
                               \n
-                                (.*?)               # YAML structure = $4
+                                ([\w\W]*)               # YAML structure = $4
                               \n
                                 \3
                                 [ ]*
                               (\n|\z)
-            }xs', array($this, '_stripPluginYamlDefinitions_callback'), $text);
+            }x', array($this, '_stripPluginYamlDefinitions_callback'), $text);
 
         // Second, strip link definitions
         $text = parent::stripLinkDefinitions($text);
@@ -162,7 +162,7 @@ class HaikMarkdown extends MarkdownExtra {
             'isFlow' => false,
         );
         $this->plugins[$ref_id] = $plugin;
-        return '';
+        return "\n";
     }
     protected function _stripPluginDefinitions_callback($matches)
     {
