@@ -272,7 +272,10 @@ class HaikMarkdown extends MarkdownExtra {
 
         if (isset($this->plugins[$ref_id])) {
             $plugin = $this->plugins[$ref_id];
-            return $this->_doInlinePlugins($plugin['id'], $plugin['params'], $body, '', $whole_match);
+            $params = $plugin['params'];
+            if ($plugin['isFlow'])
+                $params = YamlParams::adjustAsFlow($params);
+            return $this->_doInlinePlugin($plugin['id'], $params, $body, '', $whole_match);
         }
 
         return $this->hashPart($whole_match);
@@ -283,18 +286,18 @@ class HaikMarkdown extends MarkdownExtra {
         $whole_match = $matches[0];
         $plugin_id = $matches['id'];
         $params_str = isset($matches['params']) && $matches['params'] ? $matches['params'] : '';
+        $params_str = YamlParams::adjustAsFlow($params_str);
         $body = isset($matches['body']) ? $matches['body'] : '';
         $special_attr = isset($matches[4]) ? $matches[4] : '';
 
-        return $this->_doInlinePlugins($plugin_id, $params_str, $body, $special_attr, $whole_match);
+        return $this->_doInlinePlugin($plugin_id, $params_str, $body, $special_attr, $whole_match);
     }
 
-    protected function _doInlinePlugins($plugin_id, $params = '', $body = '', $special_attr = '', $whole_match = '')
+    protected function _doInlinePlugin($plugin_id, $params = '', $body = '', $special_attr = '', $whole_match = '')
     {
         $body = $this->unhash($this->runSpanGamut($body));
 
-        $yaml = YamlParams::adjustAsFlow($params);
-        $params = YamlParams::parse($yaml);
+        $params = YamlParams::parse($params);
 
         try {
             $plugin = $this->loadPlugin($plugin_id);
