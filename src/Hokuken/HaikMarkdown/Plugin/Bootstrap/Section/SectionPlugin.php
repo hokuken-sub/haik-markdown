@@ -331,6 +331,20 @@ class SectionPlugin extends Plugin implements SpecialAttributeInterface {
     }
 
     /**
+     * get plugin top class attribute
+     */
+    protected function getPluginClassAttribute()
+    {
+        $classes = array();
+        $classes[] = self::$PREFIX_CLASS_ATTRIBUTE;
+        $classes[] = $this->specialClassAttribute;
+        $classes[] = ($this->config['class']) ? e($this->config['class']) : '';
+        $classes = array_filter($classes);
+
+        return join(" ", $classes);
+    }
+
+    /**
      * get class attribute
      */
     protected function getClassAttribute()
@@ -338,13 +352,14 @@ class SectionPlugin extends Plugin implements SpecialAttributeInterface {
         $classes = array();
         $classes[] = ($this->config['nojumbotron']) ? '' : 'jumbotron '. self::$PREFIX_CLASS_ATTRIBUTE . '-jumbotron';
         $classes[] = ($this->config['align']) ? $this->config['align'] : '';
-        $classes[] = ($this->config['class']) ? e($this->config['class']) : '';
-        $classes[] = $this->specialClassAttribute;
         $classes = array_filter($classes);
 
         return join(" ", $classes);
     }
 
+    /**
+     * get id attribute
+     */
     protected function getIdAttribute()
     {
         if ( ! empty($this->specialIdAttribute))
@@ -359,14 +374,16 @@ class SectionPlugin extends Plugin implements SpecialAttributeInterface {
     {
         $id_attr = $this->getIdAttribute();
         $id_attr_str = $id_attr ? ' id="' . $id_attr .'"' : '';
+
         $section_style_attr   = $this->getStyleAttribute('section');
         $container_style_attr = $this->getStyleAttribute('container');
+        $section_plugin_class_attr = $this->getPluginClassAttribute();
         $section_class_attr   = $this->getClassAttribute();
 
         // if first section plugin is called,  output section stylesheet
         $html  = $this->getPluginStylesheet();
         $html .= '
-<div'. $id_attr_str .' class="'. self::$PREFIX_CLASS_ATTRIBUTE . '">
+<div'. $id_attr_str .' class="'. $section_plugin_class_attr . '">
   <div class="'. $section_class_attr . '" style="' . $section_style_attr . '">
     <div class="container" style="' . $container_style_attr . '">
       '. $this->content .'
