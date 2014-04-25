@@ -13,7 +13,7 @@
         "php": ">=5.3.3",
 		"illuminate/support": "~4.1",
 		"michelf/php-markdown": "1.4.0",
-		"symfony/yaml": "~2.4.3"
+		"symfony/yaml": "~2.4"
     },
     "require-dev": {
         "phpunit/PHPUnit": "3.7.*",
