@@ -61,7 +61,8 @@ class PluginRepository extends AbstractPluginRepository {
 
     protected function getClassName($id)
     {
-        $class_name = studly_case($id);
+        $text = ucwords(str_replace(array('-', '_'), ' ', $id));
+        $class_name = str_replace(' ', '', $text);
         return $class_name = 'Hokuken\HaikMarkdown\Plugin\FlatUI\\' . $class_name . '\\' . $class_name . 'Plugin';
     }
 

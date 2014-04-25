@@ -182,10 +182,10 @@ class Row implements ArrayAccess, IteratorAggregate, Countable {
         $id_attr_str = empty($this->idAttribute) ? '' : ' id="' . $this->idAttribute . '"';
         $class_attr = $this->createClassAttribute();
         $style_attr = $this->createStyleAttribute();
-        $style_attr = $style_attr ? ' style="' . e($style_attr) . '"' : '';
+        $style_attr = $style_attr ? ' style="' . htmlentities($style_attr, ENT_QUOTES, 'UTF-8', false) . '"' : '';
 
         $columns_html = $this->renderColumns();
-        return '<div'.$id_attr_str.' class="' . e($class_attr) . '"'.$style_attr.'>' . $columns_html . '</div>';
+        return '<div'.$id_attr_str.' class="' . htmlentities($class_attr, ENT_QUOTES, 'UTF-8', false) . '"'.$style_attr.'>' . $columns_html . '</div>';
     }
 
 }

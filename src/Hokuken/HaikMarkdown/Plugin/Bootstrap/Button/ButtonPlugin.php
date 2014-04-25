@@ -216,7 +216,7 @@ class ButtonPlugin extends Plugin {
     {
         $class_attr = $this->createClassAttribute();
         $url = $this->url;
-        $html = '<a class="'. e($class_attr) .'" href="'.e($url).'">'.$this->body.'</a>';
+        $html = '<a class="'. htmlentities($class_attr, ENT_QUOTES, 'UTF-8', false) .'" href="'.htmlentities($url, ENT_QUOTES, 'UTF-8', false).'">'.$this->body.'</a>';
         return $html;
     }
 }

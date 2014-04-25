@@ -110,7 +110,7 @@ class LabelPlugin extends Plugin {
     public function renderView($data = array())
     {
         $class_attr = $this->createClassAttribute();
-        return '<span class="'. e($class_attr) .'">'.$this->body.'</span>';
+        return '<span class="'. htmlentities($class_attr, ENT_QUOTES, 'UTF-8', false) .'">'.$this->body.'</span>';
     }
 
 }

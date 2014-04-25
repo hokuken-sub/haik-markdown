@@ -161,11 +161,11 @@ class TablePlugin extends Plugin {
             {
                 $attrs = str_replace($inner_matches[0], '', $attrs);
                 $class_attr = $inner_matches[2] . ' table';
-                $attrs .= 'class="'. e($class_attr) . '"';
+                $attrs .= 'class="'. htmlentities($class_attr, ENT_QUOTES, 'UTF-8', false) . '"';
             }
             else
             {
-                $attrs .= 'class="'. e($class_attr) .'"';
+                $attrs .= 'class="'. htmlentities($class_attr, ENT_QUOTES, 'UTF-8', false) .'"';
             }
             return '<table '.$attrs.'>';
         }, $html, 1);

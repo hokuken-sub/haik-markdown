@@ -322,7 +322,7 @@ class SectionPlugin extends Plugin implements SpecialAttributeInterface {
         {
             if ($val !== '')
             {
-              $val = e(rtrim($val, ';'));
+              $val = htmlentities(rtrim($val, ';'), ENT_QUOTES, 'UTF-8', false);
               $styles[] = "{$key}:{$val}";
             }
         }
@@ -338,7 +338,7 @@ class SectionPlugin extends Plugin implements SpecialAttributeInterface {
         $classes = array();
         $classes[] = self::$PREFIX_CLASS_ATTRIBUTE;
         $classes[] = $this->specialClassAttribute;
-        $classes[] = ($this->config['class']) ? e($this->config['class']) : '';
+        $classes[] = ($this->config['class']) ? htmlentities($this->config['class'], ENT_QUOTES, 'UTF-8', false) : '';
         $classes = array_filter($classes);
 
         return join(" ", $classes);

@@ -96,7 +96,7 @@ class AlertPlugin extends Plugin {
         $content = $this->parser->transform($this->body);
         $class_attribute = $this->createClassAttribute();
         
-        return '<div class="'. e($class_attribute) .'">'.$close_button.$content.'</div>';
+        return '<div class="'. htmlentities($class_attribute, ENT_QUOTES, 'UTF-8', false) .'">'.$close_button.$content.'</div>';
     }
 
     protected function createClassAttribute()
