@@ -231,7 +231,7 @@ class HaikMarkdown extends MarkdownExtra {
             return $this->_doInlinePlugins($plugin['id'], $plugin['params'], $body, '', $whole_match);
         }
 
-        return $whole_match;
+        return $this->hashPart($whole_match);
     }
 
     protected function _doInlinePlugin_normal_callback($matches)
