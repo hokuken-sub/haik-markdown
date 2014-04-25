@@ -832,6 +832,113 @@ class HaikMarkdownTest extends PHPUnit_Framework_TestCase {
         $this->assertTag($expected, $result);
     }
 
-    
+    public function specialAttributeOfInlineProvider()
+    {
+        return [
+            [
+                '/(plugin){#id}',
+                ['id' => 'id']
+            ],
+            [
+                '/(plugin) {#id}',
+                ['id' => 'id']
+            ],
+            [
+                '/[text](plugin){#id}',
+                ['id' => 'id']
+            ],
+            [
+                '/[text](plugin) {#id}',
+                ['id' => 'id']
+            ],
+            [
+                '/(plugin){.class}',
+                ['class' => 'class']
+            ],
+            [
+                '/(plugin) {.class}',
+                ['class' => 'class']
+            ],
+            [
+                '/[text](plugin){.class}',
+                ['class' => 'class']
+            ],
+            [
+                '/[text](plugin) {.class}',
+                ['class' => 'class']
+            ],
+            [
+                '/(plugin){#id .class}',
+                ['id' => 'id', 'class' => 'class']
+            ],
+            [
+                '/(plugin) {#id .class}',
+                ['id' => 'id', 'class' => 'class']
+            ],
+            [
+                '/[text](plugin){#id .class}',
+                ['id' => 'id', 'class' => 'class']
+            ],
+            [
+                '/[text](plugin) {#id .class}',
+                ['id' => 'id', 'class' => 'class']
+            ],
+            [
+                '/(plugin){.class1 .class2}',
+                ['class' => 'class1 class2']
+            ],
+            [
+                '/(plugin) {.class1 .class2}',
+                ['class' => 'class1 class2']
+            ],
+            [
+                '/[text](plugin){.class1 .class2}',
+                ['class' => 'class1 class2']
+            ],
+            [
+                '/[text](plugin) {.class1 .class2}',
+                ['class' => 'class1 class2']
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider specialAttributeOfInlineProvider
+     */
+    public function testSpecialAttributeOfInlinePlugin($markdown, $expected)
+    {
+        $plugin_mock = Mockery::mock('Hokuken\HaikMarkdown\Plugin\PluginInterface, Hokuken\HaikMarkdown\Plugin\SpecialAttributeInterface', function($mock) use ($expected)
+        {
+            $mock->shouldReceive('inline')
+                 ->andReturn('<span>inline plugin</span>');
+            if (isset($expected['id']))
+            {
+                $mock->shouldReceive('setSpecialIdAttribute')
+                     ->with($expected['id']);
+            }
+            if (isset($expected['class']))
+            {
+                $mock->shouldReceive('setSpecialClassAttribute')
+                     ->with($expected['class']);
+            }
+            return $mock;
+        });
+        $plugin_repository = Mockery::mock('Hokuken\HaikMarkdown\Plugin\Repositories\PluginRepositoryInterface', function($mock) use ($plugin_mock)
+        {
+            $mock->shouldReceive('exists')->andReturn(true);
+            $mock->shouldReceive('load')->andReturn($plugin_mock);
+            return $mock;
+        });
+        $parser = new HaikMarkdown();
+        $parser->registerPluginRepository($plugin_repository);
+
+        $markdown = "\n\n" . $markdown . "\n\n";
+        $result = $parser->transform($markdown);
+        $expected = [
+            'tag' => 'span',
+            'content' => 'inline plugin'
+        ];
+        $this->assertTag($expected, $result);
+    }
 
 }
