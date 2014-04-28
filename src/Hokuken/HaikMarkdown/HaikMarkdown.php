@@ -8,7 +8,7 @@ use Hokuken\HaikMarkdown\Plugin\SpecialAttributeInterface;
 
 class HaikMarkdown extends MarkdownExtra {
 
-    const VERSION = '0.5.1';
+    const VERSION = '0.6.0';
 
     /** @var boolean is parser running for prevent recursively parse */
     protected $running;
