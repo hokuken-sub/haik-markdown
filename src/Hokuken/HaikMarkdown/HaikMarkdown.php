@@ -181,7 +181,7 @@ class HaikMarkdown extends MarkdownExtra {
      */
     protected function parseSpecialAttribute($special_attr)
     {
-        if (empty($special_attr)) return [];
+        if (empty($special_attr)) return array();
 
         # Split on components
         preg_match_all('/[#.][-_:a-zA-Z0-9]+/', $special_attr, $matches);
@@ -198,10 +198,10 @@ class HaikMarkdown extends MarkdownExtra {
             }
         }
 
-        return [
+        return array(
             'id' => $id,
             'class' => join(" ", $classes)
-        ];
+        );
     }
 
     protected function doInlinePlugins($text)

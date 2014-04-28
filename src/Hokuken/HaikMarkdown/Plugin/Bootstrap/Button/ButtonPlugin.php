@@ -134,13 +134,13 @@ class ButtonPlugin extends Plugin {
                     $this->setUrl($value);
                     break;
                 case 'type':
-                    if (in_array($value, ['primary', 'info', 'success', 'warning', 'danger', 'link', 'default']))
+                    if (in_array($value, array('primary', 'info', 'success', 'warning', 'danger', 'link', 'default')))
                     {
                         $this->type = $value;
                     }
                     break;
                 case 'size':
-                    if (in_array($value, ['large', 'lg', 'small', 'sm', 'x-small', 'mini', 'xs']))
+                    if (in_array($value, array('large', 'lg', 'small', 'sm', 'x-small', 'mini', 'xs')))
                     {
                         $this->size = $value;
                     }

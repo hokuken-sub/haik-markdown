@@ -215,7 +215,7 @@ class SectionPlugin extends Plugin implements SpecialAttributeInterface {
                 case 'behavior':
                 case 'as':
                 case 'type':
-                    if (in_array($value, ['section', 'cols']))
+                    if (in_array($value, array('section', 'cols')))
                         $this->behavior = $value;
             }
         }
